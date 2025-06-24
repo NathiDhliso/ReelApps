@@ -1,21 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '../types/supabase';
+import { Database } from '../types/database';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-console.log('Environment check:', {
-  NODE_ENV: import.meta.env.MODE,
-  SUPABASE_URL: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'MISSING',
-  SUPABASE_KEY: supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING'
-});
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Key present:', !!supabaseAnonKey);
+console.log('Supabase Key length:', supabaseAnonKey?.length);
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing environment variables:', {
-    VITE_SUPABASE_URL: !!supabaseUrl,
-    VITE_SUPABASE_ANON_KEY: !!supabaseAnonKey
-  });
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+  throw new Error('Missing Supabase environment variables');
 }
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -23,6 +17,11 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true
+  },
+  global: {
+    headers: {
+      apikey: supabaseAnonKey
+    }
   }
 });
 
