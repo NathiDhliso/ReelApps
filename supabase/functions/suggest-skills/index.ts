@@ -1,7 +1,11 @@
-// Import necessary libraries from Deno and Supabase.
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
 // Placeholder for an AI model client. In a real scenario, this would be
 // a client for OpenAI, Anthropic, or another AI service.
@@ -26,26 +30,32 @@ const getAiSuggestions = async (text: string): Promise<string[]> => {
   if (text.toLowerCase().includes('python')) suggestions.add('Python');
   if (text.toLowerCase().includes('sql')) suggestions.add('SQL');
   if (text.toLowerCase().includes('data analysis')) suggestions.add('Data Analysis');
+  if (text.toLowerCase().includes('javascript')) suggestions.add('JavaScript');
+  if (text.toLowerCase().includes('node')) suggestions.add('Node.js');
+  if (text.toLowerCase().includes('database')) suggestions.add('Database Management');
+  if (text.toLowerCase().includes('api')) suggestions.add('API Development');
+  if (text.toLowerCase().includes('frontend')) suggestions.add('Frontend Development');
+  if (text.toLowerCase().includes('backend')) suggestions.add('Backend Development');
 
   console.log('AI simulation returned suggestions:', Array.from(suggestions));
   return Array.from(suggestions);
 };
 
 serve(async (req) => {
-  // This is needed if you're planning to invoke your function from a browser.
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    // Create a Supabase client with the user's authorization token.
+    // Create a Supabase client with the user's authorization token
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
     );
 
-    // Get the user from the token.
+    // Get the user from the token
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -54,7 +64,7 @@ serve(async (req) => {
       });
     }
 
-    // Get the user's profile text from the request body.
+    // Get the user's profile text from the request body
     const { text } = await req.json();
     if (!text) {
       return new Response(JSON.stringify({ error: 'Missing text for analysis' }), {
@@ -63,7 +73,7 @@ serve(async (req) => {
       });
     }
 
-    // Get AI-powered skill suggestions.
+    // Get AI-powered skill suggestions
     const suggestions = await getAiSuggestions(text);
 
     return new Response(JSON.stringify({ suggestions }), {
@@ -77,4 +87,4 @@ serve(async (req) => {
       status: 500,
     });
   }
-}); 
+});
