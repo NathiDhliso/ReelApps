@@ -1,0 +1,5 @@
+# Google Gemini API Configuration
+GEMINI_API_KEY=AIzaSyBCi4yukINSz7U_I4qJe2Z_kXDF0yPJyZk
+
+# Python Service Configuration
+PYTHON_SERVICE_URL=http://localhost:8000

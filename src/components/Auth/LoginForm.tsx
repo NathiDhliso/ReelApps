@@ -161,23 +161,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
         </div>
 
         {!isResetView && (
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Password</label>
-            <input
-              type="password"
-              className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
-              value={password}
-              onChange={(e) => handlePasswordChange(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
-            {errors.password && (
-              <div className={styles.fieldError}>
-                <AlertCircle size={14} />
-                {errors.password}
-              </div>
-            )}
-          </div>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Password</label>
+          <input
+            type="password"
+            className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+            value={password}
+            onChange={(e) => handlePasswordChange(e.target.value)}
+            placeholder="Enter your password"
+            required
+          />
+          {errors.password && (
+            <div className={styles.fieldError}>
+              <AlertCircle size={14} />
+              {errors.password}
+            </div>
+          )}
+        </div>
         )}
 
         {generalError && (
@@ -197,13 +197,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
             {isLoading ? 'Sending...' : 'Send Reset Link'}
           </Button>
         ) : (
-          <Button 
-            type="submit" 
-            className={styles.submitButton}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing In...' : 'Sign In'}
-          </Button>
+        <Button 
+          type="submit" 
+          className={styles.submitButton}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Signing In...' : 'Sign In'}
+        </Button>
         )}
 
         <div className={styles.footer}>
@@ -217,14 +217,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
             </button>
           ) : (
             <>
-              Don't have an account? 
-              <button 
-                type="button"
-                onClick={onSwitchToSignUp}
-                className={styles.link}
-              >
-                Sign up
-              </button>
+          Don't have an account? 
+          <button 
+            type="button"
+            onClick={onSwitchToSignUp}
+            className={styles.link}
+          >
+            Sign up
+          </button>
             </>
           )}
         </div>

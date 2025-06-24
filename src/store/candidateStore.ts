@@ -147,123 +147,123 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
-    const { data, error } = await supabase
-      .from('skills')
-      .insert({ ...skill, profile_id: profile.id })
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('skills')
+        .insert({ ...skill, profile_id: profile.id })
+        .select()
+        .single();
 
-    if (error) {
-      handleSupabaseError(error);
-    }
+      if (error) {
+        handleSupabaseError(error);
+      }
 
-    set(state => ({
-      profile: state.profile ? {
-        ...state.profile,
-        skills: [data, ...state.profile.skills]
-      } : null
-    }));
+      set(state => ({
+        profile: state.profile ? {
+          ...state.profile,
+          skills: [data, ...state.profile.skills]
+        } : null
+      }));
   },
 
   updateSkill: async (skillId: string, updates: Partial<Skill>) => {
-    const { data, error } = await supabase
-      .from('skills')
-      .update(updates)
-      .eq('id', skillId)
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('skills')
+        .update(updates)
+        .eq('id', skillId)
+        .select()
+        .single();
 
-    if (error) {
-      handleSupabaseError(error);
-    }
+      if (error) {
+        handleSupabaseError(error);
+      }
 
-    set(state => ({
-      profile: state.profile ? {
-        ...state.profile,
-        skills: state.profile.skills.map(skill => 
-          skill.id === skillId ? data : skill
-        )
-      } : null
-    }));
+      set(state => ({
+        profile: state.profile ? {
+          ...state.profile,
+          skills: state.profile.skills.map(skill => 
+            skill.id === skillId ? data : skill
+          )
+        } : null
+      }));
   },
 
   deleteSkill: async (skillId: string) => {
-    const { error } = await supabase
-      .from('skills')
-      .delete()
-      .eq('id', skillId);
+      const { error } = await supabase
+        .from('skills')
+        .delete()
+        .eq('id', skillId);
 
-    if (error) {
-      handleSupabaseError(error);
-    }
+      if (error) {
+        handleSupabaseError(error);
+      }
 
-    set(state => ({
-      profile: state.profile ? {
-        ...state.profile,
-        skills: state.profile.skills.filter(skill => skill.id !== skillId)
-      } : null
-    }));
+      set(state => ({
+        profile: state.profile ? {
+          ...state.profile,
+          skills: state.profile.skills.filter(skill => skill.id !== skillId)
+        } : null
+      }));
   },
 
   addProject: async (project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => {
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
-    const { data, error } = await supabase
-      .from('projects')
-      .insert({ ...project, profile_id: profile.id })
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('projects')
+        .insert({ ...project, profile_id: profile.id })
+        .select()
+        .single();
 
-    if (error) {
-      handleSupabaseError(error);
-    }
+      if (error) {
+        handleSupabaseError(error);
+      }
 
-    set(state => ({
-      profile: state.profile ? {
-        ...state.profile,
-        projects: [data, ...state.profile.projects]
-      } : null
-    }));
+      set(state => ({
+        profile: state.profile ? {
+          ...state.profile,
+          projects: [data, ...state.profile.projects]
+        } : null
+      }));
   },
 
   updateProject: async (projectId: string, updates: Partial<Project>) => {
-    const { data, error } = await supabase
-      .from('projects')
-      .update(updates)
-      .eq('id', projectId)
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from('projects')
+        .update(updates)
+        .eq('id', projectId)
+        .select()
+        .single();
 
-    if (error) {
-      handleSupabaseError(error);
-    }
+      if (error) {
+        handleSupabaseError(error);
+      }
 
-    set(state => ({
-      profile: state.profile ? {
-        ...state.profile,
-        projects: state.profile.projects.map(project => 
-          project.id === projectId ? data : project
-        )
-      } : null
-    }));
+      set(state => ({
+        profile: state.profile ? {
+          ...state.profile,
+          projects: state.profile.projects.map(project => 
+            project.id === projectId ? data : project
+          )
+        } : null
+      }));
   },
 
   deleteProject: async (projectId: string) => {
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', projectId);
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId);
 
-    if (error) {
-      handleSupabaseError(error);
-    }
+      if (error) {
+        handleSupabaseError(error);
+      }
 
-    set(state => ({
-      profile: state.profile ? {
-        ...state.profile,
-        projects: state.profile.projects.filter(project => project.id !== projectId)
-      } : null
-    }));
+      set(state => ({
+        profile: state.profile ? {
+          ...state.profile,
+          projects: state.profile.projects.filter(project => project.id !== projectId)
+        } : null
+      }));
   },
 }));

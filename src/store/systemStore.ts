@@ -84,10 +84,14 @@ export const useSystemStore = create<SystemState>((set, get) => ({
     };
 
     try {
-      // Check Supabase
-      const { supabase } = await import('../lib/supabase');
-      const { error } = await supabase.from('profiles').select('count').limit(1);
-      newStatus.supabaseService = error ? 'down' : 'healthy';
+      // Check Supabase by making a simple request to the REST API endpoint
+      // This doesn't require authentication and just verifies the service is reachable
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+        method: 'HEAD',
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      newStatus.supabaseService = response.ok ? 'healthy' : 'degraded';
     } catch {
       newStatus.supabaseService = 'down';
     }

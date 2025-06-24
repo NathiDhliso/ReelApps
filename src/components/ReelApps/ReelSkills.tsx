@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Award, Plus, Edit, Trash2, Sparkles, Brain } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Award, Plus, Edit, Trash2, Sparkles, Brain, Video, Upload, Star, CheckCircle } from 'lucide-react';
 import { useCandidateStore } from '../../store/candidateStore';
 import { useAuthStore } from '../../store/authStore';
 import { supabase } from '../../lib/supabase';
@@ -16,6 +16,10 @@ interface Skill {
   proficiency: ProficiencyLevel;
   years_experience: number;
   description: string | null;
+  video_demo_url?: string | null;
+  video_verified?: boolean;
+  ai_rating?: number | null;
+  ai_feedback?: string | null;
 }
 
 interface SkillFormData {
@@ -28,9 +32,10 @@ interface SkillFormData {
 
 const ReelSkills: React.FC = () => {
   const { profile, isLoading, fetchProfile, addSkill, updateSkill, deleteSkill } = useCandidateStore();
-  const { user } = useAuthStore();
+  const { profile: authProfile } = useAuthStore();
   const [isAdding, setIsAdding] = useState(false);
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
+  const isFetchingRef = useRef(false);
   const [formData, setFormData] = useState<SkillFormData>({
     name: '',
     category: 'technical',
@@ -44,11 +49,21 @@ const ReelSkills: React.FC = () => {
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [aiError, setAiError] = useState<string | null>(null);
 
+  // Video verification state
+  const [verifyingSkill, setVerifyingSkill] = useState<Skill | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState<string>('');
+  const [verificationResult, setVerificationResult] = useState<{ rating: number; feedback: string } | null>(null);
+
   useEffect(() => {
-    if (user?.id && !profile) {
-      fetchProfile(user.id);
+    if (authProfile?.id && !profile && !isLoading && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      fetchProfile(authProfile.id).finally(() => {
+        isFetchingRef.current = false;
+      });
     }
-  }, [user?.id, profile, fetchProfile]);
+  }, [authProfile?.id, profile, isLoading]);
 
   const handleAiSuggest = async () => {
     if (!profile) return;
@@ -187,6 +202,82 @@ const ReelSkills: React.FC = () => {
   const getProficiencyFromNumber = (num: number): ProficiencyLevel => {
     const levels: ProficiencyLevel[] = ['beginner', 'intermediate', 'advanced', 'expert', 'master'];
     return levels[num - 1] || 'intermediate';
+  };
+
+  const handleGetAiPrompt = async (skill: Skill) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-skill-video', {
+        body: { 
+          action: 'get-prompt',
+          skillName: skill.name,
+          category: skill.category
+        },
+      });
+
+      if (error) throw error;
+      
+      setAiPrompt(data.prompt);
+      setVerifyingSkill(skill);
+    } catch (error) {
+      console.error('Error getting AI prompt:', error);
+      alert('Failed to get verification prompt. Please try again.');
+    }
+  };
+
+  const handleVideoUpload = async () => {
+    if (!videoFile || !verifyingSkill || !authProfile) return;
+
+    setIsUploading(true);
+    try {
+      // Upload video to storage
+      const fileName = `${authProfile.id}/${verifyingSkill.id}/${Date.now()}_${videoFile.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('skill-videos')
+        .upload(fileName, videoFile);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('skill-videos')
+        .getPublicUrl(fileName);
+
+      // Call verification function
+      const { data, error } = await supabase.functions.invoke('verify-skill-video', {
+        body: {
+          action: 'verify-video',
+          skillId: verifyingSkill.id,
+          skillName: verifyingSkill.name,
+          category: verifyingSkill.category,
+          videoUrl: publicUrl
+        },
+      });
+
+      if (error) throw error;
+
+      setVerificationResult(data);
+      
+      // Refresh profile to get updated skill data
+      if (authProfile.id) {
+        await fetchProfile(authProfile.id);
+      }
+    } catch (error) {
+      console.error('Error uploading and verifying video:', error);
+      alert('Failed to upload and verify video. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        size={16}
+        fill={i < rating ? 'gold' : 'none'}
+        stroke={i < rating ? 'gold' : 'currentColor'}
+      />
+    ));
   };
 
   if (isLoading) {
@@ -401,7 +492,32 @@ const ReelSkills: React.FC = () => {
                   <p className={styles.skillDescription}>{skill.description}</p>
                 )}
 
+                {/* Video Verification Section */}
+                {skill.video_verified && skill.ai_rating && (
+                  <div className={styles.verificationSection}>
+                    <div className={styles.verificationHeader}>
+                      <CheckCircle size={16} className={styles.verifiedIcon} />
+                      <span>AI Verified</span>
+                    </div>
+                    <div className={styles.aiRating}>
+                      {renderStars(skill.ai_rating)}
+                    </div>
+                    {skill.ai_feedback && (
+                      <p className={styles.aiFeedback}>{skill.ai_feedback}</p>
+                    )}
+                  </div>
+                )}
+
                 <div className={styles.skillActions}>
+                  {!skill.video_verified && (
+                    <button 
+                      className={styles.verifyButton}
+                      onClick={() => handleGetAiPrompt(skill)}
+                    >
+                      <Video size={12} />
+                      Verify
+                    </button>
+                  )}
                   <button 
                     className={styles.editButton}
                     onClick={() => handleEdit(skill)}
@@ -422,6 +538,82 @@ const ReelSkills: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Video Verification Modal */}
+      {verifyingSkill && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h2>Verify {verifyingSkill.name} Skill</h2>
+            
+            {!verificationResult ? (
+              <>
+                <div className={styles.aiPromptSection}>
+                  <h3>AI Challenge:</h3>
+                  <p className={styles.aiPromptText}>{aiPrompt || 'Getting your challenge...'}</p>
+                </div>
+
+                <div className={styles.uploadSection}>
+                  <label htmlFor="video-upload" className={styles.uploadLabel}>
+                    <Upload size={24} />
+                    <span>Upload Video (Max 100MB)</span>
+                  </label>
+                  <input
+                    id="video-upload"
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                    className={styles.fileInput}
+                  />
+                  
+                  {videoFile && (
+                    <p className={styles.fileName}>{videoFile.name}</p>
+                  )}
+                </div>
+
+                <div className={styles.modalActions}>
+                  <Button
+                    onClick={handleVideoUpload}
+                    disabled={!videoFile || isUploading}
+                  >
+                    {isUploading ? 'Uploading & Analyzing...' : 'Submit Video'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setVerifyingSkill(null);
+                      setVideoFile(null);
+                      setAiPrompt('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.resultSection}>
+                  <h3>Verification Complete!</h3>
+                  <div className={styles.resultRating}>
+                    {renderStars(verificationResult.rating)}
+                  </div>
+                  <p className={styles.resultFeedback}>{verificationResult.feedback}</p>
+                </div>
+                
+                <Button
+                  onClick={() => {
+                    setVerifyingSkill(null);
+                    setVideoFile(null);
+                    setAiPrompt('');
+                    setVerificationResult(null);
+                  }}
+                >
+                  Close
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

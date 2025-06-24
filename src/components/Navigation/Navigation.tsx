@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Users, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
 import { useAuthStore } from '../../store/authStore';
@@ -17,21 +18,21 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) 
   return (
     <nav className={styles.navbar}>
       <div className={styles.navContainer}>
-        <a href="/" className={styles.navLogo}>
+        <Link to="/" className={styles.navLogo}>
           <div className={styles.navLogoIcon}>
             <Users size={20} />
           </div>
           ReelApps
-        </a>
+        </Link>
         
         <ul className={styles.navLinks}>
-          <li><a href="/" className={styles.navLink}>Home</a></li>
+          <li><Link to="/" className={styles.navLink}>Home</Link></li>
           {isAuthenticated && (
             <>
-              <li><a href="/dashboard" className={styles.navLink}>My Dashboard</a></li>
-              <li><a href="/reelskills" className={styles.navLink}>ReelSkills</a></li>
+              <li><Link to="/dashboard" className={styles.navLink}>My Dashboard</Link></li>
+              <li><Link to="/reelskills" className={styles.navLink}>ReelSkills</Link></li>
               {profile?.role === 'recruiter' && (
-                <li><a href="/reelhunter" className={styles.navLink}>ReelHunter</a></li>
+                <li><Link to="/reelhunter" className={styles.navLink}>ReelHunter</Link></li>
               )}
             </>
           )}
