@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider } from './components/ThemeProvider/ThemeProvider';
 import { useAuthStore } from './store/authStore';
 import { useSystemStore } from './store/systemStore';
+import { testSupabaseConnection } from './lib/supabase';
 import Navigation from './components/Navigation/Navigation';
 import Dashboard from './components/Dashboard/Dashboard';
 import CandidateDashboard from './components/ReelCV/CandidateDashboard';
@@ -17,21 +18,54 @@ import './styles/globals.css';
 
 function App() {
   const { isAuthenticated, initialize, isLoading, profile } = useAuthStore();
-  const { startOnboarding } = useSystemStore();
+  const { startOnboarding, addNotification } = useSystemStore();
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [connectionTested, setConnectionTested] = useState(false);
 
   useEffect(() => {
-    initialize();
-    // Start background token refresh once app mounts
-    import('./store/authStore').then(mod => {
-      mod.startSessionWatcher();
-    });
-  }, [initialize]);
+    const initializeApp = async () => {
+      try {
+        console.log('Starting app initialization...');
+        
+        // Test Supabase connection first
+        const connectionOk = await testSupabaseConnection();
+        if (!connectionOk) {
+          addNotification({
+            type: 'error',
+            title: 'Connection Error',
+            message: 'Unable to connect to the database. Please check your internet connection.',
+            persistent: true
+          });
+        }
+        setConnectionTested(true);
+        
+        // Initialize auth
+        await initialize();
+        
+        // Start background token refresh
+        import('./store/authStore').then(mod => {
+          mod.startSessionWatcher();
+        });
+        
+        console.log('App initialization completed');
+      } catch (error) {
+        console.error('App initialization failed:', error);
+        addNotification({
+          type: 'error',
+          title: 'Initialization Error',
+          message: 'Failed to initialize the application. Please refresh the page.',
+          persistent: true
+        });
+      }
+    };
+
+    initializeApp();
+  }, [initialize, addNotification]);
 
   useEffect(() => {
     // Check if user should see onboarding
-    if (isAuthenticated && profile) {
+    if (isAuthenticated && profile && connectionTested) {
       const hasCompletedOnboarding = localStorage.getItem('reelApps_onboarding_completed');
       const hasSkippedOnboarding = localStorage.getItem('reelApps_onboarding_skipped');
       
@@ -42,9 +76,9 @@ function App() {
         }, 1500);
       }
     }
-  }, [isAuthenticated, profile, startOnboarding]);
+  }, [isAuthenticated, profile, connectionTested, startOnboarding]);
 
-  if (isLoading) {
+  if (isLoading || !connectionTested) {
     return (
       <ThemeProvider>
         <div style={{ 
@@ -52,11 +86,18 @@ function App() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          background: 'var(--bg-primary)'
+          background: 'var(--bg-primary)',
+          flexDirection: 'column',
+          gap: '16px'
         }}>
-          <div className="animate-pulse" style={{ color: 'var(--text-primary)' }}>
-            Loading ReelApps...
+          <div className="animate-pulse" style={{ color: 'var(--text-primary)', fontSize: '18px' }}>
+            {!connectionTested ? 'Connecting to ReelApps...' : 'Loading ReelApps...'}
           </div>
+          {!connectionTested && (
+            <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+              Testing database connection...
+            </div>
+          )}
         </div>
       </ThemeProvider>
     );
