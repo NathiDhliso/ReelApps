@@ -74,7 +74,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
           .from('persona_analyses')
           .select('*')
           .eq('profile_id', profile.id)
-          .single(),
+          .maybeSingle(),
         
         supabase
           .from('reviews')
@@ -92,7 +92,10 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
       }
       
       if (personaResult.error && personaResult.error.code !== 'PGRST116') {
-        console.error('Error fetching persona analysis:', personaResult.error);
+        // Ignore 406 errors for persona_analyses as the table might not exist
+        if (personaResult.error.code !== '406') {
+          console.error('Error fetching persona analysis:', personaResult.error);
+        }
       }
       
       if (reviewsResult.error) {

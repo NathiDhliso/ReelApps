@@ -76,26 +76,30 @@ const ReelSkills: React.FC = () => {
       // Combine profile summary and project descriptions for a richer context.
       const textForAnalysis = `
         Summary: ${profile.summary || ''}
-        Projects: ${profile.projects.map(p => `${p.title}: ${p.description}`).join('; ')}
+        Projects: ${profile.projects?.map(p => `${p.title}: ${p.description}`).join('; ') || ''}
       `;
+
+      console.log('Calling suggest-skills function with text:', textForAnalysis);
 
       const { data, error } = await supabase.functions.invoke('suggest-skills', {
         body: { text: textForAnalysis },
       });
+
+      console.log('Suggest skills response:', { data, error });
 
       if (error) {
         throw error;
       }
 
       // Filter out skills that the user already has.
-      const existingSkillNames = new Set(profile.skills.map(s => s.name.toLowerCase()));
-      const filteredSuggestions = data.suggestions.filter((s: string) => !existingSkillNames.has(s.toLowerCase()));
+      const existingSkillNames = new Set(profile.skills?.map(s => s.name.toLowerCase()) || []);
+      const filteredSuggestions = (data.suggestions || []).filter((s: string) => !existingSkillNames.has(s.toLowerCase()));
       
       setAiSuggestions(filteredSuggestions);
     } catch (err) {
       const error = err as Error;
       console.error('Error fetching AI suggestions:', error);
-      setAiError('Failed to get AI suggestions. Please try again.');
+      setAiError(error.message || 'Failed to get AI suggestions. Please try again.');
     } finally {
       setIsAiLoading(false);
     }
@@ -206,6 +210,8 @@ const ReelSkills: React.FC = () => {
 
   const handleGetAiPrompt = async (skill: Skill) => {
     try {
+      console.log('Getting AI prompt for skill:', skill.name, skill.category);
+      
       const { data, error } = await supabase.functions.invoke('verify-skill-video', {
         body: { 
           action: 'get-prompt',
@@ -214,13 +220,15 @@ const ReelSkills: React.FC = () => {
         },
       });
 
+      console.log('AI prompt response:', { data, error });
+
       if (error) throw error;
       
       setAiPrompt(data.prompt);
       setVerifyingSkill(skill);
     } catch (error) {
       console.error('Error getting AI prompt:', error);
-      alert('Failed to get verification prompt. Please try again.');
+      alert(`Failed to get verification prompt: ${(error as Error).message}`);
     }
   };
 
@@ -229,6 +237,8 @@ const ReelSkills: React.FC = () => {
 
     setIsUploading(true);
     try {
+      console.log('Starting video upload for skill:', verifyingSkill.name);
+      
       // Upload video to storage
       const fileName = `${authProfile.id}/${verifyingSkill.id}/${Date.now()}_${videoFile.name}`;
       const { error: uploadError } = await supabase.storage
@@ -242,6 +252,8 @@ const ReelSkills: React.FC = () => {
         .from('skill-videos')
         .getPublicUrl(fileName);
 
+      console.log('Video uploaded, public URL:', publicUrl);
+
       // Call verification function
       const { data, error } = await supabase.functions.invoke('verify-skill-video', {
         body: {
@@ -253,6 +265,8 @@ const ReelSkills: React.FC = () => {
         },
       });
 
+      console.log('Video verification response:', { data, error });
+
       if (error) throw error;
 
       setVerificationResult(data);
@@ -263,7 +277,7 @@ const ReelSkills: React.FC = () => {
       }
     } catch (error) {
       console.error('Error uploading and verifying video:', error);
-      alert('Failed to upload and verify video. Please try again.');
+      alert(`Failed to upload and verify video: ${(error as Error).message}`);
     } finally {
       setIsUploading(false);
     }
