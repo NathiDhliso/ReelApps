@@ -21,26 +21,33 @@ function App() {
   const { startOnboarding, addNotification } = useSystemStore();
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [connectionTested, setConnectionTested] = useState(false);
+  const [initializationComplete, setInitializationComplete] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        console.log('Starting app initialization...');
+        console.log('🚀 Starting ReelApps initialization...');
         
         // Test Supabase connection first
+        console.log('🔗 Testing database connection...');
         const connectionOk = await testSupabaseConnection();
+        
         if (!connectionOk) {
+          console.error('❌ Database connection failed');
           addNotification({
             type: 'error',
             title: 'Connection Error',
             message: 'Unable to connect to the database. Please check your internet connection.',
             persistent: true
           });
+          setInitializationComplete(true); // Still allow app to load
+          return;
         }
-        setConnectionTested(true);
+        
+        console.log('✅ Database connection successful');
         
         // Initialize auth
+        console.log('🔐 Initializing authentication...');
         await initialize();
         
         // Start background token refresh
@@ -48,15 +55,18 @@ function App() {
           mod.startSessionWatcher();
         });
         
-        console.log('App initialization completed');
+        console.log('✅ App initialization completed successfully');
+        setInitializationComplete(true);
+        
       } catch (error) {
-        console.error('App initialization failed:', error);
+        console.error('❌ App initialization failed:', error);
         addNotification({
           type: 'error',
           title: 'Initialization Error',
           message: 'Failed to initialize the application. Please refresh the page.',
           persistent: true
         });
+        setInitializationComplete(true); // Still allow app to load
       }
     };
 
@@ -65,7 +75,7 @@ function App() {
 
   useEffect(() => {
     // Check if user should see onboarding
-    if (isAuthenticated && profile && connectionTested) {
+    if (isAuthenticated && profile && initializationComplete) {
       const hasCompletedOnboarding = localStorage.getItem('reelApps_onboarding_completed');
       const hasSkippedOnboarding = localStorage.getItem('reelApps_onboarding_skipped');
       
@@ -76,9 +86,10 @@ function App() {
         }, 1500);
       }
     }
-  }, [isAuthenticated, profile, connectionTested, startOnboarding]);
+  }, [isAuthenticated, profile, initializationComplete, startOnboarding]);
 
-  if (isLoading || !connectionTested) {
+  // Show loading screen while initializing
+  if (!initializationComplete || isLoading) {
     return (
       <ThemeProvider>
         <div style={{ 
@@ -91,13 +102,11 @@ function App() {
           gap: '16px'
         }}>
           <div className="animate-pulse" style={{ color: 'var(--text-primary)', fontSize: '18px' }}>
-            {!connectionTested ? 'Connecting to ReelApps...' : 'Loading ReelApps...'}
+            {!initializationComplete ? 'Initializing ReelApps...' : 'Loading...'}
           </div>
-          {!connectionTested && (
-            <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-              Testing database connection...
-            </div>
-          )}
+          <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+            {!initializationComplete ? 'Setting up your workspace...' : 'Almost ready...'}
+          </div>
         </div>
       </ThemeProvider>
     );
