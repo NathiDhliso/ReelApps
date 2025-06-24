@@ -1,0 +1,38 @@
+name: 'Setup React Native'
+description: 'Setup React Native development environment'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+    
+    - name: Cache Gradle packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    - name: Cache CocoaPods
+      uses: actions/cache@v3
+      with:
+        path: mobile/ios/Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('mobile/ios/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+    
+    - name: Install CocoaPods
+      shell: bash
+      run: |
+        cd mobile/ios
+        pod install
