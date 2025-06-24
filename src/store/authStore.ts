@@ -169,7 +169,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   refreshProfile: async () => {
     const { user } = get();
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     try {
       const { data: profile, error } = await supabase
@@ -180,13 +182,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error refreshing profile:', error);
+        set({ isLoading: false });
         return;
       }
 
       // If no profile exists, create one with default values
       if (!profile) {
-        console.log('No profile found, creating default profile...');
-        
         const userData = user.user_metadata || {};
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
@@ -219,7 +220,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
-      
       if (error) {
         console.error('Session error:', error);
         set({ isLoading: false });
