@@ -239,8 +239,8 @@ const ReelSkills: React.FC = () => {
     try {
       console.log('Starting video upload for skill:', verifyingSkill.name);
       
-      // Upload video to storage
-      const fileName = `${authProfile.id}/${verifyingSkill.id}/${Date.now()}_${videoFile.name}`;
+      // Upload video to storage - use user_id for the folder structure
+      const fileName = `${authProfile.user_id}/${verifyingSkill.id}/${Date.now()}_${videoFile.name}`;
       const { error: uploadError } = await supabase.storage
         .from('skill-videos')
         .upload(fileName, videoFile);
