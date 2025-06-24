@@ -29,16 +29,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true });
     try {
+      console.log('Starting login process...');
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
         handleSupabaseError(error);
       }
 
       if (data.user) {
+        console.log('User authenticated successfully:', data.user.id);
+        set({ user: data.user, isAuthenticated: true });
+        
         // Wait for auth state to settle
         await new Promise(resolve => setTimeout(resolve, 500));
         
@@ -46,6 +52,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         await get().refreshProfile();
       }
     } catch (error) {
+      console.error('Login process failed:', error);
       set({ isLoading: false });
       throw error;
     }
@@ -79,67 +86,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       console.log('Auth user created successfully:', authData.user.id);
+      set({ user: authData.user, isAuthenticated: true });
 
-      // Step 2: Wait for the database trigger to create the profile
-      // The trigger should automatically create a profile based on the metadata
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Step 3: Fetch the created profile
-      let retries = 0;
-      let profile = null;
+      // Step 2: Create profile manually since we can't rely on triggers
+      console.log('Creating profile manually...');
       
-      while (retries < 5 && !profile) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', authData.user.id)
-          .maybeSingle();
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert({
+          user_id: authData.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          role: role,
+        })
+        .select()
+        .single();
 
-        if (profileError && profileError.code !== 'PGRST116') {
-          console.error('Error fetching profile:', profileError);
-        }
-
-        profile = profileData;
-        
-        if (!profile) {
-          console.log(`Profile not found yet, retry ${retries + 1}/5`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          retries++;
-        }
+      if (createError) {
+        console.error('Profile creation error:', createError);
+        // Don't throw here - user is created, just profile failed
+        // The user can still use the app and profile can be created later
+        set({ profile: null, isLoading: false });
+        return;
       }
 
-      // If profile still doesn't exist after retries, create it manually
-      if (!profile) {
-        console.log('Profile not created by trigger, creating manually...');
-        
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: authData.user.id,
-            first_name: firstName,
-            last_name: lastName,
-            role: role,
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Manual profile creation error:', createError);
-          // Don't throw here - user is created, just profile failed
-          // The user can still use the app and profile can be created later
-        }
-
-        profile = newProfile;
-      }
-
-      console.log('Signup completed with profile:', profile);
-
-      set({ 
-        user: authData.user, 
-        profile: profile,
-        isAuthenticated: true, 
-        isLoading: false 
-      });
+      console.log('Profile created successfully:', newProfile);
+      set({ profile: newProfile, isLoading: false });
 
     } catch (error) {
       console.error('Signup process failed:', error);
@@ -150,31 +122,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   
   logout: async () => {
     try {
+      console.log('Starting logout process...');
       const { error } = await supabase.auth.signOut();
       if (error) {
+        console.error('Logout error:', error);
         handleSupabaseError(error);
       }
       set({ user: null, profile: null, isAuthenticated: false });
+      console.log('Logout completed successfully');
     } catch (error) {
       console.error('Logout error:', error);
     }
   },
   
   setUser: (user) => {
+    console.log('Setting user:', user?.id || 'null');
     set({ user, isAuthenticated: !!user });
   },
 
   setProfile: (profile) => {
+    console.log('Setting profile:', profile?.id || 'null');
     set({ profile });
   },
 
   refreshProfile: async () => {
     const { user } = get();
     if (!user) {
+      console.log('No user found, skipping profile refresh');
+      set({ isLoading: false });
       return;
     }
 
     try {
+      console.log('Refreshing profile for user:', user.id);
+      
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -187,8 +168,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         return;
       }
 
-      // If no profile exists, create one with default values
       if (!profile) {
+        console.log('No profile found, creating default profile...');
         const userData = user.user_metadata || {};
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
@@ -207,8 +188,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           return;
         }
 
+        console.log('Default profile created:', newProfile);
         set({ profile: newProfile, isAuthenticated: true, isLoading: false });
       } else {
+        console.log('Profile found:', profile);
         set({ profile, isAuthenticated: true, isLoading: false });
       }
     } catch (error) {
@@ -220,6 +203,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     set({ isLoading: true });
     try {
+      console.log('Initializing auth store...');
+      
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) {
         console.error('Session error:', error);
@@ -228,9 +213,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       if (session?.user) {
-        set({ user: session.user });
+        console.log('Found existing session for user:', session.user.id);
+        set({ user: session.user, isAuthenticated: true });
         await get().refreshProfile();
       } else {
+        console.log('No existing session found');
         set({ isLoading: false });
       }
     } catch (error) {
@@ -284,6 +271,8 @@ export const startSessionWatcher = () => {
 
 // Listen for auth changes with improved error handling
 supabase.auth.onAuthStateChange(async (event, session) => {
+  console.log('Auth state change:', event, session?.user?.id || 'no user');
+  
   const { setUser, refreshProfile } = useAuthStore.getState();
   
   if (event === 'SIGNED_IN' && session?.user) {

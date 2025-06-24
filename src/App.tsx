@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider } from './components/ThemeProvider/ThemeProvider';
 import { useAuthStore } from './store/authStore';
 import { useSystemStore } from './store/systemStore';
+import { testSupabaseConnection } from './lib/supabase';
 import Navigation from './components/Navigation/Navigation';
 import Dashboard from './components/Dashboard/Dashboard';
 import CandidateDashboard from './components/ReelCV/CandidateDashboard';
@@ -17,21 +18,64 @@ import './styles/globals.css';
 
 function App() {
   const { isAuthenticated, initialize, isLoading, profile } = useAuthStore();
-  const { startOnboarding } = useSystemStore();
+  const { startOnboarding, addNotification } = useSystemStore();
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [initializationComplete, setInitializationComplete] = useState(false);
 
   useEffect(() => {
-    initialize();
-    // Start background token refresh once app mounts
-    import('./store/authStore').then(mod => {
-      mod.startSessionWatcher();
-    });
-  }, [initialize]);
+    const initializeApp = async () => {
+      try {
+        console.log('🚀 Starting ReelApps initialization...');
+        
+        // Test Supabase connection first
+        console.log('🔗 Testing database connection...');
+        const connectionOk = await testSupabaseConnection();
+        
+        if (!connectionOk) {
+          console.error('❌ Database connection failed');
+          addNotification({
+            type: 'error',
+            title: 'Connection Error',
+            message: 'Unable to connect to the database. Please check your internet connection.',
+            persistent: true
+          });
+          setInitializationComplete(true); // Still allow app to load
+          return;
+        }
+        
+        console.log('✅ Database connection successful');
+        
+        // Initialize auth
+        console.log('🔐 Initializing authentication...');
+        await initialize();
+        
+        // Start background token refresh
+        import('./store/authStore').then(mod => {
+          mod.startSessionWatcher();
+        });
+        
+        console.log('✅ App initialization completed successfully');
+        setInitializationComplete(true);
+        
+      } catch (error) {
+        console.error('❌ App initialization failed:', error);
+        addNotification({
+          type: 'error',
+          title: 'Initialization Error',
+          message: 'Failed to initialize the application. Please refresh the page.',
+          persistent: true
+        });
+        setInitializationComplete(true); // Still allow app to load
+      }
+    };
+
+    initializeApp();
+  }, [initialize, addNotification]);
 
   useEffect(() => {
     // Check if user should see onboarding
-    if (isAuthenticated && profile) {
+    if (isAuthenticated && profile && initializationComplete) {
       const hasCompletedOnboarding = localStorage.getItem('reelApps_onboarding_completed');
       const hasSkippedOnboarding = localStorage.getItem('reelApps_onboarding_skipped');
       
@@ -42,9 +86,10 @@ function App() {
         }, 1500);
       }
     }
-  }, [isAuthenticated, profile, startOnboarding]);
+  }, [isAuthenticated, profile, initializationComplete, startOnboarding]);
 
-  if (isLoading) {
+  // Show loading screen while initializing
+  if (!initializationComplete || isLoading) {
     return (
       <ThemeProvider>
         <div style={{ 
@@ -52,10 +97,15 @@ function App() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          background: 'var(--bg-primary)'
+          background: 'var(--bg-primary)',
+          flexDirection: 'column',
+          gap: '16px'
         }}>
-          <div className="animate-pulse" style={{ color: 'var(--text-primary)' }}>
-            Loading ReelApps...
+          <div className="animate-pulse" style={{ color: 'var(--text-primary)', fontSize: '18px' }}>
+            {!initializationComplete ? 'Initializing ReelApps...' : 'Loading...'}
+          </div>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
+            {!initializationComplete ? 'Setting up your workspace...' : 'Almost ready...'}
           </div>
         </div>
       </ThemeProvider>

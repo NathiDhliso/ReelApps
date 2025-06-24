@@ -1,3 +1,7 @@
 .env
+<<<<<<< HEAD
 .env.example
 .env.local
+=======
+.env.example
+>>>>>>> 0e97766cba010c43209f5339dc07474be6a10713
