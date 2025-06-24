@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Award, Plus, Edit, Trash2 } from 'lucide-react';
+import { Award, Plus, Edit, Trash2, Sparkles, Brain } from 'lucide-react';
 import { useCandidateStore } from '../../store/candidateStore';
 import { useAuthStore } from '../../store/authStore';
+import { supabase } from '../../lib/supabase';
 import Button from '../Button/Button';
 import styles from './ReelSkills.module.css';
 
 type SkillCategory = 'technical' | 'soft' | 'language' | 'certification';
 type ProficiencyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert' | 'master';
+
+interface Skill {
+  id: string;
+  name: string;
+  category: SkillCategory;
+  proficiency: ProficiencyLevel;
+  years_experience: number;
+  description: string | null;
+}
 
 interface SkillFormData {
   name: string;
@@ -20,7 +30,7 @@ const ReelSkills: React.FC = () => {
   const { profile, isLoading, fetchProfile, addSkill, updateSkill, deleteSkill } = useCandidateStore();
   const { user } = useAuthStore();
   const [isAdding, setIsAdding] = useState(false);
-  const [editingSkill, setEditingSkill] = useState<any>(null);
+  const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
   const [formData, setFormData] = useState<SkillFormData>({
     name: '',
     category: 'technical',
@@ -29,11 +39,64 @@ const ReelSkills: React.FC = () => {
     description: ''
   });
 
+  // New state for AI suggestions
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [aiError, setAiError] = useState<string | null>(null);
+
   useEffect(() => {
     if (user?.id && !profile) {
       fetchProfile(user.id);
     }
   }, [user?.id, profile, fetchProfile]);
+
+  const handleAiSuggest = async () => {
+    if (!profile) return;
+
+    setIsAiLoading(true);
+    setAiError(null);
+    setAiSuggestions([]);
+
+    try {
+      // Combine profile summary and project descriptions for a richer context.
+      const textForAnalysis = `
+        Summary: ${profile.summary || ''}
+        Projects: ${profile.projects.map(p => `${p.title}: ${p.description}`).join('; ')}
+      `;
+
+      const { data, error } = await supabase.functions.invoke('suggest-skills', {
+        body: { text: textForAnalysis },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Filter out skills that the user already has.
+      const existingSkillNames = new Set(profile.skills.map(s => s.name.toLowerCase()));
+      const filteredSuggestions = data.suggestions.filter((s: string) => !existingSkillNames.has(s.toLowerCase()));
+      
+      setAiSuggestions(filteredSuggestions);
+    } catch (err) {
+      const error = err as Error;
+      console.error('Error fetching AI suggestions:', error);
+      setAiError('Failed to get AI suggestions. Please try again.');
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
+  const handleAddSuggestedSkill = (skillName: string) => {
+    setFormData({
+      name: skillName,
+      category: 'technical', // Default category
+      proficiency: 'intermediate',
+      years_experience: 1,
+      description: ''
+    });
+    setIsAdding(true);
+    setAiSuggestions(aiSuggestions.filter(s => s !== skillName));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +139,7 @@ const ReelSkills: React.FC = () => {
     }
   };
 
-  const handleEdit = (skill: any) => {
+  const handleEdit = (skill: Skill) => {
     setFormData({
       name: skill.name,
       category: skill.category,
@@ -157,6 +220,34 @@ const ReelSkills: React.FC = () => {
           Showcase your technical and soft skills with detailed proficiency levels, 
           years of experience, and optional video demonstrations.
         </p>
+      </div>
+
+      {/* AI Suggestion Section */}
+      <div className={styles.aiSection}>
+        <div className={styles.aiHeader}>
+          <Brain size={24} />
+          <h3>AI Skill Suggestions</h3>
+        </div>
+        <p>Let our AI analyze your profile summary and projects to suggest relevant skills.</p>
+        <Button onClick={handleAiSuggest} disabled={isAiLoading}>
+          <Sparkles size={16} />
+          {isAiLoading ? 'Analyzing...' : 'Suggest Skills with AI'}
+        </Button>
+        
+        {aiError && <p className={styles.aiError}>{aiError}</p>}
+
+        {aiSuggestions.length > 0 && (
+          <div className={styles.suggestionsGrid}>
+            {aiSuggestions.map(suggestion => (
+              <div key={suggestion} className={styles.suggestionChip}>
+                <span>{suggestion}</span>
+                <button onClick={() => handleAddSuggestedSkill(suggestion)}>
+                  <Plus size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Skill Form */}

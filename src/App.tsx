@@ -12,6 +12,7 @@ import ReelHunter from './components/ReelHunter/ReelHunter';
 import AuthModal from './components/Auth/AuthModal';
 import SystemNotifications from './components/SystemNotifications/SystemNotifications';
 import OnboardingFlow from './components/Onboarding/OnboardingFlow';
+import PasswordReset from './pages/PasswordReset';
 import './styles/globals.css';
 
 function App() {
@@ -94,7 +95,8 @@ function App() {
           <OnboardingFlow />
           
           <Routes>
-            {/* Public ReelCV Showcase - No Navigation */}
+            {/* Public routes */}
+            <Route path="/password-reset" element={<PasswordReset />} />
             <Route 
               path="/reelcv/:candidateId" 
               element={<ReelCVShowcase candidateId={window.location.pathname.split('/')[2]} />} 

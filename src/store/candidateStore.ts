@@ -18,7 +18,7 @@ interface CandidateProfile extends Profile {
 interface CandidateState {
   profile: CandidateProfile | null;
   isLoading: boolean;
-  fetchProfile: (userId: string) => Promise<void>;
+  fetchProfile: (profileId: string) => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
   addSkill: (skill: Omit<Skill, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateSkill: (skillId: string, updates: Partial<Skill>) => Promise<void>;
@@ -32,25 +32,31 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   profile: null,
   isLoading: false,
   
-  fetchProfile: async (userId: string) => {
+  fetchProfile: async (profileId: string) => {
     set({ isLoading: true });
+    console.log(`[candidateStore] fetchProfile started for profileId: ${profileId}`);
     try {
-      // First get the profile
+      // First get the profile by its primary key
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', userId)
+        .eq('id', profileId)
         .single();
 
       if (profileError) {
+        console.error('[candidateStore] Error fetching main profile:', profileError);
         handleSupabaseError(profileError);
       }
 
       if (!profile) {
+        console.error(`[candidateStore] Profile with id ${profileId} not found.`);
+        set({ isLoading: false });
         throw new Error('Profile not found');
       }
+      console.log('[candidateStore] Main profile fetched:', profile);
 
       // Fetch related data in parallel
+      console.log('[candidateStore] Fetching related data (skills, projects, etc.)...');
       const [skillsResult, projectsResult, personaResult, reviewsResult] = await Promise.all([
         supabase
           .from('skills')
@@ -102,7 +108,9 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
       };
 
       set({ profile: candidateProfile, isLoading: false });
+      console.log('[candidateStore] Profile fetch complete, state updated.');
     } catch (error) {
+      console.error('[candidateStore] An error occurred in fetchProfile:', error);
       set({ isLoading: false });
       throw error;
     }
@@ -139,147 +147,123 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
-    try {
-      const { data, error } = await supabase
-        .from('skills')
-        .insert({ ...skill, profile_id: profile.id })
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('skills')
+      .insert({ ...skill, profile_id: profile.id })
+      .select()
+      .single();
 
-      if (error) {
-        handleSupabaseError(error);
-      }
-
-      set(state => ({
-        profile: state.profile ? {
-          ...state.profile,
-          skills: [data, ...state.profile.skills]
-        } : null
-      }));
-    } catch (error) {
-      throw error;
+    if (error) {
+      handleSupabaseError(error);
     }
+
+    set(state => ({
+      profile: state.profile ? {
+        ...state.profile,
+        skills: [data, ...state.profile.skills]
+      } : null
+    }));
   },
 
   updateSkill: async (skillId: string, updates: Partial<Skill>) => {
-    try {
-      const { data, error } = await supabase
-        .from('skills')
-        .update(updates)
-        .eq('id', skillId)
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('skills')
+      .update(updates)
+      .eq('id', skillId)
+      .select()
+      .single();
 
-      if (error) {
-        handleSupabaseError(error);
-      }
-
-      set(state => ({
-        profile: state.profile ? {
-          ...state.profile,
-          skills: state.profile.skills.map(skill => 
-            skill.id === skillId ? data : skill
-          )
-        } : null
-      }));
-    } catch (error) {
-      throw error;
+    if (error) {
+      handleSupabaseError(error);
     }
+
+    set(state => ({
+      profile: state.profile ? {
+        ...state.profile,
+        skills: state.profile.skills.map(skill => 
+          skill.id === skillId ? data : skill
+        )
+      } : null
+    }));
   },
 
   deleteSkill: async (skillId: string) => {
-    try {
-      const { error } = await supabase
-        .from('skills')
-        .delete()
-        .eq('id', skillId);
+    const { error } = await supabase
+      .from('skills')
+      .delete()
+      .eq('id', skillId);
 
-      if (error) {
-        handleSupabaseError(error);
-      }
-
-      set(state => ({
-        profile: state.profile ? {
-          ...state.profile,
-          skills: state.profile.skills.filter(skill => skill.id !== skillId)
-        } : null
-      }));
-    } catch (error) {
-      throw error;
+    if (error) {
+      handleSupabaseError(error);
     }
+
+    set(state => ({
+      profile: state.profile ? {
+        ...state.profile,
+        skills: state.profile.skills.filter(skill => skill.id !== skillId)
+      } : null
+    }));
   },
 
   addProject: async (project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => {
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert({ ...project, profile_id: profile.id })
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({ ...project, profile_id: profile.id })
+      .select()
+      .single();
 
-      if (error) {
-        handleSupabaseError(error);
-      }
-
-      set(state => ({
-        profile: state.profile ? {
-          ...state.profile,
-          projects: [data, ...state.profile.projects]
-        } : null
-      }));
-    } catch (error) {
-      throw error;
+    if (error) {
+      handleSupabaseError(error);
     }
+
+    set(state => ({
+      profile: state.profile ? {
+        ...state.profile,
+        projects: [data, ...state.profile.projects]
+      } : null
+    }));
   },
 
   updateProject: async (projectId: string, updates: Partial<Project>) => {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .update(updates)
-        .eq('id', projectId)
-        .select()
-        .single();
+    const { data, error } = await supabase
+      .from('projects')
+      .update(updates)
+      .eq('id', projectId)
+      .select()
+      .single();
 
-      if (error) {
-        handleSupabaseError(error);
-      }
-
-      set(state => ({
-        profile: state.profile ? {
-          ...state.profile,
-          projects: state.profile.projects.map(project => 
-            project.id === projectId ? data : project
-          )
-        } : null
-      }));
-    } catch (error) {
-      throw error;
+    if (error) {
+      handleSupabaseError(error);
     }
+
+    set(state => ({
+      profile: state.profile ? {
+        ...state.profile,
+        projects: state.profile.projects.map(project => 
+          project.id === projectId ? data : project
+        )
+      } : null
+    }));
   },
 
   deleteProject: async (projectId: string) => {
-    try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', projectId);
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId);
 
-      if (error) {
-        handleSupabaseError(error);
-      }
-
-      set(state => ({
-        profile: state.profile ? {
-          ...state.profile,
-          projects: state.profile.projects.filter(project => project.id !== projectId)
-        } : null
-      }));
-    } catch (error) {
-      throw error;
+    if (error) {
+      handleSupabaseError(error);
     }
+
+    set(state => ({
+      profile: state.profile ? {
+        ...state.profile,
+        projects: state.profile.projects.filter(project => project.id !== projectId)
+      } : null
+    }));
   },
 }));

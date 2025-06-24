@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styles from './Button.module.css';
 
 interface ButtonProps {
@@ -10,6 +11,7 @@ interface ButtonProps {
   href?: string;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
+  id?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -21,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   href,
   className = '',
   type = 'button',
+  id,
 }) => {
   const baseClasses = [
     styles.baseButton,
@@ -30,8 +33,20 @@ const Button: React.FC<ButtonProps> = ({
   ].filter(Boolean).join(' ');
 
   if (href) {
+    if (href.startsWith('/')) {
+      return (
+        <Link to={href} className={baseClasses}>
+          {children}
+        </Link>
+      );
+    }
     return (
-      <a href={href} className={baseClasses}>
+      <a 
+        href={href} 
+        className={baseClasses}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         {children}
       </a>
     );
@@ -43,6 +58,7 @@ const Button: React.FC<ButtonProps> = ({
       className={baseClasses}
       disabled={disabled}
       onClick={onClick}
+      id={id}
     >
       {children}
     </button>

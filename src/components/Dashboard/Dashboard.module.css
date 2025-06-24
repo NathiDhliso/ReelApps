@@ -6,7 +6,7 @@
 
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 24px;
   margin-top: 32px;
 }
@@ -113,4 +113,13 @@
   .dashboardGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.featuresSection, .pricingSection {
+  padding: 60px 0;
+  border-top: 1px solid var(--border-primary);
+}
+
+.pricingSection {
+  text-align: center;
 }

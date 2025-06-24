@@ -20,7 +20,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [generalError, setGeneralError] = useState('');
-  const { login, isLoading } = useAuthStore();
+  const [isResetView, setIsResetView] = useState(false);
+  const { login, sendPasswordResetEmail, isLoading } = useAuthStore();
   const { addNotification } = useSystemStore();
 
   const validateForm = (): boolean => {
@@ -96,6 +97,33 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
     if (generalError) setGeneralError('');
   };
 
+  const handlePasswordReset = async () => {
+    setGeneralError('');
+    if (!email) {
+      setErrors({ email: 'Please enter your email to reset password.' });
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(email);
+      addNotification({
+        type: 'success',
+        title: 'Password Reset Email Sent',
+        message: `If an account exists for ${email}, a reset link has been sent.`,
+        persistent: true,
+      });
+      setIsResetView(false); // Go back to login view
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+      setGeneralError(errorMessage);
+      addNotification({
+        type: 'error',
+        title: 'Password Reset Failed',
+        message: errorMessage,
+      });
+    }
+  };
+
   return (
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -106,8 +134,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
             </div>
             <span className={styles.logoText}>ReelApps</span>
           </div>
-          <h1 className={styles.title}>Welcome Back</h1>
-          <p className={styles.subtitle}>Sign in to your ReelApps account</p>
+          <h1 className={styles.title}>{isResetView ? 'Reset Password' : 'Welcome Back'}</h1>
+          <p className={styles.subtitle}>
+            {isResetView 
+              ? 'Enter your email to receive a password reset link.' 
+              : 'Sign in to your ReelApps account'}
+          </p>
         </div>
 
         <div className={styles.formGroup}>
@@ -128,23 +160,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
           )}
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Password</label>
-          <input
-            type="password"
-            className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
-            value={password}
-            onChange={(e) => handlePasswordChange(e.target.value)}
-            placeholder="Enter your password"
-            required
-          />
-          {errors.password && (
-            <div className={styles.fieldError}>
-              <AlertCircle size={14} />
-              {errors.password}
-            </div>
-          )}
-        </div>
+        {!isResetView && (
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Password</label>
+            <input
+              type="password"
+              className={`${styles.input} ${errors.password ? styles.inputError : ''}`}
+              value={password}
+              onChange={(e) => handlePasswordChange(e.target.value)}
+              placeholder="Enter your password"
+              required
+            />
+            {errors.password && (
+              <div className={styles.fieldError}>
+                <AlertCircle size={14} />
+                {errors.password}
+              </div>
+            )}
+          </div>
+        )}
 
         {generalError && (
           <div className={styles.error}>
@@ -153,25 +187,59 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
           </div>
         )}
 
-        <Button 
-          type="submit" 
-          className={styles.submitButton}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Signing In...' : 'Sign In'}
-        </Button>
+        {isResetView ? (
+          <Button 
+            type="button" 
+            onClick={handlePasswordReset}
+            className={styles.submitButton}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Sending...' : 'Send Reset Link'}
+          </Button>
+        ) : (
+          <Button 
+            type="submit" 
+            className={styles.submitButton}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Signing In...' : 'Sign In'}
+          </Button>
+        )}
 
         <div className={styles.footer}>
-          Don't have an account? 
-          <button 
-            type="button"
-            onClick={onSwitchToSignUp}
-            className={styles.link}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: '4px' }}
-          >
-            Sign up
-          </button>
+          {isResetView ? (
+            <button
+              type="button"
+              onClick={() => setIsResetView(false)}
+              className={styles.link}
+            >
+              Back to Sign In
+            </button>
+          ) : (
+            <>
+              Don't have an account? 
+              <button 
+                type="button"
+                onClick={onSwitchToSignUp}
+                className={styles.link}
+              >
+                Sign up
+              </button>
+            </>
+          )}
         </div>
+
+        {!isResetView && (
+          <div className={styles.footer}>
+            <button
+              type="button"
+              onClick={() => setIsResetView(true)}
+              className={styles.link}
+            >
+              Forgot Password?
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

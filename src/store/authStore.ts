@@ -17,6 +17,7 @@ interface AuthState {
   setProfile: (profile: Profile | null) => void;
   initialize: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -234,6 +235,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (error) {
       console.error('Initialize error:', error);
+      set({ isLoading: false });
+    }
+  },
+
+  sendPasswordResetEmail: async (email: string) => {
+    set({ isLoading: true });
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/password-reset`,
+      });
+
+      if (error) {
+        handleSupabaseError(error);
+      }
+    } finally {
       set({ isLoading: false });
     }
   },

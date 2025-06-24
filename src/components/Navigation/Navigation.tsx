@@ -60,7 +60,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) 
             </>
           ) : (
             <>
-              <Button variant="outline" size="small" onClick={onLoginClick}>
+              <Button variant="outline" size="small" onClick={onLoginClick} id="nav-login-button">
                 Sign In
               </Button>
               <Button size="small" onClick={onSignUpClick}>
