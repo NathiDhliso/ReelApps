@@ -1,9 +1,9 @@
 .reelapps-card {
-  background-color: #f7fafc;
+  background-color: var(--bg-secondary);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-primary);
   transition: all 0.3s ease-in-out;
   position: relative;
   overflow: hidden;
@@ -11,11 +11,11 @@
 
 .reelapps-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-xl);
 }
 
 .reelapps-card--glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--gradient-glass);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -29,7 +29,7 @@
 }
 
 .reelapps-card--gradient {
-  background: linear-gradient(135deg, #38b2ac 0%, #2d8a85 100%);
+  background: var(--gradient-primary);
   color: white;
 }
 
@@ -55,7 +55,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #38b2ac 0%, #2d8a85 100%);
+  background: var(--gradient-primary);
   color: white;
   flex-shrink: 0;
 }
@@ -63,12 +63,12 @@
 .reelapps-card__title {
   font-size: 20px;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .reelapps-card__description {
-  color: #718096;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
@@ -77,7 +77,7 @@
 .reelapps-card__footer {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -96,12 +96,12 @@
   display: block;
   font-size: 18px;
   font-weight: 600;
-  color: #38b2ac;
+  color: var(--brand-primary);
 }
 
 .reelapps-card__stat-label {
   font-size: 12px;
-  color: #a0aec0;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-} 
+}

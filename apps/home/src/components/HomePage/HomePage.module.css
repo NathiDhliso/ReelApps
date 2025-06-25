@@ -1,20 +1,20 @@
 .homepage {
   min-height: calc(100vh - 72px);
-  background: var(--bg-primary, #f7fafc);
+  background: var(--bg-primary);
   padding-top: 72px;
 }
 
 .heroSection {
-  background: linear-gradient(135deg, #38b2ac 0%, #2d8a85 100%);
+  background: var(--gradient-primary);
   color: white;
-  padding: 80px 24px;
+  padding: 100px 24px;
   text-align: center;
 }
 
 .heroTitle {
   font-size: 48px;
   font-weight: 700;
-  margin: 0 0 16px 0;
+  margin: 0 0 24px 0;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
@@ -23,7 +23,7 @@
 .heroSubtitle {
   font-size: 20px;
   opacity: 0.9;
-  margin: 0 0 32px 0;
+  margin: 0 0 40px 0;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -33,45 +33,45 @@
 .heroActions {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 24px;
 }
 
 .welcomeText {
-  font-size: 18px;
+  font-size: 20px;
   margin: 0;
   opacity: 0.9;
 }
 
 .appsSection {
-  padding: 64px 24px;
+  padding: 100px 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .featuresSection {
-  padding: 64px 24px;
+  padding: 100px 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .sectionTitle {
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 36px;
+  font-weight: 700;
   text-align: center;
-  margin: 0 0 48px 0;
-  color: var(--text-primary, #2d3748);
+  margin: 0 0 60px 0;
+  color: var(--text-primary);
 }
 
 .appsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 40px;
 }
 
 .featuresGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
 }
 
 @media (max-width: 768px) {
@@ -95,4 +95,4 @@
   .featuresGrid {
     grid-template-columns: 1fr;
   }
-} 
+}
