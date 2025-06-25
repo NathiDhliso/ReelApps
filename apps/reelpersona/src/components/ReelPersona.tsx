@@ -319,15 +319,15 @@ const ReelPersona: React.FC = () => {
 
   const renderIntro = () => (
     <div className={styles.intro}>
-      <div className={styles.introContent}>
+        <div className={styles.introContent}>
         <h2>Welcome to ReelPersona</h2>
         <p>Discover your personality profile with AI-powered analysis</p>
         
-        <p>
-          ReelPersona uses the scientifically-validated Big Five personality model (OCEAN) to provide 
-          you with insights into your personality traits. This assessment combines:
-        </p>
-        <ul>
+          <p>
+            ReelPersona uses the scientifically-validated Big Five personality model (OCEAN) to provide 
+            you with insights into your personality traits. This assessment combines:
+          </p>
+          <ul>
           <li>
             <strong>Structured Questionnaire:</strong> 20 carefully crafted questions covering all five personality dimensions
           </li>
@@ -337,11 +337,11 @@ const ReelPersona: React.FC = () => {
           <li>
             <strong>Comprehensive Results:</strong> Detailed insights into your strengths and growth opportunities
           </li>
-        </ul>
-        <p>
-          The entire process takes about 10-15 minutes and will provide you with valuable insights 
-          for personal development and career planning.
-        </p>
+          </ul>
+          <p>
+            The entire process takes about 10-15 minutes and will provide you with valuable insights 
+            for personal development and career planning.
+          </p>
         
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--spacing-xl)' }}>
           <button 
@@ -363,7 +363,7 @@ const ReelPersona: React.FC = () => {
 
     return (
       <div className={styles.questionnaire}>
-        <div className={styles.questionnaireContent}>
+          <div className={styles.questionnaireContent}>
           <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
             <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--primary-navy)', marginBottom: 'var(--spacing-sm)' }}>
               Question {currentQuestionIndex + 1} of {QUESTIONNAIRE.length}
@@ -379,88 +379,88 @@ const ReelPersona: React.FC = () => {
             </span>
           </div>
           
-          <div className={styles.progressBar}>
-            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-          </div>
+            <div className={styles.progressBar}>
+              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+            </div>
           
-          <h3 className={styles.questionText}>{currentQuestion.text}</h3>
+            <h3 className={styles.questionText}>{currentQuestion.text}</h3>
           
-          <div className={styles.answerOptions}>
-            {[1, 2, 3, 4, 5].map(value => (
-              <button
-                key={value}
-                className={styles.answerButton}
-                onClick={() => handleQuestionnaireAnswer(value)}
-              >
+            <div className={styles.answerOptions}>
+              {[1, 2, 3, 4, 5].map(value => (
+                <button
+                  key={value}
+                  className={styles.answerButton}
+                  onClick={() => handleQuestionnaireAnswer(value)}
+                >
                 <span className={styles.answerNumber}>
                   {value}
                 </span>
-                <span className={styles.answerLabel}>
-                  {value === 1 ? 'Strongly Disagree' :
-                   value === 2 ? 'Disagree' :
-                   value === 3 ? 'Neutral' :
-                   value === 4 ? 'Agree' : 'Strongly Agree'}
-                </span>
-              </button>
-            ))}
+                  <span className={styles.answerLabel}>
+                    {value === 1 ? 'Strongly Disagree' :
+                     value === 2 ? 'Disagree' :
+                     value === 3 ? 'Neutral' :
+                     value === 4 ? 'Agree' : 'Strongly Agree'}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
       </div>
     );
   };
 
   const renderChat = () => (
     <div className={styles.chat}>
-      <div className={styles.chatContent}>
+        <div className={styles.chatContent}>
         <div className={styles.chatHeader}>
           <h2>Conversational Analysis</h2>
           <p>Let's have a natural conversation to understand your personality better</p>
         </div>
         
-        <div className={styles.chatMessages}>
-          {chatMessages.map(message => (
-            <div 
-              key={message.id}
-              className={`${styles.chatMessage} ${message.isUser ? styles.userMessage : styles.aiMessage}`}
-            >
+          <div className={styles.chatMessages}>
+            {chatMessages.map(message => (
+              <div 
+                key={message.id}
+                className={`${styles.chatMessage} ${message.isUser ? styles.userMessage : styles.aiMessage}`}
+              >
               <div className={`${styles.messageContent} ${message.text === 'typing...' ? styles.typingMessage : ''}`}>
-                <p>{message.text}</p>
+                  <p>{message.text}</p>
                 <div className={styles.messageTime}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
                 </div>
               </div>
-            </div>
-          ))}
-          <div ref={chatEndRef} />
-        </div>
+            ))}
+            <div ref={chatEndRef} />
+          </div>
         
-        {chatQuestionIndex < CHAT_QUESTIONS.length - 1 ? (
-          <form onSubmit={handleChatSubmit} className={styles.chatForm}>
-            <input
-              type="text"
-              value={currentChatInput}
-              onChange={(e) => setCurrentChatInput(e.target.value)}
-              placeholder="Type your response..."
-              className={styles.chatInput}
-              disabled={isLoading}
-            />
+          {chatQuestionIndex < CHAT_QUESTIONS.length - 1 ? (
+            <form onSubmit={handleChatSubmit} className={styles.chatForm}>
+              <input
+                type="text"
+                value={currentChatInput}
+                onChange={(e) => setCurrentChatInput(e.target.value)}
+                placeholder="Type your response..."
+                className={styles.chatInput}
+                disabled={isLoading}
+              />
             <button 
               type="submit" 
               className={styles.sendButton}
               disabled={!currentChatInput.trim() || isLoading}
             >
               <ArrowRight size={16} />
-            </button>
-          </form>
-        ) : (
-          <div className={styles.processingMessage}>
-            <p>Great! I'm now analyzing your responses...</p>
+              </button>
+            </form>
+          ) : (
+            <div className={styles.processingMessage}>
+              <p>Great! I'm now analyzing your responses...</p>
             {isLoading && (
               <span className={styles.loader}>Analyzing...</span>
             )}
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
     </div>
   );
 
@@ -469,7 +469,7 @@ const ReelPersona: React.FC = () => {
 
     return (
       <div className={styles.results}>
-        <div className={styles.resultsContent}>
+          <div className={styles.resultsContent}>
           <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-xl)' }}>
             <h2 style={{ fontSize: '28px', fontWeight: '600', color: 'var(--primary-navy)', marginBottom: 'var(--spacing-sm)' }}>
               Your ReelPersona Results
@@ -477,58 +477,58 @@ const ReelPersona: React.FC = () => {
             <p style={{ color: 'var(--text-secondary)' }}>Based on the Big Five (OCEAN) personality model</p>
           </div>
           
-          {/* Big Five Scores */}
-          <div className={styles.traitsSection}>
-            <h3>Personality Traits</h3>
-            <div className={styles.traits}>
-              {Object.entries(results).slice(0, 5).map(([trait, score]) => (
-                <div key={trait} className={styles.trait}>
-                  <div className={styles.traitHeader}>
-                    <span className={styles.traitName}>
-                      {trait.charAt(0).toUpperCase() + trait.slice(1)}
-                    </span>
+            {/* Big Five Scores */}
+            <div className={styles.traitsSection}>
+              <h3>Personality Traits</h3>
+              <div className={styles.traits}>
+                {Object.entries(results).slice(0, 5).map(([trait, score]) => (
+                  <div key={trait} className={styles.trait}>
+                    <div className={styles.traitHeader}>
+                      <span className={styles.traitName}>
+                        {trait.charAt(0).toUpperCase() + trait.slice(1)}
+                      </span>
                     <span className={styles.traitScore}>{score as number}/100</span>
+                    </div>
+                    <div className={styles.traitBar}>
+                      <div 
+                        className={styles.traitFill} 
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
+                    <span className={styles.traitLabel}>
+                      {getTraitLabel(trait, score as number)}
+                    </span>
                   </div>
-                  <div className={styles.traitBar}>
-                    <div 
-                      className={styles.traitFill}
-                      style={{ width: `${score}%` }}
-                    />
-                  </div>
-                  <span className={styles.traitLabel}>
-                    {getTraitLabel(trait, score as number)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className={styles.summarySection}>
-            <h3>Personality Summary</h3>
-            <p>{results.summary}</p>
-          </div>
-
-          {/* Strengths and Growth Areas */}
-          <div className={styles.insightsSection}>
-            <div className={styles.strengths}>
-              <h3>Your Strengths</h3>
-              <ul>
-                {results.strengths.map((strength, index) => (
-                  <li key={index}>{strength}</li>
                 ))}
-              </ul>
+              </div>
             </div>
+
+            {/* Summary */}
+            <div className={styles.summarySection}>
+              <h3>Personality Summary</h3>
+              <p>{results.summary}</p>
+            </div>
+
+            {/* Strengths and Growth Areas */}
+            <div className={styles.insightsSection}>
+              <div className={styles.strengths}>
+                <h3>Your Strengths</h3>
+                <ul>
+                  {results.strengths.map((strength, index) => (
+                    <li key={index}>{strength}</li>
+                  ))}
+                </ul>
+              </div>
             
-            <div className={styles.growthAreas}>
-              <h3>Growth Opportunities</h3>
-              <ul>
-                {results.growth_areas.map((area, index) => (
-                  <li key={index}>{area}</li>
-                ))}
-              </ul>
+              <div className={styles.growthAreas}>
+                <h3>Growth Opportunities</h3>
+                <ul>
+                  {results.growth_areas.map((area, index) => (
+                    <li key={index}>{area}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
           
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-md)', justifyContent: 'center', marginTop: 'var(--spacing-xl)' }}>
             <button 
@@ -560,18 +560,18 @@ const ReelPersona: React.FC = () => {
 
   const renderError = () => (
     <div className={styles.error}>
-      <div className={styles.errorContent}>
-        <p>{error}</p>
-        <button 
-          className={styles.primaryButton}
-          onClick={() => {
-            setError(null);
-            setCurrentStep('chat');
-          }}
-        >
-          Try Again
-        </button>
-      </div>
+        <div className={styles.errorContent}>
+          <p>{error}</p>
+          <button 
+            className={styles.primaryButton}
+            onClick={() => {
+              setError(null);
+              setCurrentStep('chat');
+            }}
+          >
+            Try Again
+          </button>
+        </div>
     </div>
   );
 
