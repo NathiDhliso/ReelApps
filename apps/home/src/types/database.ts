@@ -169,6 +169,12 @@ export interface Database {
         Row: {
           id: string
           profile_id: string
+          openness: number | null
+          conscientiousness: number | null
+          extraversion: number | null
+          agreeableness: number | null
+          neuroticism: number | null
+          summary: string | null
           emotional_intelligence: Json
           work_style: Json
           cultural_fit: Json
@@ -184,6 +190,12 @@ export interface Database {
         Insert: {
           id?: string
           profile_id: string
+          openness?: number | null
+          conscientiousness?: number | null
+          extraversion?: number | null
+          agreeableness?: number | null
+          neuroticism?: number | null
+          summary?: string | null
           emotional_intelligence?: Json
           work_style?: Json
           cultural_fit?: Json
@@ -199,6 +211,12 @@ export interface Database {
         Update: {
           id?: string
           profile_id?: string
+          openness?: number | null
+          conscientiousness?: number | null
+          extraversion?: number | null
+          agreeableness?: number | null
+          neuroticism?: number | null
+          summary?: string | null
           emotional_intelligence?: Json
           work_style?: Json
           cultural_fit?: Json

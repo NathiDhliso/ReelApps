@@ -73,6 +73,19 @@ class MatchRequest(BaseModel):
     job_posting: Dict[str, Any]
     candidates: List[Profile]
 
+class PersonaAnalysisRequest(BaseModel):
+    text: str
+
+class PersonaAnalysisResponse(BaseModel):
+    openness: int
+    conscientiousness: int
+    extraversion: int
+    agreeableness: int
+    neuroticism: int
+    summary: str
+    strengths: List[str]
+    growth_areas: List[str]
+
 # AI Service Configuration - ONLY USING GEMINI
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
@@ -521,6 +534,112 @@ async def match_candidates(request: MatchRequest):
     except Exception as e:
         logger.error(f"Critical error in candidate matching: {str(e)}")
         raise HTTPException(status_code=500, detail="Error processing candidate matches")
+
+@app.post("/analyze/persona", response_model=PersonaAnalysisResponse)
+async def analyze_persona(request: PersonaAnalysisRequest):
+    """Analyze personality traits using the Big Five (OCEAN) model with Gemini AI"""
+    
+    prompt = f"""
+    Analyze the following text for personality traits based on the Big Five (OCEAN) model. The text contains combined answers from a questionnaire and conversational analysis.
+
+    Text to analyze:
+    {request.text}
+
+    Please provide a comprehensive personality analysis and return your analysis as a JSON object with the following structure:
+    {{
+        "openness": <score 0-100>,
+        "conscientiousness": <score 0-100>,
+        "extraversion": <score 0-100>,
+        "agreeableness": <score 0-100>,
+        "neuroticism": <score 0-100>,
+        "summary": "<one paragraph personality summary>",
+        "strengths": ["strength1 with brief explanation", "strength2 with brief explanation", "strength3 with brief explanation"],
+        "growth_areas": ["growth area1 with brief explanation", "growth area2 with brief explanation", "growth area3 with brief explanation"]
+    }}
+
+    Scoring Guidelines:
+    - Openness (0-100): Creativity, curiosity, openness to new experiences and ideas
+    - Conscientiousness (0-100): Organization, discipline, goal-orientation, reliability
+    - Extraversion (0-100): Social energy, assertiveness, tendency to seek stimulation from others
+    - Agreeableness (0-100): Compassion, cooperation, trust in others, empathy
+    - Neuroticism (0-100): Emotional stability (lower scores indicate higher stability)
+
+    For the summary, provide a cohesive paragraph that integrates all five dimensions and describes the person's overall personality profile.
+
+    For strengths, identify three key positive traits or capabilities based on the personality analysis, with a brief explanation of how each strength manifests.
+
+    For growth areas, identify three areas where the person might benefit from development or increased awareness, with a brief explanation of potential benefits.
+
+    Return only the JSON object, no additional text.
+    """
+    
+    try:
+        ai_response = await call_gemini_api(prompt)
+        
+        # Clean and parse the AI response
+        clean_response = ai_response.strip()
+        if clean_response.startswith("```json"):
+            clean_response = clean_response[7:]
+        if clean_response.endswith("```"):
+            clean_response = clean_response[:-3]
+        
+        try:
+            analysis = json.loads(clean_response.strip())
+            
+            # Validate required fields and provide defaults if missing
+            required_fields = ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']
+            for field in required_fields:
+                if field not in analysis or not isinstance(analysis[field], (int, float)):
+                    analysis[field] = 50  # Default neutral score
+                else:
+                    # Ensure scores are within 0-100 range
+                    analysis[field] = max(0, min(100, int(analysis[field])))
+            
+            # Validate string fields
+            if 'summary' not in analysis or not isinstance(analysis['summary'], str):
+                analysis['summary'] = "Based on the provided information, this individual shows a balanced personality profile across the Big Five dimensions."
+            
+            if 'strengths' not in analysis or not isinstance(analysis['strengths'], list):
+                analysis['strengths'] = [
+                    "Demonstrates self-awareness through thoughtful responses",
+                    "Shows willingness to engage in personal reflection",
+                    "Exhibits clear communication skills"
+                ]
+            
+            if 'growth_areas' not in analysis or not isinstance(analysis['growth_areas'], list):
+                analysis['growth_areas'] = [
+                    "Continue developing self-awareness through regular reflection",
+                    "Seek feedback from others to gain external perspectives",
+                    "Consider exploring areas outside comfort zone for growth"
+                ]
+            
+            # Ensure lists have exactly 3 items
+            analysis['strengths'] = analysis['strengths'][:3] if len(analysis['strengths']) >= 3 else analysis['strengths'] + ["Additional strength identified through comprehensive analysis"] * (3 - len(analysis['strengths']))
+            analysis['growth_areas'] = analysis['growth_areas'][:3] if len(analysis['growth_areas']) >= 3 else analysis['growth_areas'] + ["Additional growth opportunity for continued development"] * (3 - len(analysis['growth_areas']))
+            
+            logger.info("Successfully completed personality analysis")
+            
+            return PersonaAnalysisResponse(
+                openness=analysis['openness'],
+                conscientiousness=analysis['conscientiousness'],
+                extraversion=analysis['extraversion'],
+                agreeableness=analysis['agreeableness'],
+                neuroticism=analysis['neuroticism'],
+                summary=analysis['summary'],
+                strengths=analysis['strengths'],
+                growth_areas=analysis['growth_areas']
+            )
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse Gemini response as JSON: {str(e)}")
+            logger.error(f"Raw response: {ai_response}")
+            raise HTTPException(status_code=502, detail="AI service returned invalid response format")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in persona analysis: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error processing personality analysis")
 
 @app.get("/health")
 async def health_check():

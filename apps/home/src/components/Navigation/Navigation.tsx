@@ -41,6 +41,7 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) 
               {profile?.role === 'candidate' && (
                 <li><Link to="/reelskills" className={styles.navLink}>ReelSkills</Link></li>
               )}
+              <li><Link to="/persona" className={styles.navLink}>ReelPersona</Link></li>
               {profile?.role === 'recruiter' && (
                 <li><Link to="/reelhunter" className={styles.navLink}>ReelHunter</Link></li>
               )}

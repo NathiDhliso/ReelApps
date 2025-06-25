@@ -10,6 +10,7 @@ import CandidateDashboard from './components/ReelCV/CandidateDashboard';
 import ReelCVShowcase from './components/ReelCV/ReelCVShowcase';
 import ReelSkills from './components/ReelApps/ReelSkills';
 import ReelHunter from './components/ReelHunter/ReelHunter';
+import ReelPersona from './components/ReelPersona/ReelPersona';
 import AuthModal from './components/Auth/AuthModal';
 import SystemNotifications from './components/SystemNotifications/SystemNotifications';
 import OnboardingFlow from './components/Onboarding/OnboardingFlow';
@@ -188,6 +189,12 @@ function App() {
                         path="/reelhunter" 
                         element={
                           isAuthenticated ? <ReelHunter /> : <Navigate to="/" />
+                        } 
+                      />
+                      <Route 
+                        path="/persona" 
+                        element={
+                          isAuthenticated ? <ReelPersona /> : <Navigate to="/" />
                         } 
                       />
                       <Route path="*" element={<Navigate to="/" />} />
