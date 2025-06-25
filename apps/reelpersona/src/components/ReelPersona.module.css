@@ -1,7 +1,50 @@
 .reelPersona {
+<<<<<<< HEAD
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+=======
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+/* Enhanced Card Wrapper */
+.reelPersona .reelapps-card {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.6s ease-out;
+}
+
+.reelPersona .reelapps-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    transparent 100%);
+}
+
+.reelPersona .reelapps-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 
+    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.4);
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Intro Section */
@@ -11,28 +54,132 @@
 
 .introContent {
   text-align: left;
+<<<<<<< HEAD
+=======
+  margin: 2rem 0;
+}
+
+.authNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 28px;
+  backdrop-filter: blur(10px);
+}
+
+.authNoticeIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.authNoticeContent {
+  flex: 1;
+}
+
+.authNoticeContent p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.authNoticeContent p:last-child {
+  margin-bottom: 0;
+}
+
+.authNoticeContent strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.introContent p {
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
+
+.introContent ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.introContent li {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.introContent li:last-child {
+  border-bottom: none;
+}
+
+.introContent strong {
+  color: var(--text-primary);
+  font-weight: 600;
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Questionnaire Section */
 .questionnaire {
+<<<<<<< HEAD
   margin-bottom: 2rem;
 }
 
 .questionnaireContent {
   padding: 0;
+=======
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.questionnaireContent {
+  padding: 2.5rem 0;
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 .progressBar {
   width: 100%;
+<<<<<<< HEAD
   height: 8px;
   background-color: var(--bg-tertiary);
   border-radius: 4px;
+=======
+  height: 12px;
+  background: rgba(229, 231, 235, 0.3);
+  border-radius: 8px;
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
   overflow: hidden;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.progressBar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .progressFill {
   height: 100%;
+<<<<<<< HEAD
   background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
   transition: width 0.3s ease;
 }
@@ -40,16 +187,533 @@
 /* Chat Section */
 .chat {
   margin-bottom: 2rem;
+=======
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.questionText {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.answerOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.answerButton {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.25rem 1.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(229, 231, 235, 0.4);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.answerButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s;
+}
+
+.answerButton:hover {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.answerButton:hover::before {
+  left: 100%;
+}
+
+.answerNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.answerLabel {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+/* Chat Section */
+.chat {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.chatContent {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}
+
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: transparent;
+}
+
+.chatMessage {
+  display: flex;
+  width: 100%;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aiMessage {
+  justify-content: flex-start;
+}
+
+.userMessage {
+  justify-content: flex-end;
+}
+
+.messageContent {
+  max-width: 70%;
+  padding: 1rem 1.25rem;
+  border-radius: 18px;
+  position: relative;
+  backdrop-filter: blur(10px);
+  word-wrap: break-word;
+}
+
+.aiMessage .messageContent {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text-primary);
+  border-bottom-left-radius: 6px;
+  border: 1px solid rgba(229, 231, 235, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.userMessage .messageContent {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border-bottom-right-radius: 6px;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.messageContent p {
+  margin: 0 0 0.5rem 0;
+  line-height: 1.5;
+  font-size: 1.05rem;
+}
+
+.messageTime {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+/* Typing Indicator */
+.typingMessage {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #6b7280 !important;
+  font-style: italic;
+  position: relative;
+}
+
+.typingMessage p::after {
+  content: '...';
+  animation: typingDots 1.4s infinite;
+  margin-left: 4px;
+}
+
+@keyframes typingDots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+.chatForm {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(229, 231, 235, 0.3);
+}
+
+.chatInput {
+  flex: 1;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+}
+
+.chatInput:focus {
+  border-color: rgba(79, 70, 229, 0.6);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.chatInput::placeholder {
+  color: rgba(107, 114, 128, 0.7);
+}
+
+.sendButton {
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  font-family: inherit;
+  min-width: 80px;
+}
+
+.sendButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #4338ca, #6d28d9);
+}
+
+.sendButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+}
+
+.processingMessage {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.loader {
+  display: inline-block;
+  margin-left: 0.5rem;
+  animation: pulse 1.5s ease-in-out infinite;
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Results Section */
 .results {
+<<<<<<< HEAD
   margin-bottom: 2rem;
+=======
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.resultsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: 2rem 0;
+}
+
+.saveStatus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.saveStatusSuccess {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(34, 197, 94, 0.15) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.saveStatusGuest {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.saveStatusIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.saveStatusText {
+  flex: 1;
+  line-height: 1.6;
+}
+
+.saveStatusText strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.traitsSection h3,
+.summarySection h3,
+.insightsSection h3 {
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.traits {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.trait {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.traitHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.traitName {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--text-primary);
+}
+
+.traitScore {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+}
+
+.traitBar {
+  width: 100%;
+  height: 12px;
+  background: rgba(229, 231, 235, 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.traitFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 8px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.traitLabel {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.summarySection p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.insightsSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.strengths,
+.growthAreas {
+  background: rgba(255, 255, 255, 0.6);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.strengths {
+  border-left: 4px solid var(--success-color);
+}
+
+.growthAreas {
+  border-left: 4px solid var(--warning-color);
+}
+
+.strengths h3 {
+  color: var(--success-color);
+  font-size: 1.25rem;
+}
+
+.growthAreas h3 {
+  color: var(--warning-color);
+  font-size: 1.25rem;
+}
+
+.strengths ul,
+.growthAreas ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.strengths li,
+.growthAreas li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+  position: relative;
+  padding-left: 1.5rem;
+  line-height: 1.6;
+}
+
+.strengths li:last-child,
+.growthAreas li:last-child {
+  border-bottom: none;
+}
+
+.strengths li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.growthAreas li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--warning-color);
+  font-weight: bold;
+}
+
+/* Enhanced Buttons */
+.primaryButton {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.primaryButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+.primaryButton:hover::before {
+  left: 100%;
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text-primary);
+  border: 2px solid rgba(229, 231, 235, 0.5);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.secondaryButton:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Error Section */
 .error {
+<<<<<<< HEAD
   margin-bottom: 2rem;
+=======
+  text-align: center;
+}
+
+.errorContent {
+  padding: 2rem;
+  text-align: center;
+}
+
+.errorContent p {
+  color: var(--danger-color);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Responsive Design */
@@ -57,10 +721,423 @@
   .reelPersona {
     padding: 1rem 0.5rem;
   }
+<<<<<<< HEAD
+=======
+
+  .reelPersona .reelapps-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .insightsSection {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .answerButton {
+    padding: 1rem 1.25rem;
+    gap: 1rem;
+  }
+
+  .messageContent {
+    max-width: 85%;
+  }
+
+  .chatForm {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .sendButton {
+    align-self: flex-end;
+  }
+
+  .questionText {
+    font-size: 1.2rem;
+  }
+
+  .traitHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .strengths,
+  .growthAreas {
+    padding: 1rem;
+  }
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 @media (max-width: 480px) {
   .questionText {
     font-size: 1.1rem;
   }
+<<<<<<< HEAD
 }
+=======
+
+  .traitHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .strengths,
+  .growthAreas {
+    padding: 1rem;
+  }
+}
+
+/* ReelPersona uses global Ascension Palette variables - mapping local variables to global ones */
+:root {
+  --primary-color: var(--brand-primary);
+  --primary-dark: var(--brand-secondary);
+  --accent-color: var(--brand-accent);
+  --success-color: var(--brand-secondary);
+  --success-bg: rgba(46, 139, 87, 0.1);
+  --warning-color: var(--cta-primary);
+  --warning-bg: rgba(255, 215, 0, 0.1);
+  --error-color: #ef4444;
+  --border-light: var(--border-primary);
+}
+
+/* Comprehensive Results Enhancements */
+
+/* Overview Section */
+.overviewSection {
+  margin-bottom: 2rem;
+}
+
+.personalityOverview {
+  margin-top: 1rem;
+}
+
+.overviewCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.overviewIcon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.overviewContent h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.overviewContent p {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* Enhanced Trait Descriptions */
+.traitDescription {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Work Style Section */
+.workStyleSection {
+  margin-bottom: 2.5rem;
+}
+
+.workStyleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.workStyleCard {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.workStyleCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.workStyleIcon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.workStyleCard h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.workStyleScore {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+}
+
+.workStyleBar {
+  width: 100%;
+  height: 8px;
+  background: rgba(229, 231, 235, 0.4);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.workStyleFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 6px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Professional Insights Section */
+.professionalSection {
+  margin-bottom: 2.5rem;
+}
+
+.insightCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.insightCard {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.insightCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.insightIcon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.insightCard h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.insightCard p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Career Section */
+.careerSection {
+  margin-bottom: 2.5rem;
+}
+
+.careerCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+  margin-top: 1.5rem;
+}
+
+.careerIcon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--success-color), var(--secondary-color));
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.careerContent {
+  flex: 1;
+}
+
+.careerContent h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.careerSuggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.careerTag {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.careerNote {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Confidence Section */
+.confidenceSection {
+  margin-bottom: 2rem;
+}
+
+.confidenceCard {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.confidenceIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.confidenceContent {
+  flex: 1;
+}
+
+.confidenceContent h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.confidenceScore {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.confidenceContent p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Responsive Design for New Components */
+@media (max-width: 768px) {
+  .workStyleGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .workStyleCard {
+    padding: 1rem;
+  }
+
+  .insightCards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .insightCard {
+    padding: 1.25rem;
+  }
+
+  .overviewCard,
+  .careerCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .confidenceCard {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .careerSuggestions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .workStyleGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .workStyleCard {
+    padding: 0.75rem;
+  }
+
+  .workStyleCard h4 {
+    font-size: 1rem;
+  }
+
+  .overviewCard,
+  .careerCard,
+  .confidenceCard {
+    padding: 1.5rem;
+  }
+
+  .careerTag {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+} 
+>>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)

@@ -1,25 +1,21 @@
 .reelapps-card {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-secondary, #f9fafb);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-primary);
-<<<<<<< HEAD
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+  border: 1px solid var(--border-light, #e5e7eb);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-=======
-  transition: all 0.3s ease-in-out;
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   position: relative;
   overflow: hidden;
 }
 
 .reelapps-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04));
 }
 
 .reelapps-card--glass {
-  background: var(--gradient-glass);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -33,7 +29,7 @@
 }
 
 .reelapps-card--gradient {
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
 }
 
@@ -59,7 +55,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   color: white;
   flex-shrink: 0;
 }
@@ -67,12 +63,12 @@
 .reelapps-card__title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-primary, #111827);
   margin: 0;
 }
 
 .reelapps-card__description {
-  color: var(--text-secondary);
+  color: var(--text-secondary, #6b7280);
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
@@ -81,7 +77,7 @@
 .reelapps-card__footer {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid var(--border-primary);
+  border-top: 1px solid var(--border-light, #e5e7eb);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -100,12 +96,12 @@
   display: block;
   font-size: 18px;
   font-weight: 600;
-  color: var(--brand-primary);
+  color: var(--primary-color, #3b82f6);
 }
 
 .reelapps-card__stat-label {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-secondary, #6b7280);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
