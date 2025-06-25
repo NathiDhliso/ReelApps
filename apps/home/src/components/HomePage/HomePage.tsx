@@ -26,10 +26,10 @@ const HomePage: React.FC = () => {
 
   const getIconComponent = (iconName?: string) => {
     if (!iconName || !(iconName in iconMap)) {
-      return <User size={24} />;
+      return <User size={24} aria-hidden="true" />;
     }
     const IconComponent = iconMap[iconName as keyof typeof iconMap];
-    return <IconComponent size={24} />;
+    return <IconComponent size={24} aria-hidden="true" />;
   };
 
   const renderAppCard = (app: AppConfig) => {
@@ -45,6 +45,7 @@ const HomePage: React.FC = () => {
             href={app.url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`Open ${app.name} application in new tab`}
           >
             Open {app.name}
           </Button>
@@ -58,10 +59,10 @@ const HomePage: React.FC = () => {
     : [];
 
   return (
-    <div className={styles.homepage}>
+    <main className={styles.homepage}>
       {/* Hero Section */}
-      <section className={styles.heroSection}>
-        <h1 className={styles.heroTitle}>
+      <section className={styles.heroSection} aria-labelledby="hero-title">
+        <h1 id="hero-title" className={styles.heroTitle}>
           Welcome to ReelApps
         </h1>
         <p className={styles.heroSubtitle}>
@@ -70,12 +71,16 @@ const HomePage: React.FC = () => {
         </p>
         <div className={styles.heroActions}>
           {!isAuthenticated ? (
-            <Button size="large" onClick={handleGetStarted}>
-              <User size={20} />
+            <Button 
+              size="large" 
+              onClick={handleGetStarted}
+              aria-label="Get started with ReelApps - open login form"
+            >
+              <User size={20} aria-hidden="true" />
               Get Started
             </Button>
           ) : (
-            <p className={styles.welcomeText}>
+            <p className={styles.welcomeText} role="status" aria-live="polite">
               Welcome back, {profile?.first_name || 'User'}! Choose an application below.
             </p>
           )}
@@ -84,9 +89,9 @@ const HomePage: React.FC = () => {
 
       {/* Apps Grid */}
       {isAuthenticated && (
-        <section className={styles.appsSection}>
-          <h2 className={styles.sectionTitle}>Your Applications</h2>
-          <div className={styles.appsGrid}>
+        <section className={styles.appsSection} aria-labelledby="apps-title">
+          <h2 id="apps-title" className={styles.sectionTitle}>Your Applications</h2>
+          <div className={styles.appsGrid} role="grid" aria-label="Available applications">
             {availableApps.map(renderAppCard)}
           </div>
         </section>
@@ -94,12 +99,12 @@ const HomePage: React.FC = () => {
 
       {/* Features Overview for Non-Authenticated Users */}
       {!isAuthenticated && (
-        <section className={styles.featuresSection}>
-          <h2 className={styles.sectionTitle}>Our Applications</h2>
-          <div className={styles.featuresGrid}>
+        <section className={styles.featuresSection} aria-labelledby="features-title">
+          <h2 id="features-title" className={styles.sectionTitle}>Our Applications</h2>
+          <div className={styles.featuresGrid} role="grid" aria-label="ReelApps feature overview">
             <Card>
               <Card.Header
-                icon={<User size={24} />}
+                icon={<User size={24} aria-hidden="true" />}
                 title="ReelCV"
                 description="Dynamic candidate profiles that showcase your authentic self"
               />
@@ -107,7 +112,7 @@ const HomePage: React.FC = () => {
             
             <Card>
               <Card.Header
-                icon={<Search size={24} />}
+                icon={<Search size={24} aria-hidden="true" />}
                 title="ReelHunter"
                 description="AI-powered recruitment platform for modern hiring teams"
               />
@@ -115,7 +120,7 @@ const HomePage: React.FC = () => {
             
             <Card>
               <Card.Header
-                icon={<Target size={24} />}
+                icon={<Target size={24} aria-hidden="true" />}
                 title="ReelSkills"
                 description="Skill verification and development platform"
               />
@@ -123,7 +128,7 @@ const HomePage: React.FC = () => {
             
             <Card>
               <Card.Header
-                icon={<Users size={24} />}
+                icon={<Users size={24} aria-hidden="true" />}
                 title="ReelPersona"
                 description="AI-powered personality analysis for career development"
               />
@@ -131,7 +136,7 @@ const HomePage: React.FC = () => {
           </div>
         </section>
       )}
-    </div>
+    </main>
   );
 };
 

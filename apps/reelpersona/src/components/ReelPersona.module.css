@@ -496,32 +496,15 @@
   }
 }
 
-/* CSS Variables - Define these in your global CSS if not already present */
+/* ReelPersona uses global Ascension Palette variables - mapping local variables to global ones */
 :root {
-  --primary-color: #3b82f6;
-  --primary-dark: #2563eb;
-  --accent-color: #8b5cf6;
-  --success-color: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --warning-color: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.1);
+  --primary-color: var(--brand-primary);
+  --primary-dark: var(--brand-secondary);
+  --accent-color: var(--brand-accent);
+  --success-color: var(--brand-secondary);
+  --success-bg: rgba(46, 139, 87, 0.1);
+  --warning-color: var(--cta-primary);
+  --warning-bg: rgba(255, 215, 0, 0.1);
   --error-color: #ef4444;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
-  --border-light: #e5e7eb;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --bg-tertiary: #374151;
-    --border-light: #374151;
-  }
+  --border-light: var(--border-primary);
 } 

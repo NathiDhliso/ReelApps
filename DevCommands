@@ -1,0 +1,6 @@
+App	Command	Port	Purpose
+Home	pnpm --filter @reelapps/home dev	5173	Main hub and authentication
+ReelCV	pnpm --filter @reelapps/reelcv dev	5174	CV/Resume showcase
+ReelPersona	pnpm --filter @reelapps/reelpersona dev	5175	Personality analysis
+ReelHunter	pnpm --filter @reelapps/reelhunter dev	5176	Recruitment platform
+ReelProject	pnpm --filter @reelapps/reelproject dev	5177	Project collaboration

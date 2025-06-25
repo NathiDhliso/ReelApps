@@ -24,7 +24,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-primary);
-  border-top: 3px solid var(--brand-turquoise);
+  border-top: 3px solid var(--brand-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -170,7 +170,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--brand-deep-ocean);
+  background: var(--brand-primary);
   position: absolute;
 }
 
@@ -213,7 +213,7 @@
 }
 
 .sectionIcon {
-  color: var(--brand-turquoise);
+  color: var(--brand-primary);
   flex-shrink: 0;
 }
 
@@ -225,7 +225,7 @@
 }
 
 .count {
-  background: var(--brand-turquoise);
+  background: var(--brand-primary);
   color: white;
   padding: 4px 12px;
   border-radius: 16px;
@@ -277,7 +277,7 @@
 }
 
 .skillCategory {
-  background: var(--brand-turquoise);
+  background: var(--brand-primary);
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
@@ -380,7 +380,7 @@
 }
 
 .projectLink {
-  color: var(--brand-turquoise);
+  color: var(--brand-primary);
   padding: 8px;
   border-radius: 8px;
   transition: all 0.2s ease-in-out;
@@ -403,7 +403,7 @@
 
 .projectRole {
   font-weight: 500;
-  color: var(--brand-turquoise);
+  color: var(--brand-primary);
 }
 
 .projectDuration {
@@ -485,8 +485,10 @@
 }
 
 .metricValue {
-  font-weight: 600;
-  color: var(--brand-turquoise);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin: 0;
 }
 
 .strengthsSection {

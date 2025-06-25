@@ -111,8 +111,8 @@
 .formGroup select:focus,
 .formGroup textarea:focus {
   outline: none;
-  border-color: var(--brand-turquoise);
-  box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.1);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.1);
 }
 
 .formGroup textarea {
