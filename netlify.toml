@@ -1,8 +1,8 @@
 # Netlify build configuration for ReelApps Monorepo
 
 [build]
-  # This command is run to build the site. It now includes our validation script.
-  command = "pnpm build"
+  # This command is run to build the site. It now includes our full CI test and validation script.
+  command = "pnpm ci:test && pnpm build"
   
   # This is the directory that Netlify will deploy. 
   # It should contain the main app's build output.
