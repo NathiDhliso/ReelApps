@@ -14,7 +14,7 @@
 
 [build.environment]
   # Set the pnpm version to ensure consistency.
-  PNPM_VERSION = "8.6.0"
+  PNPM_VERSION = "9.1.0"
   
   # Set the Node.js version.
   NODE_VERSION = "18"
