@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useState } from 'react';
 import { X, Sparkles } from 'lucide-react';
 import Button from '../Button/Button';
@@ -37,6 +38,10 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<any | null>(null);
+  const [suggestedSkills, setSuggestedSkills] = useState<string[]>([]);
+  const [roleTitle, setRoleTitle] = useState('');
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -67,49 +72,37 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
     }
   };
 
-  const analyzeJobDescription = async () => {
+  const handleAnalyzeDescription = async () => {
+    if (!formData.description) {
+      setAnalysisError('Please enter a job description to analyze.');
+      return;
+    }
     setIsAnalyzing(true);
+    setAnalysisError(null);
+    setAnalysisResult(null);
+
     try {
       const { data, error } = await supabase.functions.invoke('analyze-job', {
-        body: {
-          title: formData.title,
-          description: formData.description,
-          requirements: formData.requirements.filter(req => req.trim()),
-          experience_level: formData.experience_level,
-        },
+        body: { job_description: formData.description },
       });
 
       if (error) {
-        console.warn('Edge function error:', error);
-        // Fallback mock analysis for demo
-        setAnalysis({
-          clarity: 85,
-          realism: 78,
-          inclusivity: 92,
-          suggestions: [
-            'Consider adding more specific technical requirements',
-            'Include information about team size and structure',
-            'Mention opportunities for professional development',
-          ],
-        });
-      } else {
-        setAnalysis(data as unknown as JobAnalysis);
+        throw new Error(`Function error: ${error.message}`);
       }
-      setShowAnalysis(true);
-    } catch (error) {
-      console.error('Analysis failed:', error);
-      // Fallback mock analysis
-      setAnalysis({
-        clarity: 80,
-        realism: 75,
-        inclusivity: 88,
-        suggestions: [
-          "Review technical requirements for clarity",
-          "Consider salary range transparency",
-          "Add diversity and inclusion statement"
-        ]
-      });
-      setShowAnalysis(true);
+
+      if (!data) {
+        throw new Error('No data returned from the analysis function.');
+      }
+      
+      setAnalysisResult(data);
+      // Automatically apply suggestions to the form
+      setSuggestedSkills(data.suggested_skills || []);
+      setRoleTitle(data.extracted_role || formData.title);
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      console.error('Error analyzing job description:', errorMessage);
+      setAnalysisError(`Failed to analyze: ${errorMessage}`);
     } finally {
       setIsAnalyzing(false);
     }
@@ -127,7 +120,7 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
         requirements: formData.requirements.filter(req => req.trim()),
         salary_min: formData.salary_min ? parseInt(formData.salary_min) : null,
         salary_max: formData.salary_max ? parseInt(formData.salary_max) : null,
-        ai_analysis_score: analysis,
+        ai_analysis_score: analysisResult,
         status: 'active',
         created_at: new Date().toISOString()
       };
@@ -331,7 +324,7 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
           </div>
 
           {/* AI Analysis Section */}
-          {showAnalysis && analysis && (
+          {showAnalysis && analysisResult && (
             <div className={styles.analysisSection}>
               <Card>
                 <Card.Header
@@ -345,9 +338,9 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
                     <div className={styles.scoreLabel}>Clarity</div>
                     <div 
                       className={styles.scoreValue}
-                      style={{ color: getScoreColor(analysis.clarity) }}
+                      style={{ color: getScoreColor(analysisResult.clarity) }}
                     >
-                      {analysis.clarity}%
+                      {analysisResult.clarity}%
                     </div>
                   </div>
                   
@@ -355,9 +348,9 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
                     <div className={styles.scoreLabel}>Realism</div>
                     <div 
                       className={styles.scoreValue}
-                      style={{ color: getScoreColor(analysis.realism) }}
+                      style={{ color: getScoreColor(analysisResult.realism) }}
                     >
-                      {analysis.realism}%
+                      {analysisResult.realism}%
                     </div>
                   </div>
                   
@@ -365,18 +358,18 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
                     <div className={styles.scoreLabel}>Inclusivity</div>
                     <div 
                       className={styles.scoreValue}
-                      style={{ color: getScoreColor(analysis.inclusivity) }}
+                      style={{ color: getScoreColor(analysisResult.inclusivity) }}
                     >
-                      {analysis.inclusivity}%
+                      {analysisResult.inclusivity}%
                     </div>
                   </div>
                 </div>
 
-                {analysis.suggestions.length > 0 && (
+                {analysisResult.suggestions.length > 0 && (
                   <div className={styles.suggestions}>
                     <h4>Suggestions for Improvement:</h4>
                     <ul>
-                      {analysis.suggestions.map((suggestion, index) => (
+                      {analysisResult.suggestions.map((suggestion: string, index: number) => (
                         <li key={index}>{suggestion}</li>
                       ))}
                     </ul>
@@ -391,13 +384,33 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
             <Button
               type="button"
               variant="outline"
-              onClick={analyzeJobDescription}
+              onClick={handleAnalyzeDescription}
               disabled={!canAnalyze || isAnalyzing}
             >
-              <Sparkles size={16} />
               {isAnalyzing ? 'Analyzing...' : 'Analyze with AI'}
             </Button>
             
+            {analysisError && (
+              <div className={styles.errorBanner}>
+                <p>{analysisError}</p>
+              </div>
+            )}
+
+            {analysisResult && (
+              <div className={styles.analysisResult}>
+                <h3 className="text-lg font-semibold mb-2">Analysis Complete</h3>
+                <p><strong>Extracted Role:</strong> {analysisResult.extracted_role}</p>
+                <p><strong>Top 5 Suggested Skills:</strong></p>
+                <ul className="list-disc list-inside">
+                  {suggestedSkills.slice(0, 5).map(skill => <li key={skill}>{skill}</li>)}
+                </ul>
+                <Button onClick={() => {
+                  setFormData(prev => ({ ...prev, title: roleTitle, required_skills: suggestedSkills }));
+                  setAnalysisResult(null);
+                }}>Apply Suggestions</Button>
+              </div>
+            )}
+
             <div className={styles.submitActions}>
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel

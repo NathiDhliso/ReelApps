@@ -3,11 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "pnpm --parallel --recursive dev",
-    "build": "pnpm --recursive build",
-    "lint": "pnpm --recursive lint",
-    "test": "pnpm --recursive test",
-    "clean": "pnpm --recursive clean"
+    "dev": "pnpm -r dev",
+    "build": "pnpm validate-env && pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "clean": "pnpm --recursive clean",
+    "validate-env": "node scripts/validate-env.js"
   },
   "devDependencies": {
     "pnpm": "^9.0.0"

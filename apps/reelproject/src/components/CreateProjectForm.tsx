@@ -1,15 +1,96 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import './CreateProjectForm.css';
 import { Card } from '@reelapps/ui';
+import { supabase } from '../lib/supabase';
+
+interface ScopeAnalysis {
+  clarity_score: number;
+  feasibility_score: number;
+  identified_risks: string[];
+  suggested_technologies: string[];
+}
 
 const CreateProjectForm: React.FC = () => {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<ScopeAnalysis | null>(null);
+  const [projectPlan, setProjectPlan] = useState<string[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleAnalyzeScope = async () => {
+    if (!projectDescription) {
+      setError('Please provide a project description to analyze.');
+      return;
+    }
+    setIsAnalyzing(true);
+    setError(null);
+    setAnalysis(null);
+
+    try {
+      // First, analyze the project scope
+      const { data: analysisData, error: analysisError } = await supabase.functions.invoke('analyze-project-scope', {
+        body: { description: projectDescription },
+      });
+
+      if (analysisError) throw analysisError;
+      if (!analysisData) throw new Error('Failed to analyze project scope. No data returned.');
+
+      setAnalysis(analysisData);
+
+      // Then, generate the project plan based on the analysis
+      const { data: planData, error: planError } = await supabase.functions.invoke('generate-project-plan', {
+        body: {
+          scope_analysis: analysisData,
+          user_id: null
+        },
+      });
+
+      if (planError) throw planError;
+      if (!planData) throw new Error('Failed to generate project plan. No data returned.');
+
+      setProjectPlan(planData.project_plan);
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+      console.error('Project analysis failed:', err);
+      setError(`Analysis Error: ${errorMessage}`);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Project creation logic will go here
-    console.log('Creating project:', { projectName, projectDescription });
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // 1. Analyze project scope
+      const { data: analysis, error: analysisError } = await supabase.functions.invoke('analyze-project-scope', {
+        body: { projectDescription },
+      });
+
+      if (analysisError) throw analysisError;
+      setAnalysis(analysis);
+
+      // 2. Generate project plan
+      const { data: plan, error: planError } = await supabase.functions.invoke('generate-project-plan', {
+        body: { projectName, projectDescription },
+      });
+
+      if (planError) throw planError;
+      setProjectPlan(plan);
+
+      console.log('Project analysis & plan:', { analysis, plan });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unexpected error';
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

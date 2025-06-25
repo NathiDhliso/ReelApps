@@ -150,76 +150,29 @@ const ReelPersona: React.FC = () => {
     setIsLoading(true);
     setError(null);
 
+    const chatHistory = chatMessages.map(msg => ({
+      role: msg.isUser ? 'user' : 'model',
+      parts: [{ text: msg.text }],
+    }));
+
     try {
-      // Combine questionnaire and chat data
-      const questionnaireText = QUESTIONNAIRE.map(q => 
-        `${q.text} - Answer: ${questionnaireAnswers[q.id] || 3}/5`
-      ).join('\n');
-
-      const chatText = chatMessages
-        .filter(msg => msg.isUser)
-        .map(msg => msg.text)
-        .join('\n');
-
-      const combinedText = `Questionnaire Responses:\n${questionnaireText}\n\nConversational Responses:\n${chatText}`;
-
-      // Call the persona analysis API (adjust URL for backend)
-      const response = await fetch('http://localhost:8000/analyze/persona', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const { data, error } = await supabase.functions.invoke('analyze-persona', {
+        body: {
+          questionnaire: questionnaireAnswers,
+          conversation: chatHistory,
         },
-        body: JSON.stringify({ text: combinedText }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to analyze personality');
-      }
-
-      const analysisResults = await response.json();
-      setResults(analysisResults);
+      if (error) throw error;
+      if (!data) throw new Error('No data returned from persona analysis.');
       
-      // Save results to database
-      if (profile?.id) {
-        await savePersonaResults(analysisResults);
-      }
-      
+      setResults(data);
       setCurrentStep('results');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'An unknown error occurred during analysis.');
+      setCurrentStep('results'); // Show results screen with error
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const savePersonaResults = async (results: PersonaResults) => {
-    if (!profile?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('persona_analyses')
-        .upsert({
-          profile_id: profile.id,
-          openness: results.openness,
-          conscientiousness: results.conscientiousness,
-          extraversion: results.extraversion,
-          agreeableness: results.agreeableness,
-          neuroticism: results.neuroticism,
-          summary: results.summary,
-          strengths: results.strengths,
-          growth_areas: results.growth_areas,
-          assessment_data: {
-            questionnaire_answers: questionnaireAnswers,
-            chat_responses: chatMessages.filter(msg => msg.isUser).map(msg => msg.text)
-          },
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Error saving persona results:', error);
-      }
-    } catch (error) {
-      console.error('Error saving persona results:', error);
     }
   };
 

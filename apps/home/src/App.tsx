@@ -25,6 +25,10 @@ function App() {
   const [initializationComplete, setInitializationComplete] = useState(false);
 
   useEffect(() => {
+    // Force dark mode and gradient background on app load
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.body.classList.add('gradient-background');
+    
     const initializeApp = async () => {
       try {
         console.log('🚀 Starting ReelApps initialization...');
@@ -102,15 +106,36 @@ function App() {
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
-          background: 'var(--bg-primary)',
+          background: 'var(--gradient-hero)',
           flexDirection: 'column',
-          gap: '16px'
+          gap: '24px'
         }}>
-          <div className="animate-pulse" style={{ color: 'var(--text-primary)', fontSize: '18px' }}>
+          <div className="loading-spinner" style={{
+            width: '48px',
+            height: '48px',
+            border: '4px solid rgba(64, 224, 208, 0.2)',
+            borderTop: '4px solid var(--brand-primary)',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          <div style={{ 
+            background: 'var(--gradient-text)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontSize: '24px',
+            fontWeight: '700',
+            textAlign: 'center'
+          }}>
             {!initializationComplete ? 'Initializing ReelApps...' : 'Loading...'}
           </div>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            {!initializationComplete ? 'Setting up your workspace...' : 'Almost ready...'}
+          <div style={{ 
+            color: 'var(--text-secondary)', 
+            fontSize: '16px',
+            textAlign: 'center',
+            maxWidth: '400px'
+          }}>
+            {!initializationComplete ? 'Setting up your AI-powered career workspace...' : 'Almost ready for your career journey...'}
           </div>
         </div>
       </ThemeProvider>

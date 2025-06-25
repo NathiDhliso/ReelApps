@@ -37,7 +37,11 @@
 }
 
 .introContent strong {
-  color: var(--text-primary);
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
 }
 
 /* Questionnaire Section */
@@ -160,7 +164,7 @@
 }
 
 .userMessage .messageContent {
-  background: var(--primary-color);
+  background: var(--gradient-primary);
   color: white;
   border-bottom-right-radius: 6px;
 }
@@ -296,8 +300,11 @@
 
 .traitScore {
   font-weight: 700;
-  color: var(--primary-color);
   font-size: 1.1rem;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .traitBar {
@@ -310,7 +317,7 @@
 
 .traitFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  background: var(--gradient-primary);
   transition: width 0.8s ease;
 }
 
@@ -394,20 +401,22 @@
 /* Buttons */
 .primaryButton {
   padding: 0.875rem 2rem;
-  background: var(--primary-color);
-  color: white;
-  border: none;
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-metallic);
   border-radius: 8px;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-right: 1rem;
+  box-shadow: var(--shadow-md);
 }
 
 .primaryButton:hover {
-  background: var(--primary-dark);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  filter: brightness(1.1);
 }
 
 .secondaryButton {
@@ -493,35 +502,5 @@
   .strengths,
   .growthAreas {
     padding: 1.5rem;
-  }
-}
-
-/* CSS Variables - Define these in your global CSS if not already present */
-:root {
-  --primary-color: #3b82f6;
-  --primary-dark: #2563eb;
-  --accent-color: #8b5cf6;
-  --success-color: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --warning-color: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --error-color: #ef4444;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
-  --border-light: #e5e7eb;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --bg-tertiary: #374151;
-    --border-light: #374151;
   }
 } 

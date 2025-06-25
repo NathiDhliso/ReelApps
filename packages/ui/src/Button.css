@@ -9,11 +9,7 @@
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
-<<<<<<< HEAD
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-=======
-  transition: all 0.3s ease-in-out;
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   text-decoration: none;
   white-space: nowrap;
   position: relative;
@@ -22,11 +18,7 @@
 
 .reelapps-button:focus {
   outline: none;
-<<<<<<< HEAD
-  box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.3);
-=======
   box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.3);
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
 }
 
 .reelapps-button:disabled {
@@ -35,21 +27,13 @@
 }
 
 .reelapps-button--primary {
-<<<<<<< HEAD
   background-color: var(--brand-primary);
-=======
-  background: var(--brand-primary);
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   color: white;
 }
 
 .reelapps-button--primary:hover:not(:disabled) {
-<<<<<<< HEAD
   background-color: var(--cta-primary);
-=======
-  background: var(--cta-primary);
   color: var(--text-primary);
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   transform: translateY(-2px) scale(1.02);
   box-shadow: var(--shadow-lg);
 }
@@ -60,11 +44,7 @@
 
 .reelapps-button--secondary {
   background-color: var(--bg-secondary);
-<<<<<<< HEAD
   color: var(--brand-secondary);
-=======
-  color: var(--brand-primary);
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   border: 2px solid var(--brand-secondary);
 }
 
@@ -94,11 +74,7 @@
 }
 
 .reelapps-button--ghost:hover:not(:disabled) {
-<<<<<<< HEAD
-  background-color: var(--bg-primary);
-=======
   background-color: var(--bg-tertiary);
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   color: var(--text-primary);
 }
 

@@ -4,68 +4,50 @@
 @tailwind utilities;
 
 :root {
-<<<<<<< HEAD
-  /* Ascension Palette - Light Theme */
-=======
   /* Brand Colors */
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   --brand-primary: #0047AB;
   --brand-secondary: #2E8B57;
   --brand-accent: #8A2BE2;
   --cta-primary: #FFD700;
   --cta-secondary: #40E0D0;
-<<<<<<< HEAD
-  --bg-primary: #F5F5F5;
-  --bg-secondary: #FFFFFF;
-=======
-  
+
   /* Background Colors */
   --bg-primary: #F5F5F5;
   --bg-secondary: #FFFFFF;
   --bg-tertiary: #EDF2F7;
-  
+
   /* Text Colors */
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   --text-primary: #1A202C;
   --text-secondary: #4A5568;
   --text-muted: #718096;
-  
+
   /* Border Colors */
   --border-primary: #E2E8F0;
   --border-secondary: #CBD5E0;
 
-<<<<<<< HEAD
-  /* Legacy brand colors for backwards compatibility */
-  --brand-deep-ocean: var(--brand-primary);
-  --brand-turquoise: var(--cta-secondary);
-  --brand-turquoise-light: #4FD1C7;
-  --brand-turquoise-dark: #2C7A7B;
-  
-  /* Legacy accent colors */
-=======
   /* Legacy Brand Colors (kept for backward compatibility) */
   --brand-deep-ocean: #0A2540;
   --brand-turquoise: #38B2AC;
   --brand-turquoise-light: #4FD1C7;
   --brand-turquoise-dark: #2C7A7B;
-  
+
   /* Legacy Accent Colors */
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   --accent-green: #38A169;
   --accent-purple: var(--brand-accent);
   --accent-yellow: var(--cta-primary);
   --accent-red: #E53E3E;
-  
-<<<<<<< HEAD
-  /* Gradients using new palette */
+
+  /* Enhanced Gradients for Light Mode */
   --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--cta-secondary) 100%);
-=======
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   --gradient-secondary: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-accent) 100%);
+  --gradient-tertiary: linear-gradient(135deg, var(--brand-accent) 0%, var(--cta-primary) 100%);
+  --gradient-hero: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 50%, var(--cta-secondary) 100%);
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
   --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-  
+  --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 100%);
+  --gradient-text: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+  --gradient-border: linear-gradient(135deg, var(--border-primary) 0%, var(--border-secondary) 100%);
+
   /* Shadows for light theme */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -73,229 +55,184 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-<<<<<<< HEAD
-[data-theme='dark'] {
-  /* Ascension Palette - Dark Theme */
-=======
 [data-theme="dark"] {
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
-  --brand-primary: #40E0D0;
-  --brand-secondary: #2E8B57;
-  --brand-accent: #8A2BE2;
+  /* Ascension Palette - Midnight Metal Dark Theme */
+  --brand-primary: #40E0D0; /* Hopeful Turquoise as main accent */
+  --brand-secondary: #0047AB; /* Deep Ocean Blue */
+  --brand-accent: #8A2BE2; /* Innovation Purple as secondary accent */
   --cta-primary: #FFD700;
-  --cta-secondary: #0047AB;
-<<<<<<< HEAD
-  --bg-primary: #1A202C;
-  --bg-secondary: #2D3748;
-=======
-  
-  --bg-primary: #1A202C;
-  --bg-secondary: #2D3748;
-  --bg-tertiary: #1A365D;
-  
->>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
-  --text-primary: #F7FAFC;
-  --text-secondary: #A0AEC0;
-  --text-muted: #718096;
-  
-  --border-primary: #2D3748;
-  --border-secondary: #4A5568;
-  
-  /* Updated gradients for dark theme */
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  
+  --cta-secondary: #2E8B57;
+
+  --bg-primary: #0f1d33; /* Midnight Metal base from screenshot */
+  --bg-secondary: #1b2b45; /* Lighter Midnight Metal */
+  --bg-tertiary: #0a1422; /* Darker Midnight Metal */
+
+  --text-primary: #E6F1FF; /* Lighter, softer text */
+  --text-secondary: #A8B2D1;
+  --text-muted: #64748B;
+
+  --border-primary: #1b2b45;
+  --border-secondary: #303C55;
+  --border-metallic: rgba(255, 255, 255, 0.1);
+
+  /* Gradients for "Midnight Metal" theme */
+  --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-accent) 100%);
+  --gradient-hero: radial-gradient(ellipse at 50% 0%, #1b2b45 0%, #0f1d33 70%); /* Metallic sheen */
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --gradient-text: linear-gradient(135deg, var(--text-primary) 0%, var(--brand-primary) 100%);
+  --gradient-border: linear-gradient(135deg, var(--border-metallic) 0%, rgba(255, 255, 255, 0.05) 100%);
+
   /* Shadows for dark theme */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
+html[data-theme="dark"],
+html:not([data-theme]) {
+  /* Apply Midnight Metal Dark Theme variables */
+  --brand-primary: #40E0D0; /* Hopeful Turquoise as main accent */
+  --brand-secondary: #0047AB; /* Deep Ocean Blue */
+  --brand-accent: #8A2BE2; /* Innovation Purple as secondary accent */
+  --cta-primary: #FFD700;
+  --cta-secondary: #2E8B57;
+
+  --bg-primary: #0f1d33; /* Midnight Metal base from screenshot */
+  --bg-secondary: #1b2b45; /* Lighter Midnight Metal */
+  --bg-tertiary: #0a1422; /* Darker Midnight Metal */
+
+  --text-primary: #E6F1FF; /* Lighter, softer text */
+  --text-secondary: #A8B2D1;
+  --text-muted: #64748B;
+
+  --border-primary: #1b2b45;
+  --border-secondary: #303C55;
+  --border-metallic: rgba(255, 255, 255, 0.1);
+
+  /* Gradients for "Midnight Metal" theme */
+  --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-accent) 100%);
+  --gradient-hero: radial-gradient(ellipse at 50% 0%, #1b2b45 0%, #0f1d33 70%); /* Metallic sheen */
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --gradient-text: linear-gradient(135deg, var(--text-primary) 0%, var(--brand-primary) 100%);
+  --gradient-border: linear-gradient(135deg, var(--border-metallic) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Shadows for dark theme */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+}
+
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   font-size: 16px;
-  background-color: var(--bg-primary);
+  background-color: var(--bg-primary); /* Fallback */
+  background-image: var(--gradient-hero);
+  background-attachment: fixed;
   color: var(--text-primary);
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-size: 16px;
+  transition: background 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  line-height: 1.2;
-  margin-top: 0;
-  margin-bottom: 0.5em;
+/* Force dark mode by default */
+html {
+  color-scheme: dark;
 }
 
-h1 {
-  font-size: 2.5rem;
+html,
+html[data-theme="dark"],
+html:not([data-theme]) {
+  /* Apply Professional Dark Theme variables */
+  --brand-primary: #8A2BE2; /* Innovation Purple */
+  --brand-secondary: #0047AB; /* Deep Ocean Blue */
+  --brand-accent: #40E0D0; /* Hopeful Turquoise */
+  --cta-primary: #FFD700;
+  --cta-secondary: #2E8B57;
+
+  --bg-primary: #0A192F; /* Dark Navy */
+  --bg-secondary: #112240; /* Lighter Navy */
+  --bg-tertiary: #081428;
+
+  --text-primary: #CCD6F6; /* Light Blue-Gray */
+  --text-secondary: #8892B0; /* Muted Blue-Gray */
+  --text-muted: #495670;
+
+  --border-primary: #1D2D44;
+  --border-secondary: #303C55;
+
+  --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-accent) 100%);
+  --gradient-tertiary: linear-gradient(135deg, var(--brand-accent) 0%, var(--cta-primary) 100%);
+  --gradient-hero: linear-gradient(225deg, var(--bg-primary) 0%, #112240 100%);
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+  --gradient-text: linear-gradient(135deg, var(--text-primary) 0%, var(--brand-accent) 100%);
+  --gradient-border: linear-gradient(135deg, var(--border-primary) 0%, var(--brand-accent) 100%);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
 }
 
-h2 {
-  font-size: 2rem;
+html[data-theme="dark"] body,
+html:not([data-theme]) body,
+body {
+  background: var(--gradient-hero);
+  background-attachment: fixed;
 }
 
-h3 {
-  font-size: 1.75rem;
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Bold Typography Scale */
-h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin: 0 0 1.5rem 0;
+/* Utility classes */
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 
-h2 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
-  margin: 0 0 1.25rem 0;
-}
-
-h3 {
-  font-size: 1.875rem;
-  font-weight: 600;
-  line-height: 1.4;
-  margin: 0 0 1rem 0;
-}
-
-/* Global utility classes */
-.gradient-primary {
-  background: var(--gradient-primary);
-}
-
-.gradient-secondary {
-  background: var(--gradient-secondary);
+/* Enhanced background for gradient experience */
+.gradient-background {
+  background: var(--gradient-hero) !important;
+  background-attachment: fixed !important;
 }
 
 .glass-effect {
   background: var(--gradient-glass);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.text-gradient {
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.card-gradient {
+  background: var(--gradient-card);
+  backdrop-filter: blur(20px);
 }
 
-/* Animation keyframes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.border-gradient {
+  background: var(--gradient-border);
+  padding: 2px;
+  border-radius: inherit;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.5s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse 2s infinite;
-}
-
-/* Focus styles for accessibility */
-*:focus {
-  outline: 2px solid var(--brand-primary);
-  outline-offset: 2px;
-}
-
-*:focus:not(:focus-visible) {
-  outline: none;
-}
-
-*:focus-visible {
-  outline: 2px solid var(--brand-primary);
-  outline-offset: 2px;
-}
-
-/* Skip link for screen readers */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 6px;
-  background: var(--brand-primary);
-  color: white;
-  padding: 8px;
-  text-decoration: none;
-  border-radius: 4px;
-  z-index: 1000;
-  font-weight: 600;
-}
-
-.skip-link:focus {
-  top: 6px;
-}
-
-/* Ensure sufficient color contrast for interactive elements */
-button:focus,
-a:focus,
-input:focus,
-select:focus,
-textarea:focus {
-  box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.3);
-}
-
-[data-theme='dark'] button:focus,
-[data-theme='dark'] a:focus,
-[data-theme='dark'] input:focus,
-[data-theme='dark'] select:focus,
-[data-theme='dark'] textarea:focus {
-  box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.3);
-}
-
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.border-gradient > * {
+  background: var(--bg-secondary);
+  border-radius: inherit;
 }
