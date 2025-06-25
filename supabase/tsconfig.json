@@ -18,7 +18,7 @@
     "types": []
   },
   "include": [
-    "./**/*.ts",
-    "./**/*.tsx"
+    "./functions/**/*.ts",
+    "./functions/**/*.tsx"
   ]
-} 
+}

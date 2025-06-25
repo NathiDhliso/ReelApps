@@ -8,8 +8,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && node -e \"require('fs').readdirSync('src').filter(f=>f.endsWith('.css')).forEach(f=>require('fs').copyFileSync('src/'+f,'dist/'+f))\"",
-    "dev": "tsc --watch",
+    "build": "pnpm exec tsc && node -e \"require('fs').readdirSync('src').filter(f=>f.endsWith('.css')).forEach(f=>require('fs').copyFileSync('src/'+f,'dist/'+f))\"",
+    "dev": "pnpm exec tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["react", "ui", "components"],

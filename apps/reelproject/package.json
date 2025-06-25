@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "dev": "pnpm exec vite",
+    "build": "pnpm exec vite build",
+    "lint": "pnpm exec eslint .",
+    "preview": "pnpm exec vite preview",
+    "test": "pnpm exec vitest",
+    "test:ui": "pnpm exec vitest --ui",
+    "test:coverage": "pnpm exec vitest --coverage"
   },
   "dependencies": {
     "@reelapps/auth": "workspace:*",
@@ -45,4 +45,4 @@
     "vite": "^6.3.5",
     "vitest": "^3.2.4"
   }
-} 
+}

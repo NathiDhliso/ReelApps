@@ -14,4 +14,4 @@ declare global {
 }
 
 // Make this a module to avoid global pollution
-export {}; 
+export {};
