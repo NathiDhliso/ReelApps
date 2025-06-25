@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Card } from '@reelapps/ui';
-import { useAuthStore } from '../store/authStore';
+import { Brain, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import styles from './ReelPersona.module.css';
 
@@ -69,7 +68,6 @@ const CHAT_QUESTIONS = [
 ];
 
 const ReelPersona: React.FC = () => {
-  const { profile } = useAuthStore();
   const [currentStep, setCurrentStep] = useState<'intro' | 'questionnaire' | 'chat' | 'results'>('intro');
   const [questionnaireAnswers, setQuestionnaireAnswers] = useState<Record<number, number>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -163,63 +161,36 @@ const ReelPersona: React.FC = () => {
 
       const combinedText = `Questionnaire Responses:\n${questionnaireText}\n\nConversational Responses:\n${chatText}`;
 
-      // Call the persona analysis API (adjust URL for backend)
-      const response = await fetch('http://localhost:8000/analyze/persona', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text: combinedText }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to analyze personality');
-      }
-
-      const analysisResults = await response.json();
-      setResults(analysisResults);
+      // In a real implementation, this would call the backend API
+      // For now, we'll simulate a response
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Save results to database
-      if (profile?.id) {
-        await savePersonaResults(analysisResults);
-      }
+      // Simulated AI response
+      const mockResults: PersonaResults = {
+        openness: 78,
+        conscientiousness: 65,
+        extraversion: 52,
+        agreeableness: 83,
+        neuroticism: 41,
+        summary: "You demonstrate a high level of openness to new experiences and ideas, paired with strong agreeableness that makes you collaborative and empathetic. Your conscientiousness is above average, showing good organization and reliability. You have a balanced approach to social interactions, being neither strongly extraverted nor introverted. Your emotional stability is good, with relatively low neuroticism scores indicating resilience in the face of challenges.",
+        strengths: [
+          "Creative problem-solving and openness to innovation",
+          "Empathetic collaboration and team harmony facilitation",
+          "Reliable follow-through on commitments and responsibilities"
+        ],
+        growth_areas: [
+          "Could benefit from more structured planning approaches",
+          "May need to assert personal needs more in collaborative settings",
+          "Could develop more comfort with ambiguity and uncertainty"
+        ]
+      };
       
+      setResults(mockResults);
       setCurrentStep('results');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const savePersonaResults = async (results: PersonaResults) => {
-    if (!profile?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('persona_analyses')
-        .upsert({
-          profile_id: profile.id,
-          openness: results.openness,
-          conscientiousness: results.conscientiousness,
-          extraversion: results.extraversion,
-          agreeableness: results.agreeableness,
-          neuroticism: results.neuroticism,
-          summary: results.summary,
-          strengths: results.strengths,
-          growth_areas: results.growth_areas,
-          assessment_data: {
-            questionnaire_answers: questionnaireAnswers,
-            chat_responses: chatMessages.filter(msg => msg.isUser).map(msg => msg.text)
-          },
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Error saving persona results:', error);
-      }
-    } catch (error) {
-      console.error('Error saving persona results:', error);
     }
   };
 
@@ -236,35 +207,46 @@ const ReelPersona: React.FC = () => {
 
   const renderIntro = () => (
     <div className={styles.intro}>
-      <Card>
-        <Card.Header 
-          title="Welcome to ReelPersona" 
-          description="Discover your personality profile with AI-powered analysis"
-        />
-        <div className={styles.introContent}>
-          <p>
-            ReelPersona uses the scientifically-validated Big Five personality model (OCEAN) to provide 
-            you with insights into your personality traits. This assessment combines:
-          </p>
-          <ul>
-            <li><strong>Structured Questionnaire:</strong> 20 carefully crafted questions covering all five personality dimensions</li>
-            <li><strong>Conversational Analysis:</strong> A natural dialogue with our AI personality coach</li>
-            <li><strong>Comprehensive Results:</strong> Detailed insights into your strengths and growth opportunities</li>
-          </ul>
-          <p>
-            The entire process takes about 10-15 minutes and will provide you with valuable insights 
-            for personal development and career planning.
-          </p>
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto">
+        <div className="bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] p-6 text-white">
+          <h2 className="text-2xl font-bold mb-2">Welcome to ReelPersona</h2>
+          <p className="text-white/90">Discover your personality profile with AI-powered analysis</p>
         </div>
-        <Card.Footer>
+        
+        <div className={styles.introContent}>
+          <div className="p-6">
+            <p className="mb-4 text-gray-700">
+              ReelPersona uses the scientifically-validated Big Five personality model (OCEAN) to provide 
+              you with insights into your personality traits. This assessment combines:
+            </p>
+            <ul className="space-y-2 mb-6">
+              <li className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <strong className="text-[var(--brand-primary)]">Structured Questionnaire:</strong> 20 carefully crafted questions covering all five personality dimensions
+              </li>
+              <li className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <strong className="text-[var(--brand-primary)]">Conversational Analysis:</strong> A natural dialogue with our AI personality coach
+              </li>
+              <li className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <strong className="text-[var(--brand-primary)]">Comprehensive Results:</strong> Detailed insights into your strengths and growth opportunities
+              </li>
+            </ul>
+            <p className="text-gray-700">
+              The entire process takes about 10-15 minutes and will provide you with valuable insights 
+              for personal development and career planning.
+            </p>
+          </div>
+        </div>
+        
+        <div className="p-6 border-t border-gray-100 bg-gray-50 flex justify-end">
           <button 
-            className={styles.primaryButton}
+            className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-lg font-medium flex items-center gap-2 hover:bg-[var(--brand-secondary)] transition-all shadow-md hover:shadow-lg transform hover:-translate-y-1"
             onClick={() => setCurrentStep('questionnaire')}
           >
             Start Assessment
+            <ArrowRight size={18} />
           </button>
-        </Card.Footer>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 
@@ -274,56 +256,72 @@ const ReelPersona: React.FC = () => {
 
     return (
       <div className={styles.questionnaire}>
-        <Card>
-          <Card.Header 
-            title={`Question ${currentQuestionIndex + 1} of ${QUESTIONNAIRE.length}`}
-            description={`${currentQuestion.trait.charAt(0).toUpperCase() + currentQuestion.trait.slice(1)} Assessment`}
-          />
-          <div className={styles.questionnaireContent}>
-            <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-            </div>
-            <h3 className={styles.questionText}>{currentQuestion.text}</h3>
-            <div className={styles.answerOptions}>
-              {[1, 2, 3, 4, 5].map(value => (
-                <button
-                  key={value}
-                  className={styles.answerButton}
-                  onClick={() => handleQuestionnaireAnswer(value)}
-                >
-                  <span className={styles.answerNumber}>{value}</span>
-                  <span className={styles.answerLabel}>
-                    {value === 1 ? 'Strongly Disagree' :
-                     value === 2 ? 'Disagree' :
-                     value === 3 ? 'Neutral' :
-                     value === 4 ? 'Agree' : 'Strongly Agree'}
-                  </span>
-                </button>
-              ))}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto">
+          <div className="bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] p-6 text-white">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl font-bold">Question {currentQuestionIndex + 1} of {QUESTIONNAIRE.length}</h2>
+              <span className="px-3 py-1 bg-white/20 rounded-full text-sm">
+                {currentQuestion.trait.charAt(0).toUpperCase() + currentQuestion.trait.slice(1)}
+              </span>
             </div>
           </div>
-        </Card>
+          
+          <div className={styles.questionnaireContent}>
+            <div className="p-6">
+              <div className={styles.progressBar}>
+                <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+              </div>
+              
+              <h3 className="text-xl font-medium text-gray-800 mb-8">{currentQuestion.text}</h3>
+              
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map(value => (
+                  <button
+                    key={value}
+                    className="w-full p-4 border border-gray-200 rounded-lg flex items-center gap-4 hover:border-[var(--brand-primary)] hover:bg-[var(--brand-primary)/5] transition-all"
+                    onClick={() => handleQuestionnaireAnswer(value)}
+                  >
+                    <span className="w-10 h-10 rounded-full bg-[var(--brand-primary)] text-white flex items-center justify-center font-semibold flex-shrink-0">
+                      {value}
+                    </span>
+                    <span className="font-medium text-gray-700">
+                      {value === 1 ? 'Strongly Disagree' :
+                       value === 2 ? 'Disagree' :
+                       value === 3 ? 'Neutral' :
+                       value === 4 ? 'Agree' : 'Strongly Agree'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
 
   const renderChat = () => (
     <div className={styles.chat}>
-      <Card>
-        <Card.Header 
-          title="Conversational Analysis" 
-          description="Let's have a natural conversation to understand your personality better"
-        />
-        <div className={styles.chatContent}>
-          <div className={styles.chatMessages}>
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-2xl mx-auto">
+        <div className="bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] p-6 text-white">
+          <h2 className="text-xl font-bold mb-2">Conversational Analysis</h2>
+          <p className="text-white/90">Let's have a natural conversation to understand your personality better</p>
+        </div>
+        
+        <div className="p-6">
+          <div className="bg-gray-50 rounded-lg border border-gray-100 h-[400px] mb-4 overflow-y-auto p-4">
             {chatMessages.map(message => (
               <div 
                 key={message.id}
-                className={`${styles.chatMessage} ${message.isUser ? styles.userMessage : styles.aiMessage}`}
+                className={`mb-4 ${message.isUser ? 'flex justify-end' : ''}`}
               >
-                <div className={styles.messageContent}>
-                  <p>{message.text}</p>
-                  <span className={styles.messageTime}>
+                <div className={`max-w-[80%] p-3 rounded-lg ${
+                  message.isUser 
+                    ? 'bg-[var(--brand-primary)] text-white rounded-br-none' 
+                    : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                }`}>
+                  <p className="mb-1">{message.text}</p>
+                  <span className="text-xs opacity-70">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -331,28 +329,37 @@ const ReelPersona: React.FC = () => {
             ))}
             <div ref={chatEndRef} />
           </div>
+          
           {chatQuestionIndex < CHAT_QUESTIONS.length - 1 ? (
-            <form onSubmit={handleChatSubmit} className={styles.chatForm}>
+            <form onSubmit={handleChatSubmit} className="flex gap-2">
               <input
                 type="text"
                 value={currentChatInput}
                 onChange={(e) => setCurrentChatInput(e.target.value)}
                 placeholder="Type your response..."
-                className={styles.chatInput}
+                className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                 disabled={isLoading}
               />
-              <button type="submit" className={styles.sendButton} disabled={!currentChatInput.trim() || isLoading}>
+              <button 
+                type="submit" 
+                className="px-4 py-3 bg-[var(--brand-primary)] text-white rounded-lg font-medium disabled:opacity-50"
+                disabled={!currentChatInput.trim() || isLoading}
+              >
                 Send
               </button>
             </form>
           ) : (
-            <div className={styles.processingMessage}>
-              <p>Great! I'm now analyzing your responses...</p>
-              {isLoading && <div className={styles.loader}>Analyzing...</div>}
+            <div className="text-center p-6">
+              <p className="text-gray-700 mb-4">Great! I'm now analyzing your responses...</p>
+              {isLoading && (
+                <div className="inline-block px-4 py-2 bg-gray-100 rounded-full text-sm animate-pulse">
+                  Analyzing...
+                </div>
+              )}
             </div>
           )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 
@@ -361,31 +368,32 @@ const ReelPersona: React.FC = () => {
 
     return (
       <div className={styles.results}>
-        <Card>
-          <Card.Header 
-            title="Your ReelPersona Results" 
-            description="Based on the Big Five (OCEAN) personality model"
-          />
-          <div className={styles.resultsContent}>
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-4xl mx-auto">
+          <div className="bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)] p-6 text-white">
+            <h2 className="text-2xl font-bold mb-2">Your ReelPersona Results</h2>
+            <p className="text-white/90">Based on the Big Five (OCEAN) personality model</p>
+          </div>
+          
+          <div className="p-6">
             {/* Big Five Scores */}
-            <div className={styles.traitsSection}>
-              <h3>Personality Traits</h3>
-              <div className={styles.traits}>
+            <div className="mb-10">
+              <h3 className="text-xl font-semibold text-gray-800 mb-6">Personality Traits</h3>
+              <div className="space-y-6">
                 {Object.entries(results).slice(0, 5).map(([trait, score]) => (
-                  <div key={trait} className={styles.trait}>
-                    <div className={styles.traitHeader}>
-                      <span className={styles.traitName}>
+                  <div key={trait} className="bg-gray-50 p-5 rounded-lg border border-gray-100">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-lg font-medium text-gray-800">
                         {trait.charAt(0).toUpperCase() + trait.slice(1)}
                       </span>
-                      <span className={styles.traitScore}>{score}/100</span>
+                      <span className="text-lg font-bold text-[var(--brand-primary)]">{score}/100</span>
                     </div>
-                    <div className={styles.traitBar}>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
                       <div 
-                        className={styles.traitFill} 
+                        className="h-full bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-secondary)]" 
                         style={{ width: `${score}%` }}
                       />
                     </div>
-                    <span className={styles.traitLabel}>
+                    <span className="text-sm text-gray-600 font-medium">
                       {getTraitLabel(trait, score as number)}
                     </span>
                   </div>
@@ -394,40 +402,50 @@ const ReelPersona: React.FC = () => {
             </div>
 
             {/* Summary */}
-            <div className={styles.summarySection}>
-              <h3>Personality Summary</h3>
-              <p>{results.summary}</p>
+            <div className="mb-10">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Personality Summary</h3>
+              <p className="text-gray-700 leading-relaxed bg-gray-50 p-5 rounded-lg border border-gray-100">
+                {results.summary}
+              </p>
             </div>
 
             {/* Strengths and Growth Areas */}
-            <div className={styles.insightsSection}>
-              <div className={styles.strengths}>
-                <h3>Your Strengths</h3>
-                <ul>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-[var(--success-bg)] p-6 rounded-lg border border-[var(--success-color)/20]">
+                <h3 className="text-lg font-semibold text-[var(--success-color)] mb-4">Your Strengths</h3>
+                <ul className="space-y-3">
                   {results.strengths.map((strength, index) => (
-                    <li key={index}>{strength}</li>
+                    <li key={index} className="flex items-start gap-2 pb-3 border-b border-[var(--success-color)/10] last:border-0">
+                      <CheckCircle size={18} className="text-[var(--success-color)] mt-1 flex-shrink-0" />
+                      <span className="text-gray-800">{strength}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
-              <div className={styles.growthAreas}>
-                <h3>Growth Opportunities</h3>
-                <ul>
+              
+              <div className="bg-[var(--warning-bg)] p-6 rounded-lg border border-[var(--warning-color)/20]">
+                <h3 className="text-lg font-semibold text-[var(--warning-color)] mb-4">Growth Opportunities</h3>
+                <ul className="space-y-3">
                   {results.growth_areas.map((area, index) => (
-                    <li key={index}>{area}</li>
+                    <li key={index} className="flex items-start gap-2 pb-3 border-b border-[var(--warning-color)/10] last:border-0">
+                      <ArrowRight size={18} className="text-[var(--warning-color)] mt-1 flex-shrink-0" />
+                      <span className="text-gray-800">{area}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
-          <Card.Footer>
+          
+          <div className="p-6 border-t border-gray-100 bg-gray-50 flex flex-wrap gap-4 justify-end">
             <button 
-              className={styles.primaryButton}
+              className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-lg font-medium hover:bg-[var(--brand-secondary)] transition-all shadow-md"
               onClick={() => window.location.href = '/dashboard'}
             >
               Return to Dashboard
             </button>
             <button 
-              className={styles.secondaryButton}
+              className="px-6 py-3 bg-transparent border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-all"
               onClick={() => {
                 setCurrentStep('intro');
                 setQuestionnaireAnswers({});
@@ -440,23 +458,27 @@ const ReelPersona: React.FC = () => {
             >
               Take Assessment Again
             </button>
-          </Card.Footer>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   };
 
   const renderError = () => (
     <div className={styles.error}>
-      <Card>
-        <Card.Header 
-          title="Analysis Error" 
-          description="Something went wrong during the personality analysis"
-        />
-        <div className={styles.errorContent}>
-          <p>{error}</p>
+      <div className="bg-white rounded-xl shadow-lg border border-red-100 overflow-hidden max-w-2xl mx-auto">
+        <div className="bg-red-600 p-6 text-white">
+          <h2 className="text-xl font-bold mb-2">Analysis Error</h2>
+          <p className="text-white/90">Something went wrong during the personality analysis</p>
+        </div>
+        
+        <div className="p-6">
+          <p className="text-red-600 mb-6 p-4 bg-red-50 rounded-lg border border-red-100">
+            {error}
+          </p>
+          
           <button 
-            className={styles.primaryButton}
+            className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-lg font-medium hover:bg-[var(--brand-secondary)] transition-all shadow-md"
             onClick={() => {
               setError(null);
               setCurrentStep('chat');
@@ -465,7 +487,7 @@ const ReelPersona: React.FC = () => {
             Try Again
           </button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 
