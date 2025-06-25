@@ -1,420 +1,123 @@
-/* Base styles and CSS variables for ReelPersona */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('../../home/src/styles/globals.css');
 
-:root {
-  /* Colors */
-  --primary-color: #3b82f6;
-  --accent-color: #8b5cf6;
-  --secondary-color: #10b981;
-  --danger-color: #ef4444;
-  --warning-color: #f59e0b;
-  --success-color: #10b981;
-
-  /* Text colors */
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
-  --text-inverse: #ffffff;
-
-  /* Background colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
-  --bg-quaternary: #e5e7eb;
-
-  /* Border colors */
-  --border-light: #e5e7eb;
-  --border-medium: #d1d5db;
-  --border-dark: #9ca3af;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
-
-  /* Border radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-
-  /* Transitions */
-  --transition-fast: 0.15s ease-in-out;
-  --transition-normal: 0.3s ease-in-out;
-  --transition-slow: 0.5s ease-in-out;
-
-  /* Typography */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-
-  /* Line heights */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+/* Additional animations for ReelPersona */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --text-tertiary: #9ca3af;
-    --text-inverse: #111827;
-
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --bg-tertiary: #374151;
-    --bg-quaternary: #4b5563;
-
-    --border-light: #374151;
-    --border-medium: #4b5563;
-    --border-dark: #6b7280;
-  }
+/* Enhanced background for gradient experience */
+.gradient-background {
+  background: var(--gradient-hero) !important;
+  background-attachment: fixed !important;
 }
 
-/* Base reset and typography */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  font-family: var(--font-family);
-  line-height: var(--line-height-normal);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: var(--font-size-base);
-  margin: 0;
-  padding: 0;
-}
-
-#root {
-  min-height: 100vh;
-}
-
-/* App Layout */
-.app {
-  min-height: 100vh;
-  background: linear-gradient(135deg,
-      #667eea 0%,
-      #764ba2 25%,
-      #6B73FF 50%,
-      #9068be 75%,
-      #667eea 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  position: relative;
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Header */
-.app-header {
-  background: rgba(255, 255, 255, 0.1);
+/* Enhanced glassmorphism effects */
+.glass-effect {
+  background: var(--gradient-glass);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1.5rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* --- ReelPersona layout helpers (retain Ascension palette) --- */
+html, body, #root {
+  height: 100%;
+}
+
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+}
+
+.app-header,
+.app-footer {
+  flex-shrink: 0;
+}
+
+.app-main {
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+/* Header and footer styling */
+.app-header {
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+  padding: 1.5rem 0;
+  width: 100%;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.app-footer {
+  background: var(--gradient-primary);
+  color: var(--text-primary);
+  padding: 1.5rem 0;
+  width: 100%;
+  margin-top: auto;
+  box-shadow: 0 -1px 2px rgb(0 0 0 / 0.05);
+}
+
+.footer-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  margin: 0 0.5rem;
+  font-weight: 500;
+}
+
+.footer-link:hover {
+  opacity: 0.8;
+}
+
+/* Header inner layout */
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
-  text-align: center;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.app-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
+.header-content h1 {
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: -0.025em;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-inverse);
 }
 
-.app-subtitle {
-  font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin: 0.5rem 0 0 0;
-  font-weight: 400;
+.nav-links {
+  display: flex;
+  gap: 1rem;
 }
 
-/* Main Content */
-.app-main {
-  padding: 2rem 0;
-  min-height: calc(100vh - 140px);
+.nav-links a {
+  color: var(--text-inverse);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease-in-out;
 }
 
-/* Footer */
-.app-footer {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem 0;
-  margin-top: auto;
+.nav-links a:hover {
+  opacity: 0.8;
 }
 
+/* Footer layout */
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1rem;
   text-align: center;
 }
 
 .footer-links {
   display: flex;
   justify-content: center;
-  align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
   flex-wrap: wrap;
-}
-
-.footer-link {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: all var(--transition-normal);
-}
-
-.footer-link:hover {
-  color: rgba(255, 255, 255, 1);
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
-}
-
-.footer-separator {
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 300;
-}
-
-.footer-text {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.875rem;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.footer-text strong {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-}
-
-/* Loading State */
-.app-loading {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.125rem;
-  gap: 1.5rem;
-}
-
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* Utility classes */
-.text-primary {
-  color: var(--text-primary);
-}
-.text-secondary {
-  color: var(--text-secondary);
-}
-.text-tertiary {
-  color: var(--text-tertiary);
-}
-
-.bg-primary {
-  background-color: var(--bg-primary);
-}
-.bg-secondary {
-  background-color: var(--bg-secondary);
-}
-.bg-tertiary {
-  background-color: var(--bg-tertiary);
-}
-
-.border-light {
-  border-color: var(--border-light);
-}
-.border-medium {
-  border-color: var(--border-medium);
-}
-.border-dark {
-  border-color: var(--border-dark);
-}
-
-/* Button base styles */
-button {
-  font-family: inherit;
-  font-size: inherit;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  transition: all var(--transition-normal);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Input base styles */
-input,
-textarea {
-  font-family: inherit;
-  font-size: inherit;
-  outline: none;
-  transition: all var(--transition-normal);
-}
-
-/* Link styles */
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-a:hover {
-  color: var(--accent-color);
-}
-
-/* Scrollbar styles */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-medium);
-  border-radius: var(--radius-sm);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-dark);
-}
-
-/* Focus styles */
-*:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
-
-/* Animation keyframes */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive design helpers */
-@media (max-width: 768px) {
-  :root {
-    --font-size-xs: 0.7rem;
-    --font-size-sm: 0.8rem;
-    --font-size-base: 0.9rem;
-    --font-size-lg: 1rem;
-    --font-size-xl: 1.125rem;
-    --font-size-2xl: 1.25rem;
-    --font-size-3xl: 1.5rem;
-    --font-size-4xl: 1.875rem;
-  }
-
-  .app-title {
-    font-size: 2rem;
-  }
-
-  .app-subtitle {
-    font-size: 1rem;
-  }
-
-  .header-content {
-    padding: 0 1rem;
-  }
+  margin-bottom: 0.5rem;
 }
