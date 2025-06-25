@@ -7,7 +7,11 @@
 .heroSection {
   background: var(--gradient-primary);
   color: white;
+<<<<<<< HEAD
   padding: 120px 24px;
+=======
+  padding: 100px 24px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -27,8 +31,13 @@
 .heroTitle {
   font-size: 4rem;
   font-weight: 700;
+<<<<<<< HEAD
   margin: 0 0 32px 0;
   max-width: 900px;
+=======
+  margin: 0 0 24px 0;
+  max-width: 800px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   margin-left: auto;
   margin-right: auto;
   line-height: 1.1;
@@ -40,8 +49,13 @@
 .heroSubtitle {
   font-size: 1.375rem;
   opacity: 0.9;
+<<<<<<< HEAD
   margin: 0 0 64px 0;
   max-width: 700px;
+=======
+  margin: 0 0 40px 0;
+  max-width: 600px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   margin-left: auto;
   margin-right: auto;
   line-height: 1.7;
@@ -53,26 +67,43 @@
   display: flex;
   justify-content: center;
   gap: 24px;
+<<<<<<< HEAD
   position: relative;
   z-index: 1;
 }
 
 .welcomeText {
   font-size: 1.25rem;
+=======
+}
+
+.welcomeText {
+  font-size: 20px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   margin: 0;
   opacity: 0.95;
   font-weight: 400;
 }
 
 .appsSection {
+<<<<<<< HEAD
   padding: 120px 24px;
   max-width: 1400px;
+=======
+  padding: 100px 24px;
+  max-width: 1200px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   margin: 0 auto;
 }
 
 .featuresSection {
+<<<<<<< HEAD
   padding: 120px 24px;
   max-width: 1400px;
+=======
+  padding: 100px 24px;
+  max-width: 1200px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   margin: 0 auto;
   background: var(--bg-secondary);
   margin-top: 80px;
@@ -80,6 +111,7 @@
 }
 
 .sectionTitle {
+<<<<<<< HEAD
   font-size: 3rem;
   font-weight: 700;
   text-align: center;
@@ -87,20 +119,36 @@
   color: var(--text-primary);
   letter-spacing: -0.01em;
   line-height: 1.2;
+=======
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 60px 0;
+  color: var(--text-primary);
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
 }
 
 .appsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+<<<<<<< HEAD
   gap: 48px;
   margin-top: 64px;
+=======
+  gap: 40px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
 }
 
 .featuresGrid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 40px;
   margin-top: 64px;
+=======
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
 }
 
 @media (max-width: 768px) {
@@ -156,4 +204,4 @@
   .featuresSection {
     padding: 60px 16px;
   }
-} 
+}

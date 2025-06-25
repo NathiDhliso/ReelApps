@@ -4,7 +4,11 @@
   padding: 24px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-primary);
+<<<<<<< HEAD
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+=======
+  transition: all 0.3s ease-in-out;
+>>>>>>> 2cbaadb6eb206920db69930490da78486f94fe21
   position: relative;
   overflow: hidden;
 }
@@ -104,4 +108,4 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-} 
+}
