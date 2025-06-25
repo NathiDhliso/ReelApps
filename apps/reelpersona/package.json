@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm exec vite",
     "build": "pnpm exec tsc -b && pnpm exec vite build",
-    "lint": "pnpm exec eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "pnpm exec eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "pnpm exec vite preview"
   },
   "dependencies": {

@@ -7,7 +7,6 @@ import { supabase } from '../lib/supabase';
 
 interface JobPostingFormProps {
   onClose: () => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onJobCreated: (job: any) => void;
 }
 
@@ -121,7 +120,6 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
 
     try {
       // Simulate saving job posting
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const jobPosting: any = {
         id: Date.now().toString(),
         ...formData,

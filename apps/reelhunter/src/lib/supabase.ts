@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '../types/database';
+import type { Database } from '../types/database';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -26,11 +26,11 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 });
 
 // Helper function to handle Supabase errors
-export const handleSupabaseError = (error: any) => {
+export const handleSupabaseError = (error: unknown) => {
   console.error('Supabase error:', error);
   
-  if (error?.message) {
-    throw new Error(error.message);
+  if (error instanceof Error && error.message) {
+    throw error;
   }
   
   throw new Error('An unexpected error occurred');
@@ -67,7 +67,7 @@ export const testSupabaseConnection = async () => {
     console.log('Testing Supabase connection...');
     
     // Simple health check query
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('profiles')
       .select('count')
       .limit(1);

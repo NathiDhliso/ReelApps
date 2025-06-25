@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { 
   Award, 
   Briefcase, 
@@ -8,9 +9,7 @@ import {
   ExternalLink,
   Star,
   CheckCircle,
-  Globe,
-  Mail,
-  Phone
+  Globe
 } from 'lucide-react';
 import { useCandidateStore } from '../../store/candidateStore';
 import styles from './ReelCVShowcase.module.css';
@@ -21,14 +20,12 @@ interface ReelCVShowcaseProps {
 
 const ReelCVShowcase: React.FC<ReelCVShowcaseProps> = ({ candidateId }) => {
   const { profile, isLoading, fetchProfile } = useCandidateStore();
-  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     fetchProfile(candidateId);
     
-    // Update time every minute for "last updated" freshness
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(timer);
+    // No need for interval since current time isn't displayed
+    return () => {};
   }, [candidateId, fetchProfile]);
 
   if (isLoading) {

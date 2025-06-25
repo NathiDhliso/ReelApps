@@ -13,7 +13,6 @@ const OnboardingFlow: React.FC = () => {
   if (!isOnboarding) return null;
 
   const isCandidate = profile?.role === 'candidate';
-  const isRecruiter = profile?.role === 'recruiter';
 
   const candidateSteps = [
     {

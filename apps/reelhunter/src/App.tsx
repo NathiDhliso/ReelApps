@@ -1,4 +1,3 @@
-import React from 'react'
 import ReelHunter from './components/ReelHunter'
 import './index.css'
 

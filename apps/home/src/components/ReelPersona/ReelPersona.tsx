@@ -96,7 +96,7 @@ const ReelPersona: React.FC = () => {
       };
       setChatMessages([firstMessage]);
     }
-  }, [currentStep]);
+  }, [currentStep, profile, chatMessages.length]);
 
   const handleQuestionnaireAnswer = (value: number) => {
     const currentQuestion = QUESTIONNAIRE[currentQuestionIndex];

@@ -1,40 +1,8 @@
-<<<<<<< HEAD
+/* Base styles and CSS variables for ReelPersona */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  /* Brand Colors */
-  --brand-primary: #0047AB;
-  --brand-secondary: #2E8B57;
-  --brand-accent: #8A2BE2;
-  --cta-primary: #FFD700;
-  --cta-secondary: #40E0D0;
-  
-  /* Background Colors */
-  --bg-primary: #F5F5F5;
-  --bg-secondary: #FFFFFF;
-  --bg-tertiary: #EDF2F7;
-  
-  /* Text Colors */
-  --text-primary: #1A202C;
-  --text-secondary: #4A5568;
-  --text-muted: #718096;
-  
-  /* Border Colors */
-  --border-primary: #E2E8F0;
-  --border-secondary: #CBD5E0;
-  --border-light: #E2E8F0;
-
-  /* Success/Warning/Error Colors */
-  --success-color: #38A169;
-  --success-bg: rgba(56, 161, 105, 0.1);
-  --warning-color: #F59E0B;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --error-color: #E53E3E;
-=======
-/* Base styles and CSS variables for ReelPersona */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Colors */
@@ -44,73 +12,30 @@
   --danger-color: #ef4444;
   --warning-color: #f59e0b;
   --success-color: #10b981;
-  
+
   /* Text colors */
   --text-primary: #111827;
   --text-secondary: #6b7280;
   --text-tertiary: #9ca3af;
   --text-inverse: #ffffff;
-  
+
   /* Background colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f9fafb;
   --bg-tertiary: #f3f4f6;
   --bg-quaternary: #e5e7eb;
-  
+
   /* Border colors */
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
   --border-dark: #9ca3af;
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-<<<<<<< HEAD
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-  --gradient-secondary: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-accent) 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-}
 
-[data-theme="dark"] {
-  --brand-primary: #40E0D0;
-  --brand-secondary: #2E8B57;
-  --brand-accent: #8A2BE2;
-  --cta-primary: #FFD700;
-  --cta-secondary: #0047AB;
-  
-  --bg-primary: #1A202C;
-  --bg-secondary: #2D3748;
-  --bg-tertiary: #1A365D;
-  
-  --text-primary: #F7FAFC;
-  --text-secondary: #A0AEC0;
-  --text-muted: #718096;
-  
-  --border-primary: #2D3748;
-  --border-secondary: #4A5568;
-  --border-light: #2D3748;
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-  
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  margin: 0;
-  padding: 0;
-  line-height: 1.6;
-=======
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -118,18 +43,18 @@ body {
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
-  
+
   /* Border radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  
+
   /* Transitions */
   --transition-fast: 0.15s ease-in-out;
   --transition-normal: 0.3s ease-in-out;
   --transition-slow: 0.5s ease-in-out;
-  
+
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   --font-size-xs: 0.75rem;
@@ -140,7 +65,7 @@ body {
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
-  
+
   /* Line heights */
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
@@ -154,12 +79,12 @@ body {
     --text-secondary: #d1d5db;
     --text-tertiary: #9ca3af;
     --text-inverse: #111827;
-    
+
     --bg-primary: #111827;
     --bg-secondary: #1f2937;
     --bg-tertiary: #374151;
     --bg-quaternary: #4b5563;
-    
+
     --border-light: #374151;
     --border-medium: #4b5563;
     --border-dark: #6b7280;
@@ -176,14 +101,10 @@ body {
 html {
   font-family: var(--font-family);
   line-height: var(--line-height-normal);
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-<<<<<<< HEAD
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-=======
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -199,21 +120,27 @@ body {
 /* App Layout */
 .app {
   min-height: 100vh;
-  background: linear-gradient(135deg, 
-    #667eea 0%, 
-    #764ba2 25%, 
-    #6B73FF 50%, 
-    #9068be 75%, 
-    #667eea 100%);
+  background: linear-gradient(135deg,
+      #667eea 0%,
+      #764ba2 25%,
+      #6B73FF 50%,
+      #9068be 75%,
+      #667eea 100%);
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
   position: relative;
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Header */
@@ -336,17 +263,35 @@ body {
 }
 
 /* Utility classes */
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-tertiary { color: var(--text-tertiary); }
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
+}
+.text-tertiary {
+  color: var(--text-tertiary);
+}
 
-.bg-primary { background-color: var(--bg-primary); }
-.bg-secondary { background-color: var(--bg-secondary); }
-.bg-tertiary { background-color: var(--bg-tertiary); }
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
 
-.border-light { border-color: var(--border-light); }
-.border-medium { border-color: var(--border-medium); }
-.border-dark { border-color: var(--border-dark); }
+.border-light {
+  border-color: var(--border-light);
+}
+.border-medium {
+  border-color: var(--border-medium);
+}
+.border-dark {
+  border-color: var(--border-dark);
+}
 
 /* Button base styles */
 button {
@@ -364,7 +309,8 @@ button:disabled {
 }
 
 /* Input base styles */
-input, textarea {
+input,
+textarea {
   font-family: inherit;
   font-size: inherit;
   outline: none;
@@ -409,29 +355,42 @@ a:hover {
 
 /* Animation keyframes */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px); 
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive design helpers */
@@ -450,13 +409,12 @@ a:hover {
   .app-title {
     font-size: 2rem;
   }
-  
+
   .app-subtitle {
     font-size: 1rem;
   }
-  
+
   .header-content {
     padding: 0 1rem;
   }
-} 
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
+}

@@ -1,9 +1,4 @@
 .reelPersona {
-<<<<<<< HEAD
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-=======
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1rem;
@@ -12,12 +7,11 @@
 
 /* Enhanced Card Wrapper */
 .reelPersona .reelapps-card {
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -27,24 +21,24 @@
 }
 
 .reelPersona .reelapps-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.8) 50%, 
-    transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
 }
 
 .reelPersona .reelapps-card:hover {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: 
-    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+  box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.4);
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Intro Section */
@@ -54,8 +48,6 @@
 
 .introContent {
   text-align: left;
-<<<<<<< HEAD
-=======
   margin: 2rem 0;
 }
 
@@ -63,7 +55,11 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(139, 92, 246, 0.15) 100%
+  );
   border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 16px;
   padding: 20px;
@@ -124,70 +120,55 @@
 .introContent strong {
   color: var(--text-primary);
   font-weight: 600;
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Questionnaire Section */
 .questionnaire {
-<<<<<<< HEAD
-  margin-bottom: 2rem;
-}
-
-.questionnaireContent {
-  padding: 0;
-=======
   max-width: 700px;
   margin: 0 auto;
 }
 
 .questionnaireContent {
   padding: 2.5rem 0;
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 .progressBar {
   width: 100%;
-<<<<<<< HEAD
-  height: 8px;
-  background-color: var(--bg-tertiary);
-  border-radius: 4px;
-=======
   height: 12px;
   background: rgba(229, 231, 235, 0.3);
   border-radius: 8px;
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
   overflow: hidden;
   margin-bottom: 2.5rem;
   position: relative;
 }
 
 .progressBar::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
   animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .progressFill {
   height: 100%;
-<<<<<<< HEAD
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
-  transition: width 0.3s ease;
-}
-
-/* Chat Section */
-.chat {
-  margin-bottom: 2rem;
-=======
   background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
@@ -226,13 +207,18 @@
 }
 
 .answerButton::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -360,16 +346,26 @@
 }
 
 .typingMessage p::after {
-  content: '...';
+  content: "...";
   animation: typingDots 1.4s infinite;
   margin-left: 4px;
 }
 
 @keyframes typingDots {
-  0%, 20% { content: ''; }
-  40% { content: '.'; }
-  60% { content: '..'; }
-  80%, 100% { content: '...'; }
+  0%,
+  20% {
+    content: "";
+  }
+  40% {
+    content: ".";
+  }
+  60% {
+    content: "..";
+  }
+  80%,
+  100% {
+    content: "...";
+  }
 }
 
 .chatForm {
@@ -397,7 +393,8 @@
 .chatInput:focus {
   border-color: rgba(79, 70, 229, 0.6);
   background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .chatInput::placeholder {
@@ -443,14 +440,10 @@
   display: inline-block;
   margin-left: 0.5rem;
   animation: pulse 1.5s ease-in-out infinite;
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Results Section */
 .results {
-<<<<<<< HEAD
-  margin-bottom: 2rem;
-=======
   max-width: 900px;
   margin: 0 auto;
 }
@@ -474,12 +467,20 @@
 }
 
 .saveStatusSuccess {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(34, 197, 94, 0.15) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.15) 0%,
+    rgba(34, 197, 94, 0.15) 100%
+  );
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .saveStatusGuest {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15) 0%,
+    rgba(251, 191, 36, 0.15) 100%
+  );
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
@@ -624,7 +625,7 @@
 }
 
 .strengths li::before {
-  content: '✓';
+  content: "✓";
   position: absolute;
   left: 0;
   color: var(--success-color);
@@ -632,7 +633,7 @@
 }
 
 .growthAreas li::before {
-  content: '→';
+  content: "→";
   position: absolute;
   left: 0;
   color: var(--warning-color);
@@ -656,13 +657,18 @@
 }
 
 .primaryButton::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -693,14 +699,10 @@
   border-color: var(--primary-color);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Error Section */
 .error {
-<<<<<<< HEAD
-  margin-bottom: 2rem;
-=======
   text-align: center;
 }
 
@@ -713,7 +715,6 @@
   color: var(--danger-color);
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 /* Responsive Design */
@@ -721,8 +722,6 @@
   .reelPersona {
     padding: 1rem 0.5rem;
   }
-<<<<<<< HEAD
-=======
 
   .reelPersona .reelapps-card {
     padding: 1.5rem;
@@ -766,16 +765,12 @@
   .growthAreas {
     padding: 1rem;
   }
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
 }
 
 @media (max-width: 480px) {
   .questionText {
     font-size: 1.1rem;
   }
-<<<<<<< HEAD
-}
-=======
 
   .traitHeader {
     flex-direction: column;
@@ -988,7 +983,11 @@
   font-size: 2.5rem;
   flex-shrink: 0;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--success-color), var(--secondary-color));
+  background: linear-gradient(
+    135deg,
+    var(--success-color),
+    var(--secondary-color)
+  );
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -1139,5 +1138,4 @@
     font-size: 0.8rem;
     padding: 0.4rem 0.8rem;
   }
-} 
->>>>>>> 28e8dfc (feat: Modernize ReelPersona chat UI, improve AI conversation, and enhance gradient background)
+}

@@ -20,6 +20,7 @@ interface Skill {
   video_verified?: boolean;
   ai_rating?: number | null;
   ai_feedback?: string | null;
+  endorsements?: number;
 }
 
 interface SkillFormData {
@@ -63,7 +64,7 @@ const ReelSkills: React.FC = () => {
         isFetchingRef.current = false;
       });
     }
-  }, [authProfile?.id, profile, isLoading]);
+  }, [authProfile?.id, profile, isLoading, fetchProfile]);
 
   const handleAiSuggest = async () => {
     if (!profile) return;
@@ -315,7 +316,7 @@ const ReelSkills: React.FC = () => {
     );
   }
 
-  const skills = profile.skills || [];
+  const skills: Skill[] = (profile.skills as unknown as Skill[]) || [];
 
   return (
     <div className={styles.container}>

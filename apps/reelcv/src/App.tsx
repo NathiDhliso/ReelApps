@@ -1,4 +1,3 @@
-import React from 'react';
 import CandidateDashboard from './CandidateDashboard';
 import './index.css';
 

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '@reelapps/ui';
 import './CreateProjectForm.css';
+import { Card } from '@reelapps/ui';
 
 const CreateProjectForm: React.FC = () => {
-  const navigate = useNavigate();
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
 

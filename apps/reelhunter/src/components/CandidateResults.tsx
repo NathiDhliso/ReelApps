@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, Star, Mail, ExternalLink, Filter, SortDesc, User } from 'lucide-react';
+import { ExternalLink, User, MapPin } from 'lucide-react';
 import { Button, Card } from '@reelapps/ui';
-import type { Database } from '../types/database';
 import styles from './CandidateResults.module.css';
 import { MatchResponseSchema } from '../lib/schemas';
 import { supabase } from '../lib/supabase';
@@ -45,17 +44,11 @@ const CandidateResults: React.FC<CandidateResultsProps> = ({ job }) => {
   const [filterAvailability, setFilterAvailability] = useState('');
   const [blindMode, setBlindMode] = useState(false);
 
-  useEffect(() => {
-    fetchCandidateMatches();
-  }, [job]);
-
-  const fetchCandidateMatches = async () => {
+  const fetchCandidateMatches = React.useCallback(async () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('match-candidates', {
-        body: {
-          jobPosting: job,
-        },
+        body: { jobPosting: job },
       });
 
       if (error) {
@@ -71,14 +64,17 @@ const CandidateResults: React.FC<CandidateResultsProps> = ({ job }) => {
         console.warn('Invalid match response schema', parsed.error);
         setMatches(generateMockMatches());
       }
-    } catch (error) {
-      console.error('Failed to fetch candidate matches:', error);
-      // Fallback mock data
+    } catch (err) {
+      console.error('Failed to fetch candidate matches:', err);
       setMatches(generateMockMatches());
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [job]);
+
+  useEffect(() => {
+    fetchCandidateMatches();
+  }, [fetchCandidateMatches]);
 
   const generateMockMatches = (): CandidateMatch[] => {
     return [
