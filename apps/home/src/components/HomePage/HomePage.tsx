@@ -120,6 +120,14 @@ const HomePage: React.FC = () => {
                 description="Skill verification and development platform"
               />
             </Card>
+            
+            <Card>
+              <Card.Header
+                icon={<Users size={24} />}
+                title="ReelPersona"
+                description="AI-powered personality analysis for career development"
+              />
+            </Card>
           </div>
         </section>
       )}
