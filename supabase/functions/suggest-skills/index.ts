@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
+import { callGemini } from '../_shared/gemini.ts';
 
 // Placeholder for an AI model client. In a real scenario, this would be
 // a client for OpenAI, Anthropic, or another AI service.
@@ -8,32 +9,19 @@ import { corsHeaders } from '../_shared/cors.ts';
 const getAiSuggestions = async (text: string): Promise<string[]> => {
   console.log('Simulating AI analysis for text:', text.substring(0, 100) + '...');
   
-  // In a real implementation, you would make an API call to an AI service here.
-  // Example prompt:
-  // `Extract a list of professional skills from the following text.
-  //  Return the skills as a JSON array of strings. Text: "${text}"`
+  const prompt = `You are an expert career advisor. A candidate provided this profile text:\n\n"""\n${text}\n"""\n\nReturn a JSON array of up to 10 relevant skills (just the skill names, no extra keys).`;
 
-  // Simulate a network delay for the AI response.
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  try {
+    const skills: string[] = await callGemini([
+      { role: 'system', content: 'Respond ONLY with valid JSON.' },
+      { role: 'user', content: prompt },
+    ], { parseJson: true });
 
-  // Simulated AI response based on keywords.
-  const suggestions = new Set<string>();
-  if (text.toLowerCase().includes('react')) suggestions.add('React');
-  if (text.toLowerCase().includes('typescript')) suggestions.add('TypeScript');
-  if (text.toLowerCase().includes('project management')) suggestions.add('Project Management');
-  if (text.toLowerCase().includes('leadership')) suggestions.add('Leadership');
-  if (text.toLowerCase().includes('python')) suggestions.add('Python');
-  if (text.toLowerCase().includes('sql')) suggestions.add('SQL');
-  if (text.toLowerCase().includes('data analysis')) suggestions.add('Data Analysis');
-  if (text.toLowerCase().includes('javascript')) suggestions.add('JavaScript');
-  if (text.toLowerCase().includes('node')) suggestions.add('Node.js');
-  if (text.toLowerCase().includes('database')) suggestions.add('Database Management');
-  if (text.toLowerCase().includes('api')) suggestions.add('API Development');
-  if (text.toLowerCase().includes('frontend')) suggestions.add('Frontend Development');
-  if (text.toLowerCase().includes('backend')) suggestions.add('Backend Development');
-
-  console.log('AI simulation returned suggestions:', Array.from(suggestions));
-  return Array.from(suggestions);
+    return skills;
+  } catch (err) {
+    console.error('Gemini suggest-skills error', err);
+    return [];
+  }
 };
 
 serve(async (req) => {

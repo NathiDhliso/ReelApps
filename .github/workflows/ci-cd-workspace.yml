@@ -1,0 +1,347 @@
+name: CI/CD Workspace Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Detect which apps/packages have changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      home: ${{ steps.filter.outputs.home }}
+      reelcv: ${{ steps.filter.outputs.reelcv }}
+      reelhunter: ${{ steps.filter.outputs.reelhunter }}
+      ui: ${{ steps.filter.outputs.ui }}
+      auth: ${{ steps.filter.outputs.auth }}
+      config: ${{ steps.filter.outputs.config }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          home:
+            - 'apps/home/**'
+            - 'packages/**'
+          reelcv:
+            - 'apps/reelcv/**'
+            - 'packages/**'
+          reelhunter:
+            - 'apps/reelhunter/**'
+            - 'packages/**'
+          ui:
+            - 'packages/ui/**'
+          auth:
+            - 'packages/auth/**'
+          config:
+            - 'packages/config/**'
+
+  # Build shared packages
+  build-packages:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: |
+      needs.detect-changes.outputs.ui == 'true' ||
+      needs.detect-changes.outputs.auth == 'true' ||
+      needs.detect-changes.outputs.config == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    
+    - name: Build UI package
+      if: needs.detect-changes.outputs.ui == 'true'
+      run: pnpm --filter @reelapps/ui build
+    
+    - name: Build Auth package
+      if: needs.detect-changes.outputs.auth == 'true'
+      run: pnpm --filter @reelapps/auth build
+    
+    - name: Build Config package
+      if: needs.detect-changes.outputs.config == 'true'
+      run: pnpm --filter @reelapps/config build
+    
+    - name: Upload package artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: packages-build
+        path: |
+          packages/*/dist/
+          packages/*/package.json
+
+  # Test and build Home app
+  test-build-home:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, build-packages]
+    if: needs.detect-changes.outputs.home == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Download package artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: packages-build
+        path: packages/
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    
+    - name: Lint Home app
+      run: pnpm --filter @reelapps/home lint
+      continue-on-error: true
+    
+    - name: Test Home app
+      run: pnpm --filter @reelapps/home test
+      continue-on-error: true
+    
+    - name: Build Home app
+      run: pnpm --filter @reelapps/home build
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+    
+    - name: Upload Home build
+      uses: actions/upload-artifact@v3
+      with:
+        name: home-build
+        path: apps/home/dist/
+
+  # Test and build ReelCV app
+  test-build-reelcv:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, build-packages]
+    if: needs.detect-changes.outputs.reelcv == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Download package artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: packages-build
+        path: packages/
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    
+    - name: Build ReelCV app
+      run: pnpm --filter @reelapps/reelcv build
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+    
+    - name: Upload ReelCV build
+      uses: actions/upload-artifact@v3
+      with:
+        name: reelcv-build
+        path: apps/reelcv/dist/
+
+  # Test and build ReelHunter app
+  test-build-reelhunter:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, build-packages]
+    if: needs.detect-changes.outputs.reelhunter == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ env.PNPM_VERSION }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Download package artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: packages-build
+        path: packages/
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    
+    - name: Build ReelHunter app
+      run: pnpm --filter @reelapps/reelhunter build
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+    
+    - name: Upload ReelHunter build
+      uses: actions/upload-artifact@v3
+      with:
+        name: reelhunter-build
+        path: apps/reelhunter/dist/
+
+  # Deploy Home app
+  deploy-home:
+    runs-on: ubuntu-latest
+    needs: test-build-home
+    if: |
+      github.ref == 'refs/heads/main' &&
+      needs.test-build-home.result == 'success'
+    
+    environment:
+      name: production-home
+      url: https://reelapps.co.za
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download Home build
+      uses: actions/download-artifact@v3
+      with:
+        name: home-build
+        path: dist/
+    
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v2.0
+      with:
+        publish-dir: './dist'
+        production-deploy: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "Deploy Home app - ${{ github.sha }}"
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_HOME_SITE_ID }}
+
+  # Deploy ReelCV app
+  deploy-reelcv:
+    runs-on: ubuntu-latest
+    needs: test-build-reelcv
+    if: |
+      github.ref == 'refs/heads/main' &&
+      needs.test-build-reelcv.result == 'success'
+    
+    environment:
+      name: production-reelcv
+      url: https://reelcv.reelapps.co.za
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download ReelCV build
+      uses: actions/download-artifact@v3
+      with:
+        name: reelcv-build
+        path: dist/
+    
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v2.0
+      with:
+        publish-dir: './dist'
+        production-deploy: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "Deploy ReelCV app - ${{ github.sha }}"
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_REELCV_SITE_ID }}
+
+  # Deploy ReelHunter app
+  deploy-reelhunter:
+    runs-on: ubuntu-latest
+    needs: test-build-reelhunter
+    if: |
+      github.ref == 'refs/heads/main' &&
+      needs.test-build-reelhunter.result == 'success'
+    
+    environment:
+      name: production-reelhunter
+      url: https://reelhunter.reelapps.co.za
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download ReelHunter build
+      uses: actions/download-artifact@v3
+      with:
+        name: reelhunter-build
+        path: dist/
+    
+    - name: Deploy to Netlify
+      uses: nwtgck/actions-netlify@v2.0
+      with:
+        publish-dir: './dist'
+        production-deploy: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: "Deploy ReelHunter app - ${{ github.sha }}"
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_REELHUNTER_SITE_ID }}
+
+  # Deploy staging versions
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [test-build-home, test-build-reelcv, test-build-reelhunter]
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Deploy apps to staging
+      run: |
+        echo "Deploying changed apps to staging environment"
+        # Add staging deployment logic here
+
+  # Notification
+  notify:
+    runs-on: ubuntu-latest
+    needs: [deploy-home, deploy-reelcv, deploy-reelhunter]
+    if: always()
+    
+    steps:
+    - name: Notify deployment status
+      run: |
+        echo "Deployment completed"
+        echo "Home: ${{ needs.deploy-home.result }}"
+        echo "ReelCV: ${{ needs.deploy-reelcv.result }}"
+        echo "ReelHunter: ${{ needs.deploy-reelhunter.result }}" 

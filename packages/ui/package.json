@@ -1,0 +1,27 @@
+{
+  "name": "@reelapps/ui",
+  "version": "1.0.0",
+  "description": "Shared UI components for ReelApps",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').readdirSync('src').filter(f=>f.endsWith('.css')).forEach(f=>require('fs').copyFileSync('src/'+f,'dist/'+f))\"",
+    "dev": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["react", "ui", "components"],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}
