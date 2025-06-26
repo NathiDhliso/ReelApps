@@ -2,229 +2,169 @@ import React from 'react';
 import { 
   User, 
   Search, 
-  TrendingUp, 
+  Target, 
   Shield, 
-  Zap, 
+  TrendingUp, 
   Users, 
-  CheckCircle,
-  BarChart3,
-  Target,
-  Brain
+  ArrowRight,
+  Zap,
+  Star,
+  Award,
+  Brain,
+  CheckCircle
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { Card, Button } from '@reelapps/ui';
-import StatusDashboard from '../StatusDashboard/StatusDashboard';
+import { getAppsForRole, AppConfig } from '@reelapps/config';
+import { Button } from '@reelapps/ui';
 import styles from './Dashboard.module.css';
+
+const iconMap = {
+  User,
+  Search,
+  Target,
+  Shield,
+  TrendingUp,
+  Users,
+  Brain,
+  Smile: Users, // Placeholder for ReelPersona
+  Briefcase: Target, // Placeholder for ReelProject
+};
 
 const Dashboard: React.FC = () => {
   const { isAuthenticated, profile } = useAuthStore();
-  const isRecruiter = isAuthenticated && profile?.role === 'recruiter';
 
-  const handleGetStarted = () => {
-    // This logic assumes you have a way to open your auth modal.
-    // We can enhance this if you have a different store/method for it.
-    const navLoginButton = document.querySelector('#nav-login-button');
-    if (navLoginButton instanceof HTMLElement) {
-      navLoginButton.click();
+  const getIconComponent = (iconName?: string) => {
+    if (!iconName || !(iconName in iconMap)) {
+      return <User size={32} aria-hidden="true" />;
     }
+    const IconComponent = iconMap[iconName as keyof typeof iconMap];
+    return <IconComponent size={32} aria-hidden="true" />;
   };
+
+  const renderAppCard = (app: AppConfig, featured: boolean = false) => {
+    return (
+      <div key={app.id} className={`${styles.appCard} ${featured ? styles.featuredApp : ''}`}>
+        <div className={styles.appIcon}>
+          {getIconComponent(app.icon)}
+        </div>
+        <div className={styles.appContent}>
+          <h3 className={styles.appTitle}>{app.name}</h3>
+          <p className={styles.appDescription}>{app.description}</p>
+          {featured && (
+            <div className={styles.appBadge}>
+              <Star size={14} />
+              <span>Most Popular</span>
+            </div>
+          )}
+        </div>
+        <Button 
+          href={app.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.appButton}
+          aria-label={`Launch ${app.name}`}
+        >
+          Launch
+          <ArrowRight size={16} />
+        </Button>
+      </div>
+    );
+  };
+
+  const availableApps = isAuthenticated && profile?.role 
+    ? getAppsForRole(profile.role)
+    : [];
+
+  if (!isAuthenticated) {
+    return (
+      <div className={styles.dashboard}>
+        <div className={styles.notAuthenticatedMessage}>
+          <h1>Please sign in to access your dashboard</h1>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dashboard}>
-      {/* Hero Section */}
+      {/* Two-column Hero Layout */}
       <section className={styles.heroSection}>
-        <h1 className={styles.heroTitle}>
-          The Future of Talent Acquisition
-        </h1>
-        <p className={styles.heroSubtitle}>
-          ReelCV empowers candidates to showcase their authentic selves, while ReelHunter 
-          helps recruiters discover talent beyond traditional resumes. Build diverse, 
-          high-performing teams with our AI-powered ecosystem.
-        </p>
-        <div className={styles.heroActions}>
-          <Button 
-            size="large" 
-            href={isAuthenticated ? "/dashboard" : undefined}
-            onClick={!isAuthenticated ? handleGetStarted : undefined}
-          >
-            <User size={20} />
-            {isAuthenticated ? "My Dashboard" : "Get Started"}
-          </Button>
-          {isRecruiter && (
-            <Button variant="outline" size="large" href="/reelhunter">
-            <Search size={20} />
-              Open ReelHunter
-          </Button>
-          )}
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section id="features" className={styles.featuresSection}>
-      <div className={styles.dashboardGrid}>
-        {/* ReelCV Card */}
-        <Card variant="gradient" interactive>
-          <Card.Header
-            icon={<User size={24} />}
-            title="ReelCV"
-            description="Dynamic candidate profiles that go beyond traditional resumes"
-          />
-          
-          <ul className={styles.featureList}>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Video introductions & skill demonstrations
-            </li>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Portfolio integration & project showcases
-            </li>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Real-time availability & preferences
-            </li>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Skills verification & peer endorsements
-            </li>
-          </ul>
-
-          <Card.Footer>
-              <Button 
-                variant="secondary" 
-                href={isAuthenticated ? "/dashboard" : undefined}
-                onClick={!isAuthenticated ? handleGetStarted : undefined}
-              >
-              {isAuthenticated ? "View My Profile" : "Get Started"}
-            </Button>
-          </Card.Footer>
-        </Card>
-
-        {/* ReelHunter Card */}
-          {isRecruiter && (
-        <Card interactive>
-          <Card.Header
-            icon={<Search size={24} />}
-            title="ReelHunter"
-            description="AI-powered recruitment platform for modern hiring teams"
-          />
-          
-          <div className={styles.chartContainer}>
-            <BarChart3 size={48} />
-            <span style={{ marginLeft: '12px' }}>Advanced Analytics Dashboard</span>
-          </div>
-
-          <div className={styles.metricRow}>
-            <span className={styles.metricLabel}>Match Accuracy</span>
-            <span className={styles.metricValue}>94%</span>
-          </div>
-          <div className={styles.metricRow}>
-            <span className={styles.metricLabel}>Time to Hire</span>
-            <span className={styles.metricValue}>-60%</span>
-          </div>
-          <div className={styles.metricRow}>
-            <span className={styles.metricLabel}>Diversity Score</span>
-            <span className={styles.metricValue}>A+</span>
-          </div>
-
-          <Card.Footer>
-                <Button 
-                  href={isRecruiter ? "/reelhunter" : undefined}
-                  onClick={!isRecruiter && !isAuthenticated ? handleGetStarted : undefined}
-                >
-                  Open ReelHunter
-            </Button>
-          </Card.Footer>
-        </Card>
-          )}
-
-        {/* Intelligence Engine */}
-        <Card variant="glass">
-          <Card.Header
-            icon={<Brain size={24} />}
-            title="AI Intelligence Engine"
-            description="Machine learning algorithms that understand talent beyond keywords"
-          />
-          
-          <ul className={styles.featureList}>
-            <li className={styles.featureItem}>
-              <Zap size={16} className={styles.featureIcon} />
-              Culture Add analysis & team compatibility
-            </li>
-            <li className={styles.featureItem}>
-              <Target size={16} className={styles.featureIcon} />
-              Skills-first matching algorithms
-            </li>
-            <li className={styles.featureItem}>
-              <TrendingUp size={16} className={styles.featureIcon} />
-              Predictive performance modeling
-            </li>
-            <li className={styles.featureItem}>
-              <Shield size={16} className={styles.featureIcon} />
-              Bias detection & mitigation tools
-            </li>
-          </ul>
-        </Card>
-
-        {/* Analytics & Insights */}
-        <Card>
-          <Card.Header
-            icon={<TrendingUp size={24} />}
-            title="Analytics & Insights"
-            description="Data-driven insights to optimize your hiring process"
-          />
-          
-          <div className={styles.chartContainer}>
-            <TrendingUp size={48} />
-            <span style={{ marginLeft: '12px' }}>Real-time Metrics</span>
-          </div>
-
-          <Card.Footer>
-            <div className={styles.cardStats}>
-              <Card.Stat value="2.4x" label="Faster Hiring" />
-              <Card.Stat value="89%" label="Retention Rate" />
-              <Card.Stat value="45%" label="Cost Reduction" />
+        <div className={styles.heroContainer}>
+          {/* Left Column - Hero Content */}
+          <div className={styles.heroContent}>
+            <div className={styles.heroLabel}>
+              <Zap size={16} />
+              <span>The Future of Talent</span>
             </div>
-          </Card.Footer>
-        </Card>
+            
+            <h1 className={styles.heroTitle}>
+              Skills Over CVs,
+              <span className={styles.heroTitleGradient}>
+                Talent Over
+                Tradition
+              </span>
+            </h1>
+            
+            <p className={styles.heroSubtitle}>
+              Revolutionary platform where verified skills speak louder than 
+              formatted resumes. Build authentic profiles, showcase real 
+              capabilities, and connect with opportunities that match your 
+              true potential.
+            </p>
 
-        {/* Team Collaboration */}
-        <Card>
-          <Card.Header
-            icon={<Users size={24} />}
-            title="Team Collaboration"
-            description="Streamlined workflows for distributed hiring teams"
-          />
-          
-          <ul className={styles.featureList}>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Collaborative candidate evaluation
-            </li>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Automated interview scheduling
-            </li>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Real-time feedback & scoring
-            </li>
-            <li className={styles.featureItem}>
-              <CheckCircle size={16} className={styles.featureIcon} />
-              Integration with existing tools
-            </li>
-          </ul>
+            {/* Welcome Message */}
+            <div className={styles.welcomeMessage}>
+              <div className={styles.welcomeIcon}>
+                <CheckCircle size={24} />
+              </div>
+              <div>
+                <p className={styles.welcomeText}>
+                  Welcome back, {profile?.first_name || 'Kegiso'}!
+                </p>
+                <p className={styles.welcomeSubtext}>
+                  Ready to showcase your skills and advance your career?
+                </p>
+              </div>
+            </div>
 
-          <Card.Footer>
-            <Button variant="outline">
-              View Integrations
-            </Button>
-          </Card.Footer>
-        </Card>
+            {/* Quick Stats */}
+            <div className={styles.statsContainer}>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>{availableApps.length}</div>
+                <div className={styles.statLabel}>Apps Available</div>
+              </div>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>100%</div>
+                <div className={styles.statLabel}>Skill Verified</div>
+              </div>
+              <div className={styles.statItem}>
+                <div className={styles.statNumber}>24/7</div>
+                <div className={styles.statLabel}>Access</div>
+              </div>
+            </div>
+          </div>
 
-        {/* System Status */}
-        <StatusDashboard />
-      </div>
+          {/* Right Column - Apps Panel */}
+          <div className={styles.heroApps}>
+            <div className={styles.appsPanel}>
+              <div className={styles.appsHeader}>
+                <h2 className={styles.appsTitle}>
+                  <Award size={24} />
+                  Your Applications
+                </h2>
+                <p className={styles.appsSubtitle}>
+                  Click to launch and start building your verified skill portfolio
+                </p>
+              </div>
+
+              <div className={styles.appsScrollContainer}>
+                <div className={styles.appsGrid}>
+                  {availableApps.map((app, index) => renderAppCard(app, index === 0))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );

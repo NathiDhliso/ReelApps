@@ -1,125 +1,466 @@
 .dashboard {
-  padding: 100px 24px 40px;
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  overflow-x: hidden;
 }
 
-.dashboardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-  margin-top: 32px;
-}
-
-.chartContainer {
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gradient-secondary);
-  border-radius: 12px;
-  color: white;
-  font-weight: 500;
-  margin: 16px 0;
-}
-
-.metricRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.metricRow:last-child {
-  border-bottom: none;
-}
-
-.metricLabel {
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
-.metricValue {
-  font-weight: 600;
-  color: var(--brand-turquoise);
-}
-
-.featureList {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0;
-}
-
-.featureItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  color: var(--text-secondary);
-}
-
-.featureIcon {
-  color: var(--accent-green);
-  flex-shrink: 0;
-}
-
+/* Hero Section with Two-Column Layout */
 .heroSection {
-  text-align: center;
-  margin-bottom: 64px;
+  position: relative;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #0F172A 0%,
+    #1E293B 25%,
+    #0F172A 50%,
+    #1E293B 75%,
+    #0F172A 100%
+  );
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(6, 182, 212, 0.08) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.heroSection::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse 60% 80% at 80% 100%,
+    rgba(16, 185, 129, 0.1) 0%,
+    rgba(252, 211, 77, 0.05) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.heroContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  min-height: 80vh;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.heroLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: #60A5FA;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
+  width: fit-content;
 }
 
 .heroTitle {
-  font-size: 48px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  background: var(--gradient-primary);
+  font-size: 4.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #F8FAFC;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.heroTitleGradient {
+  background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #10B981 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  display: block;
+  margin-top: 0.5rem;
 }
 
 .heroSubtitle {
-  font-size: 20px;
-  color: var(--text-secondary);
-  margin-bottom: 32px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: #CBD5E1;
+  margin-bottom: 2rem;
+  max-width: 90%;
 }
 
-.heroActions {
+.welcomeMessage {
   display: flex;
-  gap: 16px;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 1.5rem;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.welcomeIcon {
+  color: #10B981;
+  flex-shrink: 0;
+}
+
+.welcomeText {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #F8FAFC;
+  margin: 0;
+}
+
+.welcomeSubtext {
+  font-size: 1rem;
+  color: #CBD5E1;
+  margin: 0.25rem 0 0 0;
+}
+
+.statsContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.statItem {
+  text-align: center;
+  background: rgba(248, 250, 252, 0.05);
+  border: 1px solid #334155;
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.statItem:hover {
+  background: rgba(248, 250, 252, 0.1);
+  border-color: #3B82F6;
+  transform: translateY(-2px);
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #3B82F6;
+  display: block;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: #94A3B8;
+  margin-top: 0.5rem;
+}
+
+/* Right Column - Apps Panel */
+.heroApps {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-height: 80vh;
+}
+
+.appsPanel {
+  background: rgba(248, 250, 252, 0.02);
+  border: 1px solid #334155;
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 75vh;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.appsHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.appsTitle {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #F8FAFC;
+  margin-bottom: 0.75rem;
+}
+
+.appsSubtitle {
+  font-size: 1rem;
+  color: #94A3B8;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.appsScrollContainer {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+  margin-right: -0.5rem;
+}
+
+.appsScrollContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.appsScrollContainer::-webkit-scrollbar-track {
+  background: rgba(248, 250, 252, 0.05);
+  border-radius: 3px;
+}
+
+.appsScrollContainer::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+}
+
+.appsScrollContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}
+
+.appsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.appCard {
+  background: rgba(248, 250, 252, 0.03);
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.appCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(6, 182, 212, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.appCard:hover {
+  transform: translateY(-4px);
+  border-color: #3B82F6;
+  box-shadow: 0 12px 25px rgba(59, 130, 246, 0.15);
+}
+
+.appCard:hover::before {
+  opacity: 1;
+}
+
+.featuredApp {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  border-color: #3B82F6;
+}
+
+.featuredApp::before {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  opacity: 1;
+}
+
+.appIcon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.featuredApp .appIcon {
+  background: linear-gradient(135deg, #10B981 0%, #FCD34D 100%);
+}
+
+.appCard:hover .appIcon {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.appContent {
+  margin-bottom: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.appTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  margin-bottom: 0.5rem;
+}
+
+.appDescription {
+  color: #94A3B8;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+.appBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+  color: #78350F;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+.appButton {
+  background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 1.25rem !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  text-decoration: none !important;
+  width: 100% !important;
+  justify-content: center !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.appButton:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Remove System Status Section */
+.statusSection {
+  display: none;
+}
+
+.notAuthenticatedMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.notAuthenticatedMessage h1 {
+  color: #F8FAFC;
+  font-size: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .heroContainer {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  
+  .heroTitle {
+    font-size: 3.5rem;
+  }
+  
+  .heroApps {
+    max-height: none;
+  }
+  
+  .appsPanel {
+    max-height: 60vh;
+  }
 }
 
 @media (max-width: 768px) {
+  .heroSection {
+    padding: 2rem 1rem;
+    min-height: auto;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  
   .heroTitle {
-    font-size: 36px;
+    font-size: 2.5rem;
   }
   
   .heroSubtitle {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
   
-  .heroActions {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .dashboardGrid {
+  .statsContainer {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .appsPanel {
+    padding: 1.5rem;
+    max-height: 50vh;
   }
 }
 
-.featuresSection, .pricingSection {
-  padding: 60px 0;
-  border-top: 1px solid var(--border-primary);
-}
-
-.pricingSection {
-  text-align: center;
+@media (max-width: 480px) {
+  .heroTitle {
+    font-size: 2rem;
+  }
+  
+  .heroLabel {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .appsTitle {
+    font-size: 1.5rem;
+  }
+  
+  .appCard {
+    padding: 1.25rem;
+  }
+  
+  .appsPanel {
+    padding: 1.25rem;
+    max-height: 45vh;
+  }
 }
