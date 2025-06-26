@@ -3,20 +3,34 @@ import CreateProjectForm from './components/CreateProjectForm'
 import ProjectDetailView from './components/ProjectDetailView'
 import './App.css'
 
+interface Project {
+  id: string;
+  name: string;
+  description: string;
+  analysis?: any;
+  plan?: string[];
+  created_at: string;
+}
+
 function App() {
   const navigate = useNavigate();
 
-  const handleProjectCreated = (project: any) => {
+  const handleProjectCreated = (project: Project) => {
     console.log('Project created:', project);
-    // Navigate to project detail view when project is created
-    if (project.id) {
-      navigate(`/${project.id}`);
-    }
+    // Navigate to project detail view with the project data
+    navigate(`/${project.id}`, { 
+      state: { project } 
+    });
   };
 
   const handleClose = () => {
-    // For now, just log - could navigate to a projects list in the future
+    // Navigate back to create form
     console.log('Form closed');
+    navigate('/');
+  };
+
+  const handleBackToCreate = () => {
+    navigate('/');
   };
 
   return (
@@ -31,7 +45,14 @@ function App() {
             />
           } 
         />
-        <Route path="/:projectId" element={<ProjectDetailView />} />
+        <Route 
+          path="/:projectId" 
+          element={
+            <ProjectDetailView 
+              onBackToCreate={handleBackToCreate}
+            />
+          } 
+        />
       </Routes>
     </div>
   )
