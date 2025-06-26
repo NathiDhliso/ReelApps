@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { X, Sparkles } from 'lucide-react';
-import Button from '../Button/Button';
-import Card from '../Card/Card';
+import Button from './Button';
+import Card from './Card';
 import styles from './JobPostingForm.module.css';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../lib/supabase';
 
 interface JobPostingFormProps {
   onClose: () => void;

@@ -86,7 +86,7 @@ jobs:
       run: pnpm --filter @reelapps/config build
     
     - name: Upload package artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: packages-build
         path: |
@@ -137,7 +137,7 @@ jobs:
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     
     - name: Upload Home build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: home-build
         path: apps/home/dist/
@@ -178,7 +178,7 @@ jobs:
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     
     - name: Upload ReelCV build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: reelcv-build
         path: apps/reelcv/dist/
@@ -219,7 +219,7 @@ jobs:
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
     
     - name: Upload ReelHunter build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: reelhunter-build
         path: apps/reelhunter/dist/
