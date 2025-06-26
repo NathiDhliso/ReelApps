@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
+import styles from './AuthModal.module.css';
 
 interface AuthModalProps {
   onSuccess?: () => void;
@@ -28,20 +29,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ onSuccess, initialMode = 'login' 
     return null; // Do not render modal when already authenticated
   }
 
-  if (mode === 'signup') {
-    return (
-      <SignUpForm 
-        onSuccess={onSuccess}
-        onSwitchToLogin={() => setMode('login')}
-      />
-    );
-  }
-
   return (
-    <LoginForm 
-      onSuccess={onSuccess}
-      onSwitchToSignUp={() => setMode('signup')}
-    />
+    <div className={styles.overlay} role="dialog" aria-modal="true">
+      {mode === 'signup' ? (
+        <SignUpForm 
+          onSuccess={onSuccess}
+          onSwitchToLogin={() => setMode('login')}
+        />
+      ) : (
+        <LoginForm 
+          onSuccess={onSuccess}
+          onSwitchToSignUp={() => setMode('signup')}
+        />
+      )}
+    </div>
   );
 };
 
