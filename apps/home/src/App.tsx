@@ -111,9 +111,19 @@ function App() {
   const { initialize } = useAuthStore();
   const [initializationComplete, setInitializationComplete] = useState(false);
 
-  // Check for app parameter in URL
+  // Determine which sub-app should load
   const urlParams = new URLSearchParams(window.location.search);
-  const requestedApp = urlParams.get('app');
+  let requestedApp: string | null = urlParams.get('app');
+
+  // Fallback: infer from custom domain (e.g. reelhunter.co.za)
+  if (!requestedApp && typeof window !== 'undefined') {
+    const host = window.location.hostname.toLowerCase();
+    if (host.includes('reelcv')) requestedApp = 'reelcv';
+    else if (host.includes('reelhunter')) requestedApp = 'reelhunter';
+    else if (host.includes('reelpersona')) requestedApp = 'reelpersona';
+    else if (host.includes('reelskills')) requestedApp = 'reelskills';
+    else if (host.includes('reelproject')) requestedApp = 'reelproject';
+  }
 
   useEffect(() => {
     const initializeApp = async () => {
