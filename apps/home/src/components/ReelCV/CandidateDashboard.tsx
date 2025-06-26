@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../lib/auth';
 import { useNavigate } from 'react-router-dom';
 import styles from './CandidateDashboard.module.css';
 

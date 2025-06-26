@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, ArrowLeft, X, Users, Award, Search, Sparkles } from 'lucide-react';
 import { useSystemStore } from '../../store/systemStore';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../lib/auth';
 import Button from '../Button/Button';
 import Card from '../Card/Card';
 import styles from './OnboardingFlow.module.css';

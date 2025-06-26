@@ -18,7 +18,7 @@ import {
   ExternalLink,
   Eye
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { getSupabaseClient } from '@reelapps/supabase';
 import './ProjectDetailView.css';
 
 interface ProjectSkill {
@@ -260,6 +260,7 @@ const ProjectDetailView: React.FC = () => {
       const evidenceType = selectedFile?.type || 'application/octet-stream';
       
       // Call the AI verification edge function
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('verify-skill-video', {
         body: {
           action: 'verify-project-evidence',

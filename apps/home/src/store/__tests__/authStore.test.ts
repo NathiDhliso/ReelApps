@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from '../authStore';
-import { supabase } from '../../lib/supabase';
+import { getSupabaseClient } from '@reelapps/supabase';
 
 // Mock Supabase
-vi.mock('../../lib/supabase', () => ({
-  supabase: {
+vi.mock('@reelapps/supabase', () => ({
+  getSupabaseClient: vi.fn(() => ({
     auth: {
       signInWithPassword: vi.fn(),
       signUp: vi.fn(),
@@ -24,7 +24,7 @@ vi.mock('../../lib/supabase', () => ({
         }))
       }))
     }))
-  }
+  }))
 }));
 
 describe('AuthStore', () => {
@@ -57,13 +57,13 @@ describe('AuthStore', () => {
       };
 
       // Mock successful auth response
-      (supabase.auth.signInWithPassword as any).mockResolvedValue({
+      (getSupabaseClient().auth.signInWithPassword as any).mockResolvedValue({
         data: { user: mockUser },
         error: null
       });
 
       // Mock profile fetch
-      (supabase.from as any).mockReturnValue({
+      (getSupabaseClient().from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
@@ -88,7 +88,7 @@ describe('AuthStore', () => {
     it('should handle login errors', async () => {
       const mockError = new Error('Invalid credentials');
       
-      (supabase.auth.signInWithPassword as any).mockResolvedValue({
+      (getSupabaseClient().auth.signInWithPassword as any).mockResolvedValue({
         data: { user: null },
         error: mockError
       });
@@ -109,7 +109,7 @@ describe('AuthStore', () => {
         resolveLogin = resolve;
       });
 
-      (supabase.auth.signInWithPassword as any).mockReturnValue(loginPromise);
+      (getSupabaseClient().auth.signInWithPassword as any).mockReturnValue(loginPromise);
 
       const { login } = useAuthStore.getState();
       
@@ -148,13 +148,13 @@ describe('AuthStore', () => {
       };
 
       // Mock successful signup
-      (supabase.auth.signUp as any).mockResolvedValue({
+      (getSupabaseClient().auth.signUp as any).mockResolvedValue({
         data: { user: mockUser },
         error: null
       });
 
       // Mock profile creation
-      (supabase.from as any).mockReturnValue({
+      (getSupabaseClient().from as any).mockReturnValue({
         insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
@@ -178,7 +178,7 @@ describe('AuthStore', () => {
     it('should handle signup errors', async () => {
       const mockError = new Error('Email already exists');
       
-      (supabase.auth.signUp as any).mockResolvedValue({
+      (getSupabaseClient().auth.signUp as any).mockResolvedValue({
         data: { user: null },
         error: mockError
       });
@@ -200,7 +200,7 @@ describe('AuthStore', () => {
         isAuthenticated: true
       });
 
-      (supabase.auth.signOut as any).mockResolvedValue({
+      (getSupabaseClient().auth.signOut as any).mockResolvedValue({
         error: null
       });
 
@@ -230,12 +230,12 @@ describe('AuthStore', () => {
         role: 'candidate'
       };
 
-      (supabase.auth.getSession as any).mockResolvedValue({
+      (getSupabaseClient().auth.getSession as any).mockResolvedValue({
         data: { session: { user: mockUser } },
         error: null
       });
 
-      (supabase.from as any).mockReturnValue({
+      (getSupabaseClient().from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             single: vi.fn().mockResolvedValue({
@@ -257,7 +257,7 @@ describe('AuthStore', () => {
     });
 
     it('should handle no existing session', async () => {
-      (supabase.auth.getSession as any).mockResolvedValue({
+      (getSupabaseClient().auth.getSession as any).mockResolvedValue({
         data: { session: null },
         error: null
       });

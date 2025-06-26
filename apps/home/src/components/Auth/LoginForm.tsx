@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Users, AlertCircle } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../lib/auth';
 import { useSystemStore } from '../../store/systemStore';
 import Button from '../Button/Button';
 import styles from './LoginForm.module.css';

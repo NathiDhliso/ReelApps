@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import { supabase, handleSupabaseError } from '../lib/supabase';
 import { User } from '@supabase/supabase-js';
-import { Database } from '../types/database';
+import { getSupabaseClient } from '@reelapps/auth';
+import { Database } from '@reelapps/types';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+type Profile = Database['public']['Tables']['profiles']['Row'] & {
+  role?: 'candidate' | 'recruiter' | 'admin';
+};
 
 interface AuthState {
   user: User | null;
@@ -20,6 +22,15 @@ interface AuthState {
   sendPasswordResetEmail: (_email: string) => Promise<void>;
 }
 
+// Helper function for error handling
+const handleSupabaseError = (error: any, context: string) => {
+  console.error(`❌ ${context}:`, error);
+  if (error?.message) {
+    throw new Error(error.message);
+  }
+  throw error;
+};
+
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   profile: null,
@@ -31,6 +42,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       console.log('Starting login process...');
       
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.auth.signInWithPassword({
         email: _email,
         password: _password,
@@ -38,7 +50,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (error) {
         console.error('Login error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'login');
       }
 
       if (data.user) {
@@ -64,6 +76,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.log('Starting signup process...');
       
       // Step 1: Create the auth user with metadata
+      const supabase = getSupabaseClient();
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: _email,
         password: _password,
@@ -78,7 +91,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        handleSupabaseError(authError);
+        handleSupabaseError(authError, 'signup');
       }
 
       if (!authData.user) {
@@ -94,10 +107,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: newProfile, error: createError } = await supabase
         .from('profiles')
         .insert({
-          user_id: authData.user.id,
+          id: authData.user.id,
           first_name: _firstName,
           last_name: _lastName,
-          role: _role,
+          email: authData.user.email
         })
         .select()
         .single();
@@ -111,7 +124,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       console.log('Profile created successfully:', newProfile);
-      set({ profile: newProfile, isLoading: false });
+      // Add role to the profile for UI purposes
+      const profileWithRole: Profile = {
+        ...newProfile,
+        role: _role || 'candidate'
+      };
+      set({ profile: profileWithRole, isLoading: false });
 
       // If session is null (e.g., email confirmation flow is enabled) automatically sign the user in so that
       // subsequent API calls have a valid JWT.
@@ -140,10 +158,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     try {
       console.log('Starting logout process...');
+      const supabase = getSupabaseClient();
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'logout');
       }
       set({ user: null, profile: null, isAuthenticated: false });
       console.log('Logout completed successfully');
@@ -171,57 +190,112 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     try {
-      console.log('Refreshing profile for user:', user.id);
+      console.log('🔍 DEBUG: Refreshing profile for user:', user.id);
+      console.log('🔍 DEBUG: User metadata:', user.user_metadata);
+      
+      const supabase = getSupabaseClient();
+      console.log('🔍 DEBUG: Got Supabase client, about to query profiles table...');
       
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .maybeSingle();
 
+      console.log('🔍 DEBUG: Profile query completed');
+      console.log('🔍 DEBUG: Profile data:', profile);
+      console.log('🔍 DEBUG: Profile error:', error);
+
       if (error && error.code !== 'PGRST116') {
-        console.error('Error refreshing profile:', error);
+        console.error('❌ Error refreshing profile:', error);
         set({ isLoading: false });
         return;
       }
 
       if (!profile) {
-        console.log('No profile found, creating default profile...');
+        console.log('📝 No profile found, creating default profile...');
         const userData = user.user_metadata || {};
+        console.log('🔍 DEBUG: User metadata for profile creation:', userData);
+        
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
-            user_id: user.id,
+            id: user.id,
             first_name: userData.first_name || 'User',
             last_name: userData.last_name || 'Name',
-            role: (userData.role as 'candidate' | 'recruiter') || 'candidate'
+            email: user.email
           })
           .select()
           .single();
 
+        console.log('🔍 DEBUG: Profile creation completed');
+        console.log('🔍 DEBUG: New profile data:', newProfile);
+        console.log('🔍 DEBUG: Profile creation error:', createError);
+
         if (createError) {
-          console.error('Error creating default profile:', createError);
-          set({ profile: null, isAuthenticated: true, isLoading: false });
+          console.error('❌ Error creating default profile:', createError);
+          // Create a minimal profile object with role for the UI
+          const fallbackProfile: Profile = {
+            id: user.id,
+            first_name: userData.first_name || 'User',
+            last_name: userData.last_name || 'Name',
+            email: user.email || null,
+            role: (userData.role as 'candidate' | 'recruiter') || 'candidate',
+            updated_at: null,
+            username: null,
+            avatar_url: null,
+            bio: null,
+            location: null,
+            website: null,
+            github_url: null,
+            linkedin_url: null,
+            twitter_url: null,
+            years_experience: null,
+            hourly_rate: null,
+            availability: null,
+            created_at: new Date().toISOString()
+          };
+          console.log('🔄 Setting fallback profile:', fallbackProfile);
+          set({ profile: fallbackProfile, isAuthenticated: true, isLoading: false });
           return;
         }
 
-        console.log('Default profile created:', newProfile);
-        set({ profile: newProfile, isAuthenticated: true, isLoading: false });
+        console.log('✅ Default profile created:', newProfile);
+        // Add role to the profile for UI purposes
+        const profileWithRole = {
+          ...newProfile,
+          role: (userData.role as 'candidate' | 'recruiter') || 'candidate'
+        };
+        console.log('🔄 Setting new profile with role:', profileWithRole);
+        set({ profile: profileWithRole, isAuthenticated: true, isLoading: false });
       } else {
-        console.log('Profile found:', profile);
-        set({ profile, isAuthenticated: true, isLoading: false });
+        console.log('✅ Profile found:', profile);
+        // Add role to the profile for UI purposes
+        const profileWithRole = {
+          ...profile,
+          role: (user.user_metadata?.role as 'candidate' | 'recruiter') || 'candidate'
+        };
+        console.log('🔄 Setting existing profile with role:', profileWithRole);
+        set({ profile: profileWithRole, isAuthenticated: true, isLoading: false });
       }
     } catch (error) {
-      console.error('Profile refresh error:', error);
+      console.error('❌ Profile refresh error:', error);
       set({ isLoading: false });
     }
   },
 
   initialize: async () => {
+    const { isLoading } = get();
+    if (isLoading) {
+      console.log('Initialization already in progress, skipping...');
+      return;
+    }
+
     set({ isLoading: true });
     try {
       console.log('Initializing auth store...');
       
+      const supabase = getSupabaseClient();
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) {
         console.error('Session error:', error);
@@ -245,10 +319,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   sendPasswordResetEmail: async (_email: string) => {
     try {
+      const supabase = getSupabaseClient();
       const { error } = await supabase.auth.resetPasswordForEmail(_email);
       if (error) {
         console.error('Password reset error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'password reset');
       }
     } catch (error) {
       console.error('Password reset error:', error);
@@ -269,6 +344,7 @@ export const startSessionWatcher = () => {
   const FIFTY_MINUTES = 50 * 60 * 1000;
   setInterval(async () => {
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.auth.refreshSession();
       if (error) {
         console.warn('Silent session refresh failed', error.message);
@@ -285,18 +361,23 @@ export const startSessionWatcher = () => {
 };
 
 // Listen for auth changes with improved error handling
-supabase.auth.onAuthStateChange(async (event, session) => {
-  console.log('Auth state change:', event, session?.user?.id || 'no user');
-  
-  const { setUser, refreshProfile } = useAuthStore.getState();
-  
-  if (event === 'SIGNED_IN' && session?.user) {
-    setUser(session.user);
-    await refreshProfile();
-  } else if (event === 'SIGNED_OUT') {
-    setUser(null);
-    useAuthStore.setState({ profile: null });
-  } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-    setUser(session.user);
-  }
-});
+let authListenerInitialized = false;
+if (!authListenerInitialized) {
+  authListenerInitialized = true;
+  const supabase = getSupabaseClient();
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth state change:', event, session?.user?.id || 'no user');
+    
+    const { setUser, refreshProfile } = useAuthStore.getState();
+    
+    if (event === 'SIGNED_IN' && session?.user) {
+      setUser(session.user);
+      await refreshProfile();
+    } else if (event === 'SIGNED_OUT') {
+      setUser(null);
+      useAuthStore.setState({ profile: null });
+    } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+      setUser(session.user);
+    }
+  });
+}

@@ -24,10 +24,18 @@ interface Database {
 let supabaseClient: SupabaseClient<Database> | null = null;
 
 export const initializeSupabase = (url: string, anonKey: string) => {
+  console.log('🔧 SUPABASE: initializeSupabase called');
+  console.log('🔧 SUPABASE: url present:', !!url);
+  console.log('🔧 SUPABASE: anonKey present:', !!anonKey);
+  console.log('🔧 SUPABASE: url length:', url?.length || 0);
+  console.log('🔧 SUPABASE: anonKey length:', anonKey?.length || 0);
+  
   if (!url || !anonKey) {
+    console.error('🔧 SUPABASE: Missing environment variables!');
     throw new Error('Missing Supabase environment variables');
   }
 
+  console.log('🔧 SUPABASE: Creating Supabase client...');
   supabaseClient = createClient<Database>(url, anonKey, {
     auth: AUTH_CONFIG.sessionOptions,
     global: {
@@ -37,13 +45,20 @@ export const initializeSupabase = (url: string, anonKey: string) => {
     }
   });
 
+  console.log('🔧 SUPABASE: Supabase client created successfully:', !!supabaseClient);
   return supabaseClient;
 };
 
 export const getSupabaseClient = () => {
+  console.log('🔍 SUPABASE: getSupabaseClient called');
+  console.log('🔍 SUPABASE: supabaseClient exists:', !!supabaseClient);
+  
   if (!supabaseClient) {
+    console.error('🔍 SUPABASE: supabaseClient is null/undefined!');
     throw new Error('Supabase client not initialized. Call initializeSupabase first.');
   }
+  
+  console.log('🔍 SUPABASE: Returning supabaseClient successfully');
   return supabaseClient;
 };
 

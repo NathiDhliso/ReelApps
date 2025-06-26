@@ -3,7 +3,7 @@ import { X, Sparkles } from 'lucide-react';
 import Button from './Button';
 import Card from './Card';
 import styles from './JobPostingForm.module.css';
-import { supabase } from '../lib/supabase';
+import { getSupabaseClient } from '@reelapps/supabase';
 
 interface JobPostingFormProps {
   onClose: () => void;
@@ -69,6 +69,7 @@ const JobPostingForm: React.FC<JobPostingFormProps> = ({ onClose, onJobCreated }
   const analyzeJobDescription = async () => {
     setIsAnalyzing(true);
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('analyze-job', {
         body: {
           title: formData.title,

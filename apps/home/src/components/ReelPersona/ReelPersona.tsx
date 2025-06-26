@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '@reelapps/ui';
-import { useAuthStore } from '../../store/authStore';
-import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../../lib/auth';
+import { getSupabaseClient } from '@reelapps/supabase';
 import styles from './ReelPersona.module.css';
 
 interface Question {
@@ -156,6 +156,7 @@ const ReelPersona: React.FC = () => {
     }));
 
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('analyze-persona', {
         body: {
           questionnaire: questionnaireAnswers,

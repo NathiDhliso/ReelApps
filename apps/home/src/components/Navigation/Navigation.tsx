@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Users, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../lib/auth';
 import { useSystemStore } from '../../store/systemStore';
 import Button from '../Button/Button';
 import styles from './Navigation.module.css';

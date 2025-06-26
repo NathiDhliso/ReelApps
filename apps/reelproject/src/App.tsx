@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, useNavigate, BrowserRouter } from 'react-router-dom'
-import { useAuthStore } from '@reelapps/auth'
+import { useAuthStore, initializeSupabase } from '@reelapps/auth'
+import { getMainAppUrl } from '@reelapps/config'
 import CreateProjectForm from './components/CreateProjectForm'
 import ProjectDetailView from './components/ProjectDetailView'
 import './App.css'
-
-const MAIN_URL = import.meta.env.VITE_APP_MAIN_URL || 'https://www.reelapps.co.za/';
 
 interface Project {
   id: string;
@@ -16,52 +15,82 @@ interface Project {
   created_at: string;
 }
 
-function AppContent() {
+function ProjectListView() {
+  const [projects, setProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
 
-  const handleProjectCreated = (project: Project) => {
-    console.log('Project created:', project);
-    // Navigate to project detail view with the project data
-    navigate(`/${project.id}`, { 
-      state: { project } 
-    });
-  };
-
-  const handleClose = () => {
-    // Navigate back to create form
-    console.log('Form closed');
-    navigate('/');
+  const addProject = (project: Project) => {
+    setProjects([...projects, project]);
   };
 
   return (
-    <Routes>
-      <Route 
-        path="/" 
-        element={
-          <CreateProjectForm 
-            onClose={handleClose}
-            onProjectCreated={handleProjectCreated}
-          />
-        } 
-      />
-      <Route 
-        path="/:projectId" 
-        element={
-          <ProjectDetailView />
-        } 
-      />
-    </Routes>
+    <div className="min-h-screen bg-background p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-text-primary mb-4">ReelProject</h1>
+          <p className="text-text-secondary">Collaborative project management for modern teams</p>
+        </div>
+
+        <div className="grid gap-6">
+          <CreateProjectForm onProjectCreated={addProject} />
+          
+          {projects.length > 0 && (
+            <div className="bg-surface rounded-lg border border-surface p-6">
+              <h2 className="text-xl font-semibold text-text-primary mb-4">Your Projects</h2>
+              <div className="space-y-4">
+                {projects.map((project) => (
+                  <div 
+                    key={project.id}
+                    className="p-4 border border-surface rounded-lg hover:bg-surface-hover cursor-pointer transition-colors"
+                    onClick={() => navigate(`/project/${project.id}`)}
+                  >
+                    <h3 className="font-semibold text-text-primary">{project.name}</h3>
+                    <p className="text-text-secondary text-sm">{project.description}</p>
+                    <p className="text-text-tertiary text-xs mt-2">
+                      Created: {new Date(project.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
 function App() {
   const { isAuthenticated, profile, initialize, isLoading } = useAuthStore();
   const [isInitializing, setIsInitializing] = useState(true);
+  const mainUrl = getMainAppUrl();
 
   useEffect(() => {
     const initializeApp = async () => {
-      await initialize();
-      setIsInitializing(false);
+      try {
+        console.log('🚀 Initializing ReelProject...');
+        
+        // Initialize Supabase client first
+        console.log('🔧 Initializing Supabase client...');
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseAnonKey) {
+          throw new Error('Missing Supabase environment variables');
+        }
+        
+        initializeSupabase(supabaseUrl, supabaseAnonKey);
+        console.log('✅ Supabase client initialized');
+        
+        // Now initialize auth store
+        console.log('🔐 Initializing auth store...');
+        await initialize();
+        console.log('✅ ReelProject initialization complete');
+      } catch (error) {
+        console.error('❌ ReelProject initialization failed:', error);
+      } finally {
+        setIsInitializing(false);
+      }
     };
     initializeApp();
   }, [initialize]);
@@ -89,7 +118,7 @@ function App() {
               You need to be signed in to access ReelProject. Please authenticate through the main ReelApps portal.
             </p>
             <a 
-              href={MAIN_URL}
+              href={mainUrl}
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
             >
               Go to ReelApps
@@ -100,25 +129,21 @@ function App() {
     );
   }
 
+  // ReelProject is available for both candidates, recruiters, and admins
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-surface border-b border-surface">
+      <nav className="bg-surface border-b border-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-xl font-semibold text-text-primary">
-                ReelProject
-              </h1>
-              <p className="text-sm text-text-secondary">
-                AI-Powered Project Analysis
-              </p>
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-text-primary">ReelProject</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-text-secondary text-sm">
-                {profile?.first_name || profile?.email}
+                {profile?.first_name || profile?.email} ({profile?.role})
               </span>
               <a 
-                href={MAIN_URL}
+                href={mainUrl}
                 className="text-text-secondary hover:text-text-primary transition-colors"
               >
                 Back to ReelApps
@@ -126,15 +151,18 @@ function App() {
             </div>
           </div>
         </div>
-      </header>
+      </nav>
       
       <main>
         <BrowserRouter>
-          <AppContent />
+          <Routes>
+            <Route path="/" element={<ProjectListView />} />
+            <Route path="/project/:id" element={<ProjectDetailView />} />
+          </Routes>
         </BrowserRouter>
       </main>
     </div>
-  )
+  );
 }
 
 export default App

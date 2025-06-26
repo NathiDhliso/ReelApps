@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { supabase } from '@reelapps/supabase';
 import { useSystemStore } from '../store/systemStore';
 import Button from '../components/Button/Button';
 import Card from '../components/Card/Card';
@@ -11,7 +11,7 @@ const PasswordReset: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
+  const location = useSearchParams();
   const { addNotification } = useSystemStore();
 
   const handlePasswordReset = async (e: React.FormEvent) => {
@@ -20,7 +20,7 @@ const PasswordReset: React.FC = () => {
     setError(null);
 
     // The access_token is provided by Supabase in the URL fragment
-    const accessToken = location.hash.split('&').find(part => part.startsWith('access_token='));
+    const accessToken = location.toString().split('&').find(part => part.startsWith('access_token='));
     
     if (!accessToken) {
       setError('Invalid or missing reset token.');

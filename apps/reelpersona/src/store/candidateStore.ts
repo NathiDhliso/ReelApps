@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { supabase, handleSupabaseError } from '../lib/supabase';
-import { Database } from '../types/database';
+import { getSupabaseClient, handleSupabaseError } from '@reelapps/supabase';
+import { Database } from '@reelapps/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Skill = Database['public']['Tables']['skills']['Row'];
@@ -37,7 +37,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     console.log(`[candidateStore] fetchProfile started for profileId: ${profileId}`);
     try {
       // First get the profile by its primary key
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await getSupabaseClient()
         .from('profiles')
         .select('*')
         .eq('id', profileId)
@@ -58,25 +58,25 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
       // Fetch related data in parallel
       console.log('[candidateStore] Fetching related data (skills, projects, etc.)...');
       const [skillsResult, projectsResult, personaResult, reviewsResult] = await Promise.all([
-        supabase
+        getSupabaseClient()
           .from('skills')
           .select('*')
           .eq('profile_id', profile.id)
           .order('created_at', { ascending: false }),
         
-        supabase
+        getSupabaseClient()
           .from('projects')
           .select('*')
           .eq('profile_id', profile.id)
           .order('created_at', { ascending: false }),
         
-        supabase
+        getSupabaseClient()
           .from('persona_analyses')
           .select('*')
           .eq('profile_id', profile.id)
           .maybeSingle(),
         
-        supabase
+        getSupabaseClient()
           .from('reviews')
           .select('*')
           .eq('profile_id', profile.id)
@@ -125,7 +125,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from('profiles')
         .update(updates)
         .eq('id', profile.id)
@@ -150,7 +150,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from('skills')
         .insert({ ...skill, profile_id: profile.id })
         .select()
@@ -169,7 +169,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   updateSkill: async (skillId: string, updates: Partial<Skill>) => {
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from('skills')
         .update(updates)
         .eq('id', skillId)
@@ -191,7 +191,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   deleteSkill: async (skillId: string) => {
-      const { error } = await supabase
+      const { error } = await getSupabaseClient()
         .from('skills')
         .delete()
         .eq('id', skillId);
@@ -212,7 +212,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from('projects')
         .insert({ ...project, profile_id: profile.id })
         .select()
@@ -231,7 +231,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   updateProject: async (projectId: string, updates: Partial<Project>) => {
-      const { data, error } = await supabase
+      const { data, error } = await getSupabaseClient()
         .from('projects')
         .update(updates)
         .eq('id', projectId)
@@ -253,7 +253,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   deleteProject: async (projectId: string) => {
-      const { error } = await supabase
+      const { error } = await getSupabaseClient()
         .from('projects')
         .delete()
         .eq('id', projectId);

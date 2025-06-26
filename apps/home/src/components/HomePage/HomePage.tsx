@@ -15,10 +15,12 @@ import {
   Award,
   ChevronRight
 } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../lib/auth';
 import { useSystemStore } from '../../store/systemStore';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
+import { launchAppWithAuth } from '@reelapps/auth';
+import { getSupabaseClient } from '@reelapps/supabase';
 import styles from './HomePage.module.css';
 
 const iconMap = {
@@ -38,6 +40,18 @@ const HomePage: React.FC = () => {
 
   const handleGetStarted = () => {
     openAuthModal('signup');
+  };
+
+  const handleLaunchApp = async (appUrl: string) => {
+    try {
+      await launchAppWithAuth(appUrl);
+    } catch (error) {
+      console.error('Error launching app:', error);
+      // Fallback to regular window.open
+      if (typeof window !== 'undefined') {
+        window.open(appUrl, '_blank');
+      }
+    }
   };
 
   const getIconComponent = (iconName?: string) => {
@@ -65,9 +79,7 @@ const HomePage: React.FC = () => {
           )}
         </div>
         <Button 
-          href={app.url}
-          target="_blank"
-          rel="noopener noreferrer"
+          onClick={() => handleLaunchApp(app.url)}
           className={styles.appButton}
           aria-label={`Launch ${app.name}`}
         >
@@ -81,6 +93,13 @@ const HomePage: React.FC = () => {
   const availableApps = isAuthenticated && profile?.role 
     ? getAppsForRole(profile.role)
     : [];
+
+  // Debug logging
+  console.log('🔍 DEBUG: HomePage - isAuthenticated:', isAuthenticated);
+  console.log('🔍 DEBUG: HomePage - profile:', profile);
+  console.log('🔍 DEBUG: HomePage - profile.role:', profile?.role);
+  console.log('🔍 DEBUG: HomePage - availableApps:', availableApps);
+  console.log('🔍 DEBUG: HomePage - availableApps.length:', availableApps.length);
 
   const featuredApps = availableApps.slice(0, 3);
   const otherApps = availableApps.slice(3);

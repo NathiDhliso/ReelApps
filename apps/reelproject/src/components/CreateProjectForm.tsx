@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import './CreateProjectForm.css';
-import { supabase } from '../lib/supabase';
+import { getSupabaseClient } from '@reelapps/supabase';
 import { 
   Plus, 
   X, 
@@ -206,6 +206,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose, onProjec
     setAnalysisError(null);
 
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('analyze-project-scope', {
         body: {
           projectDescription,

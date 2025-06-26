@@ -13,7 +13,7 @@ import {
   Brain,
   CheckCircle
 } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore } from '../../lib/auth';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
 import styles from './Dashboard.module.css';

@@ -7,29 +7,44 @@ export interface AppConfig {
   icon?: string;
 }
 
+// Environment-specific URL configuration
+const getEnvironmentUrls = () => {
+  const isDev = process.env.NODE_ENV === 'development' || 
+                 (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+  
+  return {
+    main: isDev ? 'http://localhost:5173' : 'https://www.reelapps.co.za',
+    reelcv: isDev ? 'http://localhost:5174' : 'https://www.reelcv.co.za',
+    reelhunter: isDev ? 'http://localhost:5176' : 'https://www.reelhunter.co.za',
+    reelpersona: isDev ? 'http://localhost:5177' : 'https://www.reelpersona.co.za',
+    reelproject: isDev ? 'http://localhost:5178' : 'https://www.reelprojects.co.za',
+    reelskills: isDev ? 'http://localhost:5179' : 'https://www.reelskills.co.za'
+  };
+};
+
 export const apps: AppConfig[] = [
   {
     id: 'reelcv',
     name: 'ReelCV',
     description: 'Dynamic candidate profiles that go beyond traditional resumes',
-    url: 'https://www.reelcv.co.za/',
-    roles: ['candidate'],
+    url: getEnvironmentUrls().reelcv,
+    roles: ['candidate', 'admin'],
     icon: 'User'
   },
   {
     id: 'reelhunter',
     name: 'ReelHunter',
     description: 'AI-powered recruitment platform for modern hiring teams',
-    url: 'https://www.reelhunter.co.za/',
-    roles: ['recruiter'],
+    url: getEnvironmentUrls().reelhunter,
+    roles: ['recruiter', 'admin'],
     icon: 'Search'
   },
   {
     id: 'reelskills',
     name: 'ReelSkills',
     description: 'Skill verification and development platform',
-    url: 'https://www.reelskills.co.za/',
-    roles: ['candidate'],
+    url: getEnvironmentUrls().reelskills,
+    roles: ['candidate', 'admin'],
     icon: 'Target'
   },
   // --- ADDED: ReelPersona Configuration ---
@@ -37,8 +52,8 @@ export const apps: AppConfig[] = [
     id: 'reelpersona',
     name: 'ReelPersona',
     description: 'AI-driven personality assessments for cultural fit',
-    url: 'https://www.reelpersona.co.za/',
-    roles: ['candidate', 'recruiter'],
+    url: getEnvironmentUrls().reelpersona,
+    roles: ['candidate', 'recruiter', 'admin'],
     icon: 'Smile'
   },
   // --- ADDED: ReelProject Configuration ---
@@ -46,8 +61,8 @@ export const apps: AppConfig[] = [
     id: 'reelproject',
     name: 'ReelProject',
     description: 'Collaborative project management for freelance teams',
-    url: 'https://www.reelprojects.co.za/',
-    roles: ['candidate', 'recruiter'],
+    url: getEnvironmentUrls().reelproject,
+    roles: ['candidate', 'recruiter', 'admin'],
     icon: 'Briefcase'
   }
 ];
@@ -58,11 +73,24 @@ export const apps: AppConfig[] = [
  * @returns An array of AppConfig objects. Admins get all apps.
  */
 export const getAppsForRole = (role: 'candidate' | 'recruiter' | 'admin'): AppConfig[] => {
+  console.log('🔍 DEBUG: getAppsForRole called with role:', role);
+  console.log('🔍 DEBUG: getAppsForRole - all apps:', apps);
+  
   // --- UPDATED: Admins should see all applications ---
   if (role === 'admin') {
+    console.log('🔍 DEBUG: getAppsForRole - admin role, returning all apps:', apps);
     return apps;
   }
-  return apps.filter(app => app.roles.includes(role));
+  
+  const filteredApps = apps.filter(app => app.roles.includes(role));
+  console.log('🔍 DEBUG: getAppsForRole - filtered apps for role', role, ':', filteredApps);
+  
+  return filteredApps;
+};
+
+// --- ADDED: Helper function to get main app URL ---
+export const getMainAppUrl = (): string => {
+  return getEnvironmentUrls().main;
 };
 
 /**
@@ -85,12 +113,13 @@ export const fetchUserAppsFromDatabase = async (supabase: any): Promise<AppConfi
       return profile ? getAppsForRole(profile.role) : [];
     }
     
-    // Map database results to AppConfig format
+    // Map database results to AppConfig format with environment-specific URLs
+    const envUrls = getEnvironmentUrls();
     return data.map((app: any) => ({
       id: app.app_id,
       name: app.app_name,
       description: app.app_description,
-      url: app.app_url,
+      url: envUrls[app.app_id as keyof typeof envUrls] || app.app_url,
       roles: [], // Not needed when fetching from DB
       icon: getIconForApp(app.app_id)
     }));

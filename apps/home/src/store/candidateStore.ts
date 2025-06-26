@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { supabase, handleSupabaseError } from '../lib/supabase';
-import { Database } from '../types/database';
+import { supabase, handleSupabaseError } from '@reelapps/supabase';
+import { Database } from '@reelapps/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Skill = Database['public']['Tables']['skills']['Row'];

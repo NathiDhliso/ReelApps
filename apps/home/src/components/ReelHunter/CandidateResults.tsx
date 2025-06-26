@@ -4,7 +4,7 @@ import Button from '../Button/Button';
 import Card from '../Card/Card';
 import styles from './CandidateResults.module.css';
 import { MatchResponseSchema } from '../../lib/schemas';
-import { supabase } from '../../lib/supabase';
+import { getSupabaseClient } from '@reelapps/supabase';
 
 interface Job {
   title: string;
@@ -48,6 +48,7 @@ const CandidateResults: React.FC<CandidateResultsProps> = ({ job }) => {
   const fetchCandidateMatches = React.useCallback(async () => {
     setIsLoading(true);
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke('match-candidates', {
         body: { jobPosting: job },
       });

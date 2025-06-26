@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, Plus, Edit, Trash2, Sparkles, Brain, Video, Upload, Star, CheckCircle } from 'lucide-react';
 import { useCandidateStore } from '../../store/candidateStore';
-import { useAuthStore } from '../../store/authStore';
-import { supabase } from '../../lib/supabase';
+import { useAuthStore } from '../../lib/auth';
+import { getSupabaseClient } from '@reelapps/supabase';
 import Button from '../Button/Button';
 import styles from './ReelSkills.module.css';
 
@@ -82,7 +82,7 @@ const ReelSkills: React.FC = () => {
 
       console.log('Calling suggest-skills function with text:', textForAnalysis);
 
-      const { data, error } = await supabase.functions.invoke('suggest-skills', {
+      const { data, error } = await getSupabaseClient().functions.invoke('suggest-skills', {
         body: { text: textForAnalysis },
       });
 
@@ -213,7 +213,7 @@ const ReelSkills: React.FC = () => {
     try {
       console.log('Getting AI prompt for skill:', skill.name, skill.category);
       
-      const { data, error } = await supabase.functions.invoke('verify-skill-video', {
+      const { data, error } = await getSupabaseClient().functions.invoke('verify-skill-video', {
         body: { 
           action: 'get-prompt',
           skillName: skill.name,
@@ -242,21 +242,21 @@ const ReelSkills: React.FC = () => {
       
       // Upload video to storage - use user_id for the folder structure
       const fileName = `${authProfile.user_id}/${verifyingSkill.id}/${Date.now()}_${videoFile.name}`;
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await getSupabaseClient().storage
         .from('skill-videos')
         .upload(fileName, videoFile);
 
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = getSupabaseClient().storage
         .from('skill-videos')
         .getPublicUrl(fileName);
 
       console.log('Video uploaded, public URL:', publicUrl);
 
       // Call verification function
-      const { data, error } = await supabase.functions.invoke('verify-skill-video', {
+      const { data, error } = await getSupabaseClient().functions.invoke('verify-skill-video', {
         body: {
           action: 'verify-video',
           skillId: verifyingSkill.id,

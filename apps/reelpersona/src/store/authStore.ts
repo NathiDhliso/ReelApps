@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { supabase, handleSupabaseError } from '../lib/supabase';
+import { getSupabaseClient, handleSupabaseError } from '@reelapps/supabase';
 import { User } from '@supabase/supabase-js';
-import { Database } from '../types/database';
+import { Database } from '@reelapps/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -31,6 +31,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       console.log('Starting login process...');
       
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -64,6 +65,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.log('Starting signup process...');
       
       // Step 1: Create the auth user with metadata
+      const supabase = getSupabaseClient();
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -94,10 +96,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: newProfile, error: createError } = await supabase
         .from('profiles')
         .insert({
-          user_id: authData.user.id,
+          id: authData.user.id,
           first_name: firstName,
           last_name: lastName,
-          role: role,
+          email: authData.user.email
         })
         .select()
         .single();
@@ -140,6 +142,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     try {
       console.log('Starting logout process...');
+      const supabase = getSupabaseClient();
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
@@ -173,10 +176,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       console.log('Refreshing profile for user:', user.id);
       
+      const supabase = getSupabaseClient();
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -191,10 +195,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
-            user_id: user.id,
+            id: user.id,
             first_name: userData.first_name || 'User',
             last_name: userData.last_name || 'Name',
-            role: (userData.role as 'candidate' | 'recruiter') || 'candidate'
+            email: user.email
           })
           .select()
           .single();
@@ -222,6 +226,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       console.log('Initializing auth store...');
       
+      const supabase = getSupabaseClient();
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) {
         console.error('Session error:', error);
@@ -246,8 +251,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   sendPasswordResetEmail: async (email: string) => {
     set({ isLoading: true });
     try {
+      const supabase = getSupabaseClient();
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/password-reset`,
+        redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/password-reset`,
       });
 
       if (error) {
@@ -271,6 +277,7 @@ export const startSessionWatcher = () => {
   const FIFTY_MINUTES = 50 * 60 * 1000;
   setInterval(async () => {
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase.auth.refreshSession();
       if (error) {
         console.warn('Silent session refresh failed', error.message);
@@ -287,6 +294,7 @@ export const startSessionWatcher = () => {
 };
 
 // Listen for auth changes with improved error handling
+const supabase = getSupabaseClient();
 supabase.auth.onAuthStateChange(async (event, session) => {
   console.log('Auth state change:', event, session?.user?.id || 'no user');
   

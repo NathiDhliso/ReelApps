@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useCandidateStore } from '../candidateStore';
-import { supabase } from '../../lib/supabase';
+import { getSupabaseClient } from '@reelapps/supabase';
 
 // Mock Supabase
-vi.mock('../../lib/supabase', () => ({
-  supabase: {
+vi.mock('@reelapps/supabase', () => ({
+  getSupabaseClient: vi.fn(() => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
@@ -32,7 +32,7 @@ vi.mock('../../lib/supabase', () => ({
         }))
       }))
     }))
-  }
+  }))
 }));
 
 describe('CandidateStore', () => {
@@ -95,12 +95,14 @@ describe('CandidateStore', () => {
       ];
 
       // Mock profile fetch
-      (supabase.from as any).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockProfile,
-              error: null
+      (getSupabaseClient as any).mockReturnValueOnce({
+        from: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockProfile,
+                error: null
+              })
             })
           })
         })
@@ -154,7 +156,7 @@ describe('CandidateStore', () => {
         }
       ];
 
-      (supabase.from as any)
+      (getSupabaseClient as any)
         .mockReturnValueOnce(mockFromCalls[0])
         .mockReturnValueOnce(mockFromCalls[1])
         .mockReturnValueOnce(mockFromCalls[2])
@@ -176,12 +178,14 @@ describe('CandidateStore', () => {
     });
 
     it('should handle profile not found', async () => {
-      (supabase.from as any).mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: null,
-              error: { message: 'Profile not found' }
+      (getSupabaseClient as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Profile not found' }
+              })
             })
           })
         })
@@ -221,12 +225,14 @@ describe('CandidateStore', () => {
         updated_at: '2024-01-01T00:00:00Z'
       };
 
-      (supabase.from as any).mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockInsertedSkill,
-              error: null
+      (getSupabaseClient as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockInsertedSkill,
+                error: null
+              })
             })
           })
         })
@@ -244,12 +250,14 @@ describe('CandidateStore', () => {
     it('should handle add skill errors', async () => {
       useCandidateStore.setState({ profile: { id: 'profile-123', skills: [] } as any });
 
-      (supabase.from as any).mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: null,
-              error: { message: 'Skill already exists' }
+      (getSupabaseClient as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Skill already exists' }
+              })
             })
           })
         })
@@ -297,13 +305,15 @@ describe('CandidateStore', () => {
         ...updates
       };
 
-      (supabase.from as any).mockReturnValue({
-        update: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: updatedSkill,
-                error: null
+      (getSupabaseClient as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              select: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({
+                  data: updatedSkill,
+                  error: null
+                })
               })
             })
           })
@@ -331,10 +341,12 @@ describe('CandidateStore', () => {
         } as any
       });
 
-      (supabase.from as any).mockReturnValue({
-        delete: vi.fn().mockReturnValue({
-          eq: vi.fn().mockResolvedValue({
-            error: null
+      (getSupabaseClient as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          delete: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: null
+            })
           })
         })
       });

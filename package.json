@@ -10,7 +10,9 @@
     "test": "pnpm -r test",
     "ci:test": "pnpm lint && pnpm test",
     "clean": "pnpm --recursive clean",
-    "validate-env": "node scripts/validate-env.js"
+    "validate-env": "node scripts/validate-env.js",
+    "setup:dev": "node scripts/setup-env.js",
+    "setup:prod": "node scripts/setup-env.js --prod"
   },
   "eslintConfig": {
     "ignorePatterns": ["**/*"]

@@ -1,4 +1,4 @@
-import { initializeSupabase, setupAuthListener, startSessionWatcher } from '@reelapps/auth';
+import { initializeSupabase } from '@reelapps/auth';
 
 // Initialize Supabase with environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -8,14 +8,22 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Initialize the Supabase client
-export const supabase = initializeSupabase(supabaseUrl, supabaseAnonKey);
+// Initialize the Supabase client FIRST
+initializeSupabase(supabaseUrl, supabaseAnonKey);
 
-// Set up auth listener and session watcher
+// Now import the rest after initialization
+export { 
+  useAuthStore, 
+  setupAuthListener, 
+  startSessionWatcher,
+  type Profile 
+} from '@reelapps/auth';
+
+// Set up auth listener and session watcher after initialization
 if (typeof window !== 'undefined') {
-  setupAuthListener();
-  startSessionWatcher();
-}
-
-// Re-export everything from the auth package for convenience
-export * from '@reelapps/auth'; 
+  // Import dynamically to ensure initialization order
+  import('@reelapps/auth').then(({ setupAuthListener, startSessionWatcher }) => {
+    setupAuthListener();
+    startSessionWatcher();
+  });
+} 

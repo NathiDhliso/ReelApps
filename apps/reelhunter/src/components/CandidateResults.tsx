@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, User, MapPin } from 'lucide-react';
-import { Button, Card } from '@reelapps/ui';
+import { getSupabaseClient } from '@reelapps/supabase';
+import { Star, MapPin, Clock, ExternalLink, FileText, User } from 'lucide-react';
+import { Button } from '@reelapps/ui';
+import Card from './Card';
 import styles from './CandidateResults.module.css';
-import { MatchResponseSchema } from '../lib/schemas';
-import { supabase } from '../lib/supabase';
 
 interface Job {
   title: string;
@@ -43,6 +43,8 @@ const CandidateResults: React.FC<CandidateResultsProps> = ({ job }) => {
   const [filterLocation, setFilterLocation] = useState('');
   const [filterAvailability, setFilterAvailability] = useState('');
   const [blindMode, setBlindMode] = useState(false);
+
+  const supabase = getSupabaseClient();
 
   const fetchCandidateMatches = React.useCallback(async () => {
     setIsLoading(true);

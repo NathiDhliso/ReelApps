@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@reelapps/auth": "workspace:*",
+    "@reelapps/config": "workspace:*",
     "@reelapps/ui": "workspace:*",
     "@supabase/supabase-js": "^2.39.0",
     "lucide-react": "^0.344.0",

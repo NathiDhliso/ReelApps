@@ -1,7 +1,27 @@
 import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
-import { getSupabaseClient, handleSupabaseError } from './supabase';
-import { syncSessionAcrossApps, restoreSharedSession, setupCrossAppAuthListener } from './shared-auth';
+import { getSupabaseClient } from './supabase';
+import { 
+  syncSessionAcrossApps, 
+  restoreSharedSession, 
+  setupCrossAppAuthListener,
+  shouldRedirectToMainApp,
+  redirectToMainApp,
+  handleReturnFromMainApp,
+  handleMainAppReturn,
+  getCurrentDomainType
+} from './shared-auth';
+
+// Helper function to handle Supabase errors
+const handleSupabaseError = (error: any, context: string) => {
+  console.error(`❌ ${context}:`, error);
+  if (error?.message) {
+    console.error(`Error message: ${error.message}`);
+  }
+  if (error?.details) {
+    console.error(`Error details: ${error.details}`);
+  }
+};
 
 export interface Profile {
   id: string;
@@ -48,7 +68,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (error) {
         console.error('Login error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'login');
       }
 
       if (data.user) {
@@ -92,7 +112,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        handleSupabaseError(authError);
+        handleSupabaseError(authError, 'signup');
       }
 
       if (!authData.user) {
@@ -150,7 +170,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'logout');
       }
       
       set({ user: null, profile: null, isAuthenticated: false });
@@ -233,44 +253,93 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initialize: async () => {
-    set({ isLoading: true });
+    console.log('🔄 AUTH STORE: Initializing auth store...');
+    
     try {
-      console.log('Initializing auth store...');
+      set({ isLoading: true });
       
       const supabase = getSupabaseClient();
+      console.log('✅ AUTH STORE: Got Supabase client');
       
-      // First try to restore shared session
-      const restoredSession = await restoreSharedSession(supabase);
+      // Check if we're on the main app or individual app
+      const currentDomain = getCurrentDomainType();
+      console.log('🌐 AUTH STORE: Current domain type:', currentDomain);
       
-      if (restoredSession) {
-        console.log('Restored shared session for user:', restoredSession.user.id);
-        set({ user: restoredSession.user, isAuthenticated: true });
-        await get().refreshProfile();
-      } else {
-        // Fall back to getting session normally
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Session error:', error);
-          set({ isLoading: false });
-          return;
+      if (currentDomain === 'main') {
+        // Main app logic - just log that we received return_to parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnTo = urlParams.get('return_to');
+        if (returnTo) {
+          console.log('🔄 SHARED AUTH: Main app received return_to parameter:', returnTo);
+          console.log('📋 SHARED AUTH: Waiting for user authentication to redirect back');
         }
-
-        if (session?.user) {
-          console.log('Found existing session for user:', session.user.id);
+      } else {
+        // Individual app logic - check for session and redirect if needed
+        const shouldRedirect = await shouldRedirectToMainApp(supabase);
+        
+        if (shouldRedirect) {
+          console.log('🔄 AUTH STORE: Redirecting to main app for authentication');
+          redirectToMainApp();
+          return; // Don't continue initialization, we're redirecting
+        }
+        
+        // Handle return from main app if applicable
+        handleReturnFromMainApp();
+      }
+      
+      // Set up auth state listener
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        console.log('Auth state change:', event, session?.user?.id);
+        
+        if (event === 'SIGNED_IN' && session?.user) {
           set({ user: session.user, isAuthenticated: true });
           await get().refreshProfile();
-          // Sync this session across apps
+          // Sync session across apps
           await syncSessionAcrossApps(supabase);
-        } else {
-          console.log('No existing session found');
-          set({ isLoading: false });
+          
+          // If we're on main app and have return_to, redirect back
+          if (currentDomain === 'main') {
+            await handleMainAppReturn(supabase);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          set({ user: null, profile: null, isAuthenticated: false });
+          // Clear local storage
+          if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.removeItem('reelapps-shared-auth');
+          }
+        }
+      });
+      
+      // Check for existing session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user) {
+        console.log('✅ AUTH STORE: Found existing session for user:', session.user.id);
+        set({ user: session.user, isAuthenticated: true });
+        await get().refreshProfile();
+        // Sync this session across apps
+        await syncSessionAcrossApps(supabase);
+        
+        // If we're on main app and have return_to, redirect back
+        if (currentDomain === 'main') {
+          console.log('🔄 AUTH STORE: Checking for return redirect on existing session');
+          await handleMainAppReturn(supabase);
+        }
+      } else {
+        console.log('📋 AUTH STORE: No existing session found');
+        // Try to restore from local storage
+        const restoredSession = await restoreSharedSession(supabase);
+        if (restoredSession?.user) {
+          console.log('✅ AUTH STORE: Session restored from storage for user:', restoredSession.user.id);
+          set({ user: restoredSession.user, isAuthenticated: true });
+          await get().refreshProfile();
         }
       }
       
-      // Set up cross-app auth listener
-      setupCrossAppAuthListener(supabase);
+      console.log('✅ AUTH STORE: Initialization completed successfully');
     } catch (error) {
-      console.error('Initialize error:', error);
+      console.error('❌ AUTH STORE: Initialization error:', error);
+    } finally {
       set({ isLoading: false });
     }
   },
@@ -284,7 +353,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'sendPasswordResetEmail');
       }
     } finally {
       set({ isLoading: false });

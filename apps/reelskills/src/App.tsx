@@ -1,18 +1,40 @@
 import { useEffect, useState } from 'react'
-import { useAuthStore } from '@reelapps/auth'
+import { useAuthStore, initializeSupabase } from '@reelapps/auth'
+import { getMainAppUrl } from '@reelapps/config'
 import ReelSkillsDashboard from './components/ReelSkillsDashboard'
 import './index.css'
-
-const MAIN_URL = import.meta.env.VITE_APP_MAIN_URL || 'https://www.reelapps.co.za/';
 
 function App() {
   const { isAuthenticated, profile, initialize, isLoading } = useAuthStore();
   const [isInitializing, setIsInitializing] = useState(true);
+  const mainUrl = getMainAppUrl();
 
   useEffect(() => {
     const initializeApp = async () => {
-      await initialize();
-      setIsInitializing(false);
+      try {
+        console.log('🚀 Initializing ReelSkills...');
+        
+        // Initialize Supabase client first
+        console.log('🔧 Initializing Supabase client...');
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        
+        if (!supabaseUrl || !supabaseAnonKey) {
+          throw new Error('Missing Supabase environment variables');
+        }
+        
+        initializeSupabase(supabaseUrl, supabaseAnonKey);
+        console.log('✅ Supabase client initialized');
+        
+        // Now initialize auth store
+        console.log('🔐 Initializing auth store...');
+        await initialize();
+        console.log('✅ ReelSkills initialization complete');
+      } catch (error) {
+        console.error('❌ ReelSkills initialization failed:', error);
+      } finally {
+        setIsInitializing(false);
+      }
     };
     initializeApp();
   }, [initialize]);
@@ -40,7 +62,7 @@ function App() {
               You need to be signed in to access ReelSkills. Please authenticate through the main ReelApps portal.
             </p>
             <a 
-              href={MAIN_URL}
+              href={mainUrl}
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
             >
               Go to ReelApps
@@ -51,7 +73,7 @@ function App() {
     );
   }
 
-  // Check if user has access to ReelSkills (candidates only)
+  // Check if user has access to ReelSkills (candidates and admins only)
   if (profile?.role === 'recruiter') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -62,7 +84,7 @@ function App() {
               ReelSkills is only available for candidates. Recruiters can view verified skills through ReelHunter.
             </p>
             <a 
-              href={MAIN_URL}
+              href={mainUrl}
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
             >
               Back to ReelApps
@@ -75,23 +97,18 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-surface border-b border-surface">
+      <nav className="bg-surface border-b border-surface">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-xl font-semibold text-text-primary">
-                ReelSkills
-              </h1>
-              <p className="text-sm text-text-secondary">
-                Skill Verification Platform
-              </p>
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <h1 className="text-xl font-semibold text-text-primary">ReelSkills</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-text-secondary text-sm">
-                {profile?.first_name || profile?.email}
+                {profile?.first_name || profile?.email} ({profile?.role})
               </span>
               <a 
-                href={MAIN_URL}
+                href={mainUrl}
                 className="text-text-secondary hover:text-text-primary transition-colors"
               >
                 Back to ReelApps
@@ -99,13 +116,13 @@ function App() {
             </div>
           </div>
         </div>
-      </header>
+      </nav>
       
       <main>
         <ReelSkillsDashboard />
       </main>
     </div>
-  )
+  );
 }
 
 export default App 

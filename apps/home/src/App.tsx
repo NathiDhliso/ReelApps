@@ -1,8 +1,8 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider/ThemeProvider';
-import { useAuthStore } from './lib/auth';
-import { testSupabaseConnection } from './lib/supabase';
+import { testSupabaseConnection } from '@reelapps/auth';
+import { getMainAppUrl } from '@reelapps/config';
 import HomePage from './components/HomePage/HomePage';
 import Dashboard from './components/Dashboard/Dashboard';
 import AuthModal from './components/Auth/AuthModal';
@@ -33,7 +33,28 @@ const AppWrapper: React.FC<{
   requiredRole?: 'candidate' | 'recruiter' | 'both',
   appName: string 
 }> = ({ children, requiredRole = 'both', appName }) => {
-  const { isAuthenticated, profile } = useAuthStore();
+  const [authStore, setAuthStore] = useState<any>(null);
+  const mainUrl = getMainAppUrl();
+
+  // Dynamically import auth store after initialization
+  useEffect(() => {
+    import('./lib/auth').then(({ useAuthStore }) => {
+      setAuthStore({ useAuthStore });
+    });
+  }, []);
+
+  if (!authStore) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-text-secondary">Loading authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { isAuthenticated, profile } = authStore.useAuthStore();
 
   if (!isAuthenticated) {
     return (
@@ -45,7 +66,7 @@ const AppWrapper: React.FC<{
               You need to be signed in to access {appName}. Please authenticate through the main ReelApps portal.
             </p>
             <a 
-              href="https://www.reelapps.co.za"
+              href={mainUrl}
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
             >
               Go to ReelApps
@@ -56,8 +77,8 @@ const AppWrapper: React.FC<{
     );
   }
 
-  // Check role-based access
-  if (requiredRole !== 'both' && profile?.role !== requiredRole) {
+  // Check role-based access - Admin users have access to all apps
+  if (requiredRole !== 'both' && profile?.role !== requiredRole && profile?.role !== 'admin') {
     const accessMessage = requiredRole === 'candidate' 
       ? 'This application is only available for candidates.'
       : 'This application is only available for recruiters.';
@@ -69,7 +90,7 @@ const AppWrapper: React.FC<{
             <h1 className="text-2xl font-bold text-text-primary mb-4">Access Restricted</h1>
             <p className="text-text-secondary mb-6">{accessMessage}</p>
             <a 
-              href="https://www.reelapps.co.za"
+              href={mainUrl}
               className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
             >
               Back to ReelApps
@@ -90,10 +111,10 @@ const AppWrapper: React.FC<{
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-text-secondary text-sm">
-                {profile?.first_name || profile?.email}
+                {profile?.first_name || profile?.email} ({profile?.role})
               </span>
               <a 
-                href="https://www.reelapps.co.za"
+                href={mainUrl}
                 className="text-text-secondary hover:text-text-primary transition-colors"
               >
                 Back to ReelApps
@@ -108,11 +129,13 @@ const AppWrapper: React.FC<{
 };
 
 function App() {
-  const { initialize } = useAuthStore();
+  const [authStore, setAuthStore] = useState<any>(null);
   const [initializationComplete, setInitializationComplete] = useState(false);
 
+  console.log('🏁 App component rendering, initializationComplete:', initializationComplete);
+
   // Determine which sub-app should load
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
   let requestedApp: string | null = urlParams.get('app');
 
   // Fallback: infer from custom domain (e.g. reelhunter.co.za)
@@ -125,34 +148,82 @@ function App() {
     else if (host.includes('reelproject')) requestedApp = 'reelproject';
   }
 
+  console.log('🔍 Requested app:', requestedApp || 'none (main portal)');
+
   useEffect(() => {
+    console.log('📋 useEffect starting - initializationComplete:', initializationComplete);
+    
     const initializeApp = async () => {
       console.log('🚀 Starting ReelApps initialization...');
       
       try {
+        console.log('🔐 Initializing Supabase client...');
+        // Ensure Supabase is initialized first
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        
+        console.log('🔑 Environment variables check:');
+        console.log('  - VITE_SUPABASE_URL present:', !!supabaseUrl);
+        console.log('  - VITE_SUPABASE_ANON_KEY present:', !!supabaseAnonKey);
+        console.log('  - VITE_SUPABASE_URL length:', supabaseUrl?.length || 0);
+        console.log('  - VITE_SUPABASE_ANON_KEY length:', supabaseAnonKey?.length || 0);
+        
+        if (!supabaseUrl || !supabaseAnonKey) {
+          throw new Error('Missing Supabase environment variables');
+        }
+        
+        // Import and initialize from auth lib
+        console.log('📦 Importing initializeSupabase from @reelapps/auth...');
+        const { initializeSupabase } = await import('@reelapps/auth');
+        console.log('✅ initializeSupabase imported successfully');
+        
+        console.log('🔧 Calling initializeSupabase...');
+        const supabaseClient = initializeSupabase(supabaseUrl, supabaseAnonKey);
+        console.log('✅ Supabase client initialized:', !!supabaseClient);
+        
         console.log('🔗 Testing database connection...');
         await testSupabaseConnection();
         console.log('✅ Database connection successful');
         
-        console.log('🔐 Initializing authentication...');
-        await initialize();
+        // Now import and initialize auth store
+        console.log('📦 Importing auth store...');
+        const { useAuthStore } = await import('./lib/auth');
+        console.log('✅ Auth store imported successfully');
+        
+        setAuthStore({ useAuthStore });
+        
+        console.log('🔐 Initializing authentication store...');
+        console.log('📋 About to call initialize() function...');
+        await useAuthStore.getState().initialize();
+        console.log('✅ Authentication store initialized successfully');
         
         // Start background token refresh
-        import('./store/authStore').then(mod => {
-          mod.startSessionWatcher();
+        console.log('⏰ Setting up session watcher...');
+        import('./lib/auth').then(mod => {
+          if (mod.startSessionWatcher) {
+            console.log('🔄 Starting session watcher...');
+            mod.startSessionWatcher();
+          }
         });
         
         console.log('✅ App initialization completed successfully');
       } catch (error) {
         console.error('❌ Initialization failed:', error);
+        console.error('❌ Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       } finally {
+        console.log('🏁 Setting initializationComplete to true...');
         setInitializationComplete(true);
         console.log('ℹ️ Initialization flow ended, setting flag');
       }
     };
 
-    initializeApp();
-  }, [initialize]);
+    if (!initializationComplete) {
+      console.log('🎬 Starting initialization process...');
+      initializeApp();
+    } else {
+      console.log('⏭️ Initialization already complete, skipping...');
+    }
+  }, [initializationComplete]);
 
   // Show loading screen during initialization
   if (!initializationComplete) {
@@ -161,6 +232,18 @@ function App() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-text-secondary">Initializing ReelApps...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If auth store hasn't been loaded yet, show loading
+  if (!authStore) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-text-secondary">Loading authentication...</p>
         </div>
       </div>
     );
