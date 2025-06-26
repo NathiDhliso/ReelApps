@@ -19,6 +19,67 @@
   # Set the Node.js version.
   NODE_VERSION = "18"
 
+# Domain-specific redirects to serve different apps
+[[redirects]]
+  from = "https://www.reelcv.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelcv&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://reelcv.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelcv&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.reelpersona.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelpersona&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://reelpersona.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelpersona&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.reelhunter.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelhunter&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://reelhunter.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelhunter&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.reelprojects.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelproject&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://reelprojects.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelproject&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://www.reelskills.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelskills&path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://reelskills.co.za/*"
+  to = "https://www.reelapps.co.za/?app=reelskills&path=:splat"
+  status = 200
+  force = true
+
 # Redirects and rewrites for a Single Page Application (SPA)
 [[redirects]]
   from = "/*"
