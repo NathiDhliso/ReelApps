@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 export interface AppConfig {
   id: string;
   name: string;
@@ -12,7 +14,7 @@ export const apps: AppConfig[] = [
     id: 'reelcv',
     name: 'ReelCV',
     description: 'Dynamic candidate profiles that go beyond traditional resumes',
-    url: 'https://reelcv.reelapps.co.za',
+    url: import.meta.env.VITE_APP_REELCV_URL,
     roles: ['candidate'],
     icon: 'User'
   },
@@ -20,7 +22,7 @@ export const apps: AppConfig[] = [
     id: 'reelhunter',
     name: 'ReelHunter',
     description: 'AI-powered recruitment platform for modern hiring teams',
-    url: 'https://reelhunter.reelapps.co.za',
+    url: import.meta.env.VITE_APP_REELHUNTER_URL,
     roles: ['recruiter'],
     icon: 'Search'
   },
@@ -28,7 +30,7 @@ export const apps: AppConfig[] = [
     id: 'reelskills',
     name: 'ReelSkills',
     description: 'Skill verification and development platform',
-    url: 'https://reelskills.reelapps.co.za',
+    url: import.meta.env.VITE_APP_REELSKILLS_URL,
     roles: ['candidate'],
     icon: 'Target'
   }

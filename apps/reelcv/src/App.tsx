@@ -1,5 +1,8 @@
+/// <reference types="vite/client" />
 import CandidateDashboard from './CandidateDashboard';
 import './index.css';
+
+const MAIN_URL = import.meta.env.VITE_APP_MAIN_URL || 'https://www.reelapps.co.za/';
 
 function App() {
   return (
@@ -12,7 +15,7 @@ function App() {
             </div>
             <div className="flex items-center space-x-4">
               <a 
-                href="https://reelapps.co.za" 
+                href={MAIN_URL}
                 className="text-gray-600 hover:text-gray-900"
                 target="_blank"
                 rel="noopener noreferrer"
