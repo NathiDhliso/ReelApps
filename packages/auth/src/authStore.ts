@@ -136,15 +136,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const supabase = getSupabaseClient();
       console.log('Starting logout process...');
+      
+      // Clear shared session storage first
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('reelapps-shared-auth');
+        
+        // Broadcast logout event to other apps
+        const channel = new BroadcastChannel('reelapps-auth-sync');
+        channel.postMessage({ type: 'logout' });
+        channel.close();
+      }
+      
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
         handleSupabaseError(error);
       }
+      
       set({ user: null, profile: null, isAuthenticated: false });
       console.log('Logout completed successfully');
     } catch (error) {
       console.error('Logout error:', error);
+      // Even if there's an error, clear the local state
+      set({ user: null, profile: null, isAuthenticated: false });
     }
   },
   
@@ -170,6 +184,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const supabase = getSupabaseClient();
       console.log('Refreshing profile for user:', user.id);
       
+      // Add a small delay to ensure the database has processed the user creation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
@@ -183,8 +200,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       if (!profile) {
-        console.log('No profile found');
-        set({ profile: null, isAuthenticated: true, isLoading: false });
+        console.log('No profile found, attempting to create one...');
+        
+        // Try to create a profile if it doesn't exist
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            email: user.email,
+            first_name: user.user_metadata?.first_name || null,
+            last_name: user.user_metadata?.last_name || null,
+            role: user.user_metadata?.role || 'candidate',
+          })
+          .select()
+          .single();
+          
+        if (createError) {
+          console.error('Failed to create profile:', createError);
+          set({ profile: null, isAuthenticated: true, isLoading: false });
+        } else {
+          console.log('Profile created successfully:', newProfile);
+          set({ profile: newProfile as Profile, isAuthenticated: true, isLoading: false });
+        }
       } else {
         console.log('Profile found:', profile);
         set({ profile: profile as Profile, isAuthenticated: true, isLoading: false });
