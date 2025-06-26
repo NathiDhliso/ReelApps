@@ -46,7 +46,7 @@ export const apps: AppConfig[] = [
     id: 'reelproject',
     name: 'ReelProject',
     description: 'Collaborative project management for freelance teams',
-    url: 'https://www.reelproject.co.za/',
+    url: 'https://www.reelprojects.co.za/',
     roles: ['candidate', 'recruiter'],
     icon: 'Briefcase'
   }

@@ -9,7 +9,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 VITE_APP_REELCV_URL=https://www.reelcv.co.za/
 VITE_APP_REELHUNTER_URL=https://www.reelhunter.co.za/
 VITE_APP_REELPERSONA_URL=https://www.reelpersona.co.za/
-VITE_APP_REELPROJECT_URL=https://www.reelproject.co.za/
+VITE_APP_REELPROJECT_URL=https://www.reelprojects.co.za/
 VITE_APP_REELSKILLS_URL=https://www.reelskills.co.za/
 VITE_APP_MAIN_URL=https://www.reelapps.co.za/
 
