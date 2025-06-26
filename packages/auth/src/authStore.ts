@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import { getSupabaseClient, handleSupabaseError } from './supabase';
+import { syncSessionAcrossApps, restoreSharedSession, setupCrossAppAuthListener } from './shared-auth';
 
 export interface Profile {
   id: string;
@@ -53,6 +54,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (data.user) {
         console.log('User authenticated successfully:', data.user.id);
         set({ user: data.user, isAuthenticated: true });
+        
+        // Sync session across apps
+        await syncSessionAcrossApps(supabase);
         
         // Wait for auth state to settle
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -194,24 +198,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     set({ isLoading: true });
     try {
-      const supabase = getSupabaseClient();
       console.log('Initializing auth store...');
       
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Session error:', error);
-        set({ isLoading: false });
-        return;
-      }
-
-      if (session?.user) {
-        console.log('Found existing session for user:', session.user.id);
-        set({ user: session.user, isAuthenticated: true });
+      const supabase = getSupabaseClient();
+      
+      // First try to restore shared session
+      const restoredSession = await restoreSharedSession(supabase);
+      
+      if (restoredSession) {
+        console.log('Restored shared session for user:', restoredSession.user.id);
+        set({ user: restoredSession.user, isAuthenticated: true });
         await get().refreshProfile();
       } else {
-        console.log('No existing session found');
-        set({ isLoading: false });
+        // Fall back to getting session normally
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Session error:', error);
+          set({ isLoading: false });
+          return;
+        }
+
+        if (session?.user) {
+          console.log('Found existing session for user:', session.user.id);
+          set({ user: session.user, isAuthenticated: true });
+          await get().refreshProfile();
+          // Sync this session across apps
+          await syncSessionAcrossApps(supabase);
+        } else {
+          console.log('No existing session found');
+          set({ isLoading: false });
+        }
       }
+      
+      // Set up cross-app auth listener
+      setupCrossAppAuthListener(supabase);
     } catch (error) {
       console.error('Initialize error:', error);
       set({ isLoading: false });

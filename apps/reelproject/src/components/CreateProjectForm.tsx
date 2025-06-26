@@ -343,25 +343,25 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose, onProjec
 
       <div className="form-group">
         <label htmlFor="projectName">Project Name *</label>
-        <input
+          <input
           id="projectName"
-          type="text"
-          value={projectName}
-          onChange={(e) => setProjectName(e.target.value)}
+            type="text"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
           placeholder="e.g., E-commerce Platform, Portfolio Website, Data Analytics Dashboard"
-          required
+            required
           disabled={isLoading}
-        />
+          />
       </div>
 
       <div className="form-group">
         <label htmlFor="projectDescription">Project Description *</label>
-        <textarea
+          <textarea
           id="projectDescription"
-          value={projectDescription}
-          onChange={(e) => setProjectDescription(e.target.value)}
+            value={projectDescription}
+            onChange={(e) => setProjectDescription(e.target.value)}
           placeholder="Describe what you're building, its purpose, key features, and target users. Be specific about the problems it solves."
-          required
+            required
           disabled={isLoading}
           rows={4}
         />

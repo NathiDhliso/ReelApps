@@ -64,3 +64,52 @@ export const getAppsForRole = (role: 'candidate' | 'recruiter' | 'admin'): AppCo
   }
   return apps.filter(app => app.roles.includes(role));
 };
+
+/**
+ * Fetch user-specific apps from the database (for future implementation)
+ * This will replace the static configuration once the database migration is applied
+ */
+export const fetchUserAppsFromDatabase = async (supabase: any): Promise<AppConfig[]> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_my_apps');
+    
+    if (error) {
+      console.error('Error fetching user apps:', error);
+      // Fall back to role-based apps
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .single();
+      
+      return profile ? getAppsForRole(profile.role) : [];
+    }
+    
+    // Map database results to AppConfig format
+    return data.map((app: any) => ({
+      id: app.app_id,
+      name: app.app_name,
+      description: app.app_description,
+      url: app.app_url,
+      roles: [], // Not needed when fetching from DB
+      icon: getIconForApp(app.app_id)
+    }));
+  } catch (error) {
+    console.error('Error in fetchUserAppsFromDatabase:', error);
+    return [];
+  }
+};
+
+/**
+ * Get icon name for an app ID
+ */
+const getIconForApp = (appId: string): string => {
+  const iconMap: Record<string, string> = {
+    'reelcv': 'User',
+    'reelhunter': 'Search',
+    'reelskills': 'Target',
+    'reelpersona': 'Smile',
+    'reelproject': 'Briefcase'
+  };
+  return iconMap[appId] || 'User';
+};

@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { AUTH_CONFIG } from './shared-auth';
 
 // Define minimal database types needed for auth
 interface Database {
@@ -28,14 +29,7 @@ export const initializeSupabase = (url: string, anonKey: string) => {
   }
 
   supabaseClient = createClient<Database>(url, anonKey, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-      storageKey: 'reelapps-auth',
-      flowType: 'pkce'
-    },
+    auth: AUTH_CONFIG.sessionOptions,
     global: {
       headers: {
         apikey: anonKey

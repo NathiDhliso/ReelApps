@@ -27,6 +27,8 @@ const iconMap = {
   Shield,
   TrendingUp,
   Users,
+  Smile: Users, // Placeholder for ReelPersona
+  Briefcase: Target, // Placeholder for ReelProject
 };
 
 const HomePage: React.FC = () => {
@@ -241,7 +243,7 @@ const HomePage: React.FC = () => {
               Our Complete Ecosystem
             </h2>
             <p className={styles.overviewSubtitle}>
-              Four powerful applications working together to revolutionize how talent is discovered and developed
+              Five powerful applications working together to revolutionize how talent is discovered and developed
             </p>
             
             <div className={styles.overviewGrid}>
@@ -294,6 +296,19 @@ const HomePage: React.FC = () => {
                   <span>✓ Personality Insights</span>
                   <span>✓ Career Guidance</span>
                   <span>✓ Team Compatibility</span>
+                </div>
+              </div>
+              
+              <div className={styles.overviewCard}>
+                <div className={styles.overviewIcon}>
+                  <Target size={40} />
+                </div>
+                <h3>ReelProject</h3>
+                <p>Multi-skill project showcase and verification platform</p>
+                <div className={styles.overviewFeatures}>
+                  <span>✓ Project-based Skills</span>
+                  <span>✓ AI Verification</span>
+                  <span>✓ Portfolio Building</span>
                 </div>
               </div>
             </div>
