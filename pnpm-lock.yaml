@@ -157,6 +157,9 @@ importers:
 
   apps/reelhunter:
     dependencies:
+      '@reelapps/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@reelapps/ui':
         specifier: workspace:*
         version: link:../../packages/ui
