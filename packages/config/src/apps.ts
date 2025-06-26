@@ -14,7 +14,7 @@ export const apps: AppConfig[] = [
     id: 'reelcv',
     name: 'ReelCV',
     description: 'Dynamic candidate profiles that go beyond traditional resumes',
-    url: import.meta.env.VITE_APP_REELCV_URL,
+    url: 'https://www.reelcv.co.za/',
     roles: ['candidate'],
     icon: 'User'
   },
@@ -22,7 +22,7 @@ export const apps: AppConfig[] = [
     id: 'reelhunter',
     name: 'ReelHunter',
     description: 'AI-powered recruitment platform for modern hiring teams',
-    url: import.meta.env.VITE_APP_REELHUNTER_URL,
+    url: 'https://www.reelhunter.co.za/',
     roles: ['recruiter'],
     icon: 'Search'
   },
@@ -30,7 +30,7 @@ export const apps: AppConfig[] = [
     id: 'reelskills',
     name: 'ReelSkills',
     description: 'Skill verification and development platform',
-    url: import.meta.env.VITE_APP_REELSKILLS_URL,
+    url: 'https://www.reelskills.co.za/',
     roles: ['candidate'],
     icon: 'Target'
   }
