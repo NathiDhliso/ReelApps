@@ -75,9 +75,25 @@ export const checkDatabaseSession = async (supabase: SupabaseClient<any>): Promi
     }
     
     if (session?.user) {
-      console.log('✅ SHARED AUTH: Found valid Supabase session for user:', session.user.id);
+      console.log('✅ SHARED AUTH: Found Supabase session for user:', session.user.id);
       
-      // Update session activity in database
+      // Validate session against database - this is the source of truth
+      const { data: dbSession, error: dbError } = await supabase
+        .from('user_sessions')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (dbError || !dbSession || !dbSession.is_active || new Date(dbSession.expires_at) < new Date()) {
+        console.log('⚠️ SHARED AUTH: Session is not valid in database, signing out...');
+        // If session is not valid in the database, sign the user out
+        await supabase.auth.signOut();
+        localStorage.removeItem(SHARED_SESSION_KEY);
+        return null;
+      }
+
+      console.log('✅ SHARED AUTH: Session validated against database successfully');
+      // If session is valid, update last_activity
       await updateSessionActivity(supabase, session.user.id);
       
       return session;
@@ -99,8 +115,21 @@ export const checkDatabaseSession = async (supabase: SupabaseClient<any>): Promi
           });
           
           if (!setError && data.session?.user) {
-            console.log('✅ SHARED AUTH: Successfully restored session from storage');
-            
+            // Validate restored session against database
+            const { data: dbSession, error: dbError } = await supabase
+              .from('user_sessions')
+              .select('*')
+              .eq('user_id', data.session.user.id)
+              .single();
+
+            if (dbError || !dbSession || !dbSession.is_active || new Date(dbSession.expires_at) < new Date()) {
+              console.log('⚠️ SHARED AUTH: Restored session is not valid in database');
+              await supabase.auth.signOut();
+              localStorage.removeItem(SHARED_SESSION_KEY);
+              return null;
+            }
+
+            console.log('✅ SHARED AUTH: Successfully restored and validated session from storage');
             // Update session activity in database
             await updateSessionActivity(supabase, data.session.user.id);
             

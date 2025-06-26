@@ -37,8 +37,9 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run dev',
+    command: 'pnpm -r --filter @reelapps/home --filter @reelapps/reelcv --filter @reelapps/reelpersona --filter @reelapps/reelhunter --filter @reelapps/reelproject --filter @reelapps/reelskills dev',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000, // 2 minutes timeout for all apps to start
   },
 });

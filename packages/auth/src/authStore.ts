@@ -4,13 +4,18 @@ import { getSupabaseClient } from './supabase';
 import { 
   syncSessionAcrossApps, 
   restoreSharedSession, 
-  setupCrossAppAuthListener,
   shouldRedirectToMainApp,
   redirectToMainApp,
   handleReturnFromMainApp,
   handleMainAppReturn,
   getCurrentDomainType
 } from './shared-auth';
+import {
+  startSessionCleanupService,
+  setupVisibilityChangeHandler,
+  setupStorageEventHandler,
+  validateAndCleanupCurrentSession
+} from './sessionCleanup';
 
 // Helper function to handle Supabase errors
 const handleSupabaseError = (error: any, context: string) => {
@@ -261,6 +266,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const supabase = getSupabaseClient();
       console.log('✅ AUTH STORE: Got Supabase client');
       
+      // Start session cleanup service for reliability
+      startSessionCleanupService(supabase);
+      
+      // Setup browser event handlers for session validation
+      setupVisibilityChangeHandler(supabase);
+      setupStorageEventHandler(supabase);
+      
       // Check if we're on the main app or individual app
       const currentDomain = getCurrentDomainType();
       console.log('🌐 AUTH STORE: Current domain type:', currentDomain);
@@ -285,6 +297,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         
         // Handle return from main app if applicable
         handleReturnFromMainApp();
+      }
+      
+      // Validate current session using database as source of truth
+      const isSessionValid = await validateAndCleanupCurrentSession(supabase);
+      
+      if (!isSessionValid && currentDomain !== 'main') {
+        // If session is invalid and we're not on main app, redirect for auth
+        console.log('⚠️ AUTH STORE: Session validation failed, redirecting to main app');
+        redirectToMainApp();
+        return;
       }
       
       // Set up auth state listener
