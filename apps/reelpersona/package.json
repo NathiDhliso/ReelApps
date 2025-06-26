@@ -10,6 +10,7 @@
     "preview": "pnpm exec vite preview"
   },
   "dependencies": {
+    "@reelapps/auth": "workspace:*",
     "@reelapps/ui": "workspace:*",
     "@supabase/supabase-js": "^2.39.3",
     "lucide-react": "^0.263.1",

@@ -1,129 +1,115 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useAuthStore } from '@reelapps/auth'
 import ReelPersona from './components/ReelPersona'
-import { useAuthStore } from './store/authStore'
 import './index.css'
 
+const MAIN_URL = import.meta.env.VITE_APP_MAIN_URL || 'https://www.reelapps.co.za/';
+
 function App() {
-  const { initialize, isLoading } = useAuthStore();
+  const { isAuthenticated, profile, initialize, isLoading } = useAuthStore();
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    // Initialize auth store to check for existing sessions
-    initialize();
+    const initializeApp = async () => {
+      await initialize();
+      setIsInitializing(false);
+    };
+    initializeApp();
     
     // Force dark mode on the document
     document.documentElement.setAttribute('data-theme', 'dark');
     document.body.classList.add('gradient-background');
   }, [initialize]);
 
-  if (isLoading) {
+  // Show loading while initializing
+  if (isInitializing || isLoading) {
     return (
-      <div className="app-loading glass-effect" style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        background: 'var(--gradient-hero)',
-        color: 'var(--text-primary)'
-      }}>
-        <div className="loading-spinner" style={{
-          width: '40px',
-          height: '40px',
-          border: '4px solid rgba(64, 224, 208, 0.2)',
-          borderTop: '4px solid var(--brand-primary)',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          marginBottom: '1rem'
-        }}></div>
-        <span style={{ 
-          background: 'var(--gradient-text)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          fontSize: '18px',
-          fontWeight: '600'
-        }}>Loading...</span>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-text-secondary">Loading ReelPersona...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to main app if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="max-w-md w-full mx-auto p-8 text-center">
+          <div className="bg-surface rounded-lg border border-surface p-8">
+            <h1 className="text-2xl font-bold text-text-primary mb-4">Authentication Required</h1>
+            <p className="text-text-secondary mb-6">
+              You need to be signed in to access ReelPersona. Please authenticate through the main ReelApps portal.
+            </p>
+            <a 
+              href={MAIN_URL}
+              className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
+            >
+              Go to ReelApps
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="app" style={{ background: 'var(--gradient-hero)', minHeight: '100vh' }}>
+    <div className="app min-h-screen bg-background">
       {/* Header with Gradient */}
-      <header className="app-header" style={{
-        background: 'var(--gradient-secondary)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: 'var(--shadow-lg)'
-      }}>
-        <div className="header-content">
-          <h1 className="app-title gradient-text" style={{
-            background: 'var(--gradient-text)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontSize: '28px',
-            fontWeight: '700'
-          }}>
-            ReelPersona
-          </h1>
-          <p className="app-subtitle" style={{
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '16px',
-            fontWeight: '500'
-          }}>
-            AI-Powered Personality Analysis
-          </p>
+      <header className="bg-surface border-b border-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div>
+              <h1 className="text-xl font-semibold text-text-primary">
+                ReelPersona
+              </h1>
+              <p className="text-sm text-text-secondary">
+                AI-Powered Personality Analysis
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-text-secondary text-sm">
+                {profile?.first_name || profile?.email}
+              </span>
+              <a 
+                href={MAIN_URL}
+                className="text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Back to ReelApps
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="app-main">
-      <ReelPersona />
+        <ReelPersona />
       </main>
 
-      {/* Footer with Gradient */}
-      <footer className="app-footer" style={{
-        background: 'var(--gradient-card)',
-        backdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-        marginTop: 'auto'
-      }}>
-        <div className="footer-content">
-          <div className="footer-links">
-            <a href="/" className="footer-link" style={{
-              color: 'var(--text-primary)',
-              textDecoration: 'none',
-              fontWeight: '500',
-              transition: 'all 0.3s ease'
-            }}>
-              ← Back to ReelApps
-            </a>
-            <span className="footer-separator" style={{ color: 'var(--text-secondary)' }}>|</span>
-            <a href="/about" className="footer-link" style={{
-              color: 'var(--text-primary)',
-              textDecoration: 'none',
-              fontWeight: '500'
-            }}>
-              About
-            </a>
-            <span className="footer-separator" style={{ color: 'var(--text-secondary)' }}>|</span>
-            <a href="/privacy" className="footer-link" style={{
-              color: 'var(--text-primary)',
-              textDecoration: 'none',
-              fontWeight: '500'
-            }}>
-              Privacy
-            </a>
+      {/* Footer */}
+      <footer className="bg-surface border-t border-surface mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-4 mb-4 md:mb-0">
+              <a href={MAIN_URL} className="text-text-secondary hover:text-text-primary transition-colors">
+                ← Back to ReelApps
+              </a>
+              <span className="text-text-secondary">|</span>
+              <a href="/about" className="text-text-secondary hover:text-text-primary transition-colors">
+                About
+              </a>
+              <span className="text-text-secondary">|</span>
+              <a href="/privacy" className="text-text-secondary hover:text-text-primary transition-colors">
+                Privacy
+              </a>
+            </div>
+            <p className="text-text-secondary text-sm text-center md:text-right">
+              Part of the <strong className="text-primary">ReelApps</strong> ecosystem - Building your career reel, one app at a time.
+            </p>
           </div>
-          <p className="footer-text" style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-            Part of the <strong style={{
-              background: 'var(--gradient-text)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}>ReelApps</strong> ecosystem - Building your career reel, one app at a time.
-          </p>
         </div>
       </footer>
     </div>
