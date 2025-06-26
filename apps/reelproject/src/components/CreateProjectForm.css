@@ -11,12 +11,21 @@
 .form-title {
   font-size: var(--font-size-2xl);
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   color: #F8FAFC;
   background: linear-gradient(135deg, #F8FAFC 0%, #06B6D4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-align: center;
+}
+
+.form-subtitle {
+  font-size: var(--font-size-base);
+  color: #CBD5E1;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.5;
 }
 
 .form-group {
@@ -25,9 +34,11 @@
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #CBD5E1;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #F8FAFC;
+  font-size: var(--font-size-base);
+  letter-spacing: 0.025em;
 }
 
 .form-group input,
