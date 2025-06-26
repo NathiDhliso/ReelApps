@@ -4,7 +4,7 @@ import Button from '../Button/Button';
 import Card from '../Card/Card';
 import styles from './CandidateResults.module.css';
 import { MatchResponseSchema } from '../../lib/schemas';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 
 interface Job {
   title: string;

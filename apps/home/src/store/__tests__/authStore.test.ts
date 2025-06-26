@@ -1,30 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAuthStore } from '../authStore';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 
 // Mock Supabase
-vi.mock('@reelapps/supabase', () => ({
-  getSupabaseClient: vi.fn(() => ({
-    auth: {
-      signInWithPassword: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
-      getSession: vi.fn(),
-      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } }))
-    },
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn()
-        })),
-        insert: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn()
-          }))
-        }))
-      }))
-    }))
-  }))
+vi.mock('@reelapps/auth', () => ({
+  getSupabaseClient: vi.fn(),
+  initializeSupabase: vi.fn(),
 }));
 
 describe('AuthStore', () => {
@@ -66,10 +47,7 @@ describe('AuthStore', () => {
       (getSupabaseClient().from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockProfile,
-              error: null
-            })
+            single: vi.fn()
           })
         })
       });

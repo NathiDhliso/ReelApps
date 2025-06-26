@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Award, Plus, Edit, Trash2, Sparkles, Brain, Video, Upload, Star, CheckCircle } from 'lucide-react';
 import { useCandidateStore } from '../../store/candidateStore';
 import { useAuthStore } from '../../lib/auth';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import Button from '../Button/Button';
 import styles from './ReelSkills.module.css';
 

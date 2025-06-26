@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import { useSystemStore } from '../store/systemStore';
 import Button from '../components/Button/Button';
 import Card from '../components/Card/Card';
@@ -13,6 +13,7 @@ const PasswordReset: React.FC = () => {
   const navigate = useNavigate();
   const location = useSearchParams();
   const { addNotification } = useSystemStore();
+  const supabase = getSupabaseClient();
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();

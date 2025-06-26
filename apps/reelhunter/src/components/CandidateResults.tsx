@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import { Star, MapPin, Clock, ExternalLink, FileText, User } from 'lucide-react';
 import { Button } from '@reelapps/ui';
 import Card from './Card';

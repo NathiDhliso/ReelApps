@@ -15,13 +15,20 @@
     "setup:prod": "node scripts/setup-env.js --prod"
   },
   "eslintConfig": {
-    "ignorePatterns": ["**/*"]
+    "ignorePatterns": [
+      "**/*"
+    ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.53.1",
     "pnpm": "^9.0.0"
   },
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.2",
+    "dotenv": "^16.6.0"
   }
-} 
+}

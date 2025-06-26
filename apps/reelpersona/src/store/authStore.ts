@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getSupabaseClient, handleSupabaseError } from '@reelapps/supabase';
+import { getSupabaseClient, handleSupabaseError } from '@reelapps/auth';
 import { User } from '@supabase/supabase-js';
 import { Database } from '@reelapps/types';
 
@@ -180,7 +180,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -195,7 +195,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
-            id: user.id,
+            user_id: user.id,
             first_name: userData.first_name || 'User',
             last_name: userData.last_name || 'Name',
             email: user.email

@@ -18,7 +18,7 @@ import {
   ExternalLink,
   Eye
 } from 'lucide-react';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import './ProjectDetailView.css';
 
 interface ProjectSkill {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import './CreateProjectForm.css';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import { 
   Plus, 
   X, 
@@ -24,6 +24,7 @@ import {
   Lightbulb,
   Users
 } from 'lucide-react';
+import { Project } from '../types';
 
 interface ProjectSkill {
   id: string;

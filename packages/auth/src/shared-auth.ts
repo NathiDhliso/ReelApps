@@ -165,21 +165,36 @@ const updateSessionActivity = async (supabase: SupabaseClient<any>, userId: stri
     const now = new Date().toISOString();
     const expiresAt = new Date(Date.now() + AUTH_CONFIG.sessionTimeout * 1000).toISOString();
     
-    // Upsert session activity record
-    const { error } = await supabase
+    // Try to update existing session first
+    const { data: updateData, error: updateError } = await supabase
       .from('user_sessions')
-      .upsert({
-        user_id: userId,
+      .update({
         last_activity: now,
         expires_at: expiresAt,
         is_active: true,
-      }, {
-        onConflict: 'user_id'
-      });
+        updated_at: now,
+      })
+      .eq('user_id', userId)
+      .select();
     
-    if (error) {
-      console.log('⚠️ SHARED AUTH: Could not update session activity:', error.message);
-      // Don't throw error - this is not critical for auth flow
+    // If no rows were updated, insert a new session
+    if (!updateError && (!updateData || updateData.length === 0)) {
+      const { error: insertError } = await supabase
+        .from('user_sessions')
+        .insert({
+          user_id: userId,
+          last_activity: now,
+          expires_at: expiresAt,
+          is_active: true,
+        });
+      
+      if (insertError) {
+        console.log('⚠️ SHARED AUTH: Could not insert session activity:', insertError.message);
+      } else {
+        console.log('✅ SHARED AUTH: Session activity inserted successfully');
+      }
+    } else if (updateError) {
+      console.log('⚠️ SHARED AUTH: Could not update session activity:', updateError.message);
     } else {
       console.log('✅ SHARED AUTH: Session activity updated successfully');
     }
@@ -247,8 +262,8 @@ export const handleReturnFromMainApp = () => {
 };
 
 // Handle return redirect after successful authentication on main app
-export const handleMainAppReturn = async (supabase: SupabaseClient<any>) => {
-  if (typeof window === 'undefined') return;
+export const handleMainAppReturn = async (supabase: SupabaseClient<any>): Promise<string | null> => {
+  if (typeof window === 'undefined') return null;
   
   console.log('🔍 SHARED AUTH: handleMainAppReturn called');
   
@@ -266,24 +281,25 @@ export const handleMainAppReturn = async (supabase: SupabaseClient<any>) => {
     console.log('🔍 SHARED AUTH: Current session exists:', !!session?.user);
     
     if (session?.user) {
-      console.log('✅ SHARED AUTH: User is authenticated, redirecting back to:', returnTo);
+      console.log('✅ SHARED AUTH: User is authenticated, preparing to redirect back to:', returnTo);
       
       // Update session in database
       await updateSessionActivity(supabase, session.user.id);
       
-      // Clean the URL and redirect back
+      // Clean the URL of the return_to parameter before redirecting
       const newUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, document.title, newUrl);
       
-      // Redirect back to the original app
-      console.log('🚀 SHARED AUTH: Executing redirect to:', decodeURIComponent(returnTo));
-      window.location.href = decodeURIComponent(returnTo);
+      // Return the decoded URL for the caller to handle the redirect
+      console.log('🚀 SHARED AUTH: Returning redirect URL:', decodeURIComponent(returnTo));
+      return decodeURIComponent(returnTo);
     } else {
-      console.log('📋 SHARED AUTH: User not authenticated yet, keeping return_to parameter');
-      // Keep the return_to parameter for after authentication
+      console.log('📋 SHARED AUTH: User not authenticated yet, no redirect needed from here.');
+      return null;
     }
   } else {
-    console.log('📋 SHARED AUTH: No return_to parameter found');
+    console.log('📋 SHARED AUTH: No return_to parameter found, no redirect.');
+    return null;
   }
 };
 

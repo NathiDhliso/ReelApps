@@ -20,38 +20,23 @@ importers:
       '@reelapps/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@reelapps/supabase':
-        specifier: workspace:*
-        version: link:../../packages/supabase
       '@reelapps/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@reelapps/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@supabase/supabase-js':
-        specifier: ^2.39.0
-        version: 2.50.1(ws@8.18.2)
-      lucide-react:
-        specifier: ^0.344.0
-        version: 0.344.0(react@18.3.1)
       react:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
       react-router-dom:
-        specifier: ^6.20.1
+        specifier: ^6.11.2
         version: 6.30.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      recharts:
-        specifier: ^2.8.0
-        version: 2.15.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.67
       zustand:
-        specifier: ^4.4.7
+        specifier: ^4.3.8
         version: 4.5.7(@types/react@18.3.23)(react@18.3.1)
     devDependencies:
       '@eslint/js':
@@ -117,9 +102,6 @@ importers:
       '@reelapps/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@reelapps/supabase':
-        specifier: workspace:*
-        version: link:../../packages/supabase
       '@reelapps/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -133,10 +115,10 @@ importers:
         specifier: ^0.344.0
         version: 0.344.0(react@18.3.1)
       react:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
       react-router-dom:
         specifier: ^6.20.1
@@ -178,35 +160,20 @@ importers:
       '@reelapps/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@reelapps/supabase':
-        specifier: workspace:*
-        version: link:../../packages/supabase
       '@reelapps/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@reelapps/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@supabase/supabase-js':
-        specifier: ^2.39.3
-        version: 2.50.1(ws@8.18.2)
-      lucide-react:
-        specifier: ^0.263.1
-        version: 0.263.1(react@18.3.1)
       react:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
-      react-router-dom:
-        specifier: ^6.8.1
-        version: 6.30.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.67
       zustand:
-        specifier: ^4.4.1
+        specifier: ^4.3.8
         version: 4.5.7(@types/react@18.3.23)(react@18.3.1)
     devDependencies:
       '@types/node':
@@ -260,35 +227,17 @@ importers:
       '@reelapps/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@reelapps/supabase':
-        specifier: workspace:*
-        version: link:../../packages/supabase
       '@reelapps/types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@reelapps/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@supabase/supabase-js':
-        specifier: ^2.39.3
-        version: 2.50.1(ws@8.18.2)
-      lucide-react:
-        specifier: ^0.263.1
-        version: 0.263.1(react@18.3.1)
       react:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
-      react-router-dom:
-        specifier: ^6.8.1
-        version: 6.30.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.67
       zustand:
-        specifier: ^4.4.1
+        specifier: ^4.3.8
         version: 4.5.7(@types/react@18.3.23)(react@18.3.1)
     devDependencies:
       '@types/react':
@@ -339,29 +288,14 @@ importers:
       '@reelapps/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@reelapps/supabase':
-        specifier: workspace:*
-        version: link:../../packages/supabase
-      '@reelapps/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@reelapps/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@supabase/supabase-js':
-        specifier: ^2.39.0
-        version: 2.50.1(ws@8.18.2)
-      lucide-react:
-        specifier: ^0.344.0
-        version: 0.344.0(react@18.3.1)
       react:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
       react-router-dom:
-        specifier: ^6.20.1
+        specifier: ^6.8.1
         version: 6.30.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       recharts:
         specifier: ^2.8.0
@@ -2191,11 +2125,6 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
-
-  lucide-react@0.263.1:
-    resolution: {integrity: sha512-keqxAx97PlaEN89PXZ6ki1N8nRjGWtDa4021GFYLNj0RgruM5odbpl8GHTExj0hhPq3sF6Up0gnxt6TSHu+ovw==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0
 
   lucide-react@0.344.0:
     resolution: {integrity: sha512-6YyBnn91GB45VuVT96bYCOKElbJzUHqp65vX8cDcu55MQL9T969v4dhGClpljamuI/+KMO9P6w9Acq1CVQGvIQ==}
@@ -4698,10 +4627,6 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
-
-  lucide-react@0.263.1(react@18.3.1):
-    dependencies:
-      react: 18.3.1
 
   lucide-react@0.344.0(react@18.3.1):
     dependencies:

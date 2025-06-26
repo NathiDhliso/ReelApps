@@ -199,7 +199,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       console.log('🔍 DEBUG: Profile query completed');

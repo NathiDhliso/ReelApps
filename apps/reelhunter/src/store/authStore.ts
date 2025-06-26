@@ -1,7 +1,16 @@
 import { create } from 'zustand';
-import { getSupabaseClient, handleSupabaseError } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import { User } from '@supabase/supabase-js';
 import { Database } from '@reelapps/types';
+
+// Helper function for error handling
+const handleSupabaseError = (error: any, context: string) => {
+  console.error(`❌ ${context}:`, error);
+  if (error?.message) {
+    throw new Error(error.message);
+  }
+  throw error;
+};
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -177,7 +186,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { data: profile, error } = await getSupabaseClient()
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -192,11 +201,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const { data: newProfile, error: createError } = await getSupabaseClient()
           .from('profiles')
           .insert({
-            id: user.id,
+            user_id: user.id,
             first_name: userData.first_name || 'User',
             last_name: userData.last_name || 'Name',
-            email: user.email,
-            role: (userData.role as 'candidate' | 'recruiter') || 'candidate'
+            email: user.email
           })
           .select()
           .single();

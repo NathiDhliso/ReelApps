@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getSupabaseClient, handleSupabaseError } from '@reelapps/supabase';
+import { getSupabaseClient, handleSupabaseError } from '@reelapps/auth';
 import { Database } from '@reelapps/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];

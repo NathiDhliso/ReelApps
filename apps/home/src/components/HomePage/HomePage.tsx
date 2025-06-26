@@ -20,7 +20,7 @@ import { useSystemStore } from '../../store/systemStore';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
 import { launchAppWithAuth } from '@reelapps/auth';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 import styles from './HomePage.module.css';
 
 const iconMap = {

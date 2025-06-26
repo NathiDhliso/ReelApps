@@ -3,7 +3,7 @@ import { X, Sparkles } from 'lucide-react';
 import Button from './Button';
 import Card from './Card';
 import styles from './JobPostingForm.module.css';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 
 interface JobPostingFormProps {
   onClose: () => void;

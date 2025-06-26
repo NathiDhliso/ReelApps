@@ -69,15 +69,17 @@ export const getSupabaseClient = () => {
   return supabaseClient;
 };
 
-// Helper function to handle Supabase errors
-export const handleSupabaseError = (error: { message?: string } | unknown) => {
-  console.error('Supabase error:', error);
-  
-  if (error && typeof error === 'object' && 'message' in error) {
-    throw new Error((error as { message: string }).message);
+/**
+ * Helper function to handle Supabase errors consistently
+ */
+export const handleSupabaseError = (error: any, context: string) => {
+  console.error(`❌ ${context}:`, error);
+  if (error?.message) {
+    console.error(`Error message: ${error.message}`);
   }
-  
-  throw new Error('An unexpected error occurred');
+  if (error?.details) {
+    console.error(`Error details: ${error.details}`);
+  }
 };
 
 // Helper function to get current user profile
@@ -86,7 +88,7 @@ export const getCurrentUserProfile = async () => {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   
   if (authError) {
-    handleSupabaseError(authError);
+    handleSupabaseError(authError, 'Authentication');
   }
   
   if (!user) {
@@ -100,7 +102,7 @@ export const getCurrentUserProfile = async () => {
     .single();
   
   if (profileError) {
-    handleSupabaseError(profileError);
+    handleSupabaseError(profileError, 'Profile retrieval');
   }
   
   return { user, profile };
@@ -112,10 +114,10 @@ export const testSupabaseConnection = async () => {
     const supabase = getSupabaseClient();
     console.log('Testing Supabase connection...');
     
-    // Simple health check query
+    // Simple health check query - just select first profile with limit
     const { error } = await supabase
       .from('profiles')
-      .select('count')
+      .select('id')
       .limit(1);
     
     if (error) {

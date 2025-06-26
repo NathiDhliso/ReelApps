@@ -1,38 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useCandidateStore } from '../candidateStore';
-import { getSupabaseClient } from '@reelapps/supabase';
+import { getSupabaseClient } from '@reelapps/auth';
 
 // Mock Supabase
-vi.mock('@reelapps/supabase', () => ({
-  getSupabaseClient: vi.fn(() => ({
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(),
-          order: vi.fn(() => ({
-            eq: vi.fn(() => ({
-              single: vi.fn()
-            }))
-          }))
-        })),
-        insert: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn()
-          }))
-        })),
-        update: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            select: vi.fn(() => ({
-              single: vi.fn()
-            }))
-          }))
-        })),
-        delete: vi.fn(() => ({
-          eq: vi.fn()
-        }))
-      }))
-    }))
-  }))
+vi.mock('@reelapps/auth', () => ({
+  getSupabaseClient: vi.fn(),
+  handleSupabaseError: vi.fn(),
 }));
 
 describe('CandidateStore', () => {

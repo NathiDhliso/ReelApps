@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase, handleSupabaseError } from '@reelapps/supabase';
+import { getSupabaseClient, handleSupabaseError } from '@reelapps/auth';
 import { Database } from '@reelapps/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -37,6 +37,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     console.log(`[candidateStore] fetchProfile started for profileId: ${profileId}`);
     try {
       // First get the profile by its primary key
+      const supabase = getSupabaseClient();
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -125,6 +126,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
 
     set({ isLoading: true });
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
@@ -150,6 +152,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('skills')
         .insert({ ...skill, profile_id: profile.id })
@@ -169,6 +172,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   updateSkill: async (skillId: string, updates: Partial<Skill>) => {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('skills')
         .update(updates)
@@ -191,6 +195,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   deleteSkill: async (skillId: string) => {
+      const supabase = getSupabaseClient();
       const { error } = await supabase
         .from('skills')
         .delete()
@@ -212,6 +217,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
     const { profile } = get();
     if (!profile) throw new Error('No profile loaded');
 
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('projects')
         .insert({ ...project, profile_id: profile.id })
@@ -231,6 +237,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   updateProject: async (projectId: string, updates: Partial<Project>) => {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('projects')
         .update(updates)
@@ -253,6 +260,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
   },
 
   deleteProject: async (projectId: string) => {
+      const supabase = getSupabaseClient();
       const { error } = await supabase
         .from('projects')
         .delete()
