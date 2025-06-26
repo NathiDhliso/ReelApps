@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Users, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
 import { useAuthStore } from '../../store/authStore';
+import { useSystemStore } from '../../store/systemStore';
 import Button from '../Button/Button';
 import styles from './Navigation.module.css';
 
@@ -14,8 +15,25 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) => {
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user, profile, logout } = useAuthStore();
+  const { openAuthModal } = useSystemStore();
   const location = useLocation();
   const isReelHunterPage = location.pathname.startsWith('/reelhunter');
+
+  const handleSignInClick = () => {
+    if (onLoginClick) {
+      onLoginClick();
+    } else {
+      openAuthModal('login');
+    }
+  };
+
+  const handleGetStartedClick = () => {
+    if (onSignUpClick) {
+      onSignUpClick();
+    } else {
+      openAuthModal('signup');
+    }
+  };
 
   return (
     <nav className={styles.navbar}>
@@ -98,10 +116,10 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) 
             </>
           ) : (
             <>
-              <Button variant="outline" size="small" onClick={onLoginClick} id="nav-login-button">
+              <Button variant="outline" size="small" onClick={handleSignInClick} id="nav-login-button">
                 Sign In
               </Button>
-              <Button size="small" onClick={onSignUpClick}>
+              <Button size="small" onClick={handleGetStartedClick}>
                 Get Started
               </Button>
             </>

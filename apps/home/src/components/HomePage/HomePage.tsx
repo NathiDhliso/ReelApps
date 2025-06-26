@@ -16,6 +16,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useSystemStore } from '../../store/systemStore';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
 import styles from './HomePage.module.css';
@@ -33,12 +34,10 @@ const iconMap = {
 
 const HomePage: React.FC = () => {
   const { isAuthenticated, profile } = useAuthStore();
+  const { openAuthModal } = useSystemStore();
 
   const handleGetStarted = () => {
-    const navLoginButton = document.querySelector('#nav-login-button');
-    if (navLoginButton instanceof HTMLElement) {
-      navLoginButton.click();
-    }
+    openAuthModal('signup');
   };
 
   const getIconComponent = (iconName?: string) => {

@@ -22,6 +22,8 @@ interface SystemState {
   notifications: SystemNotification[];
   isOnboarding: boolean;
   onboardingStep: number;
+  isAuthModalOpen: boolean;
+  authModalMode: 'login' | 'signup';
   addNotification: (_notification: Omit<SystemNotification, 'id' | 'timestamp' | 'dismissed'>) => void;
   dismissNotification: (_id: string) => void;
   clearNotifications: () => void;
@@ -30,6 +32,8 @@ interface SystemState {
   nextOnboardingStep: () => void;
   completeOnboarding: () => void;
   skipOnboarding: () => void;
+  openAuthModal: (_mode?: 'login' | 'signup') => void;
+  closeAuthModal: () => void;
 }
 
 export const useSystemStore = create<SystemState>((set, get) => ({
@@ -42,6 +46,8 @@ export const useSystemStore = create<SystemState>((set, get) => ({
   notifications: [],
   isOnboarding: false,
   onboardingStep: 0,
+  isAuthModalOpen: false,
+  authModalMode: 'login',
 
   addNotification: (notification) => {
     const newNotification: SystemNotification = {
@@ -152,6 +158,14 @@ export const useSystemStore = create<SystemState>((set, get) => ({
   skipOnboarding: () => {
     set({ isOnboarding: false, onboardingStep: 0 });
     localStorage.setItem('reelApps_onboarding_skipped', 'true');
+  },
+
+  openAuthModal: (mode = 'login') => {
+    set({ isAuthModalOpen: true, authModalMode: mode });
+  },
+
+  closeAuthModal: () => {
+    set({ isAuthModalOpen: false });
   },
 }));
 
