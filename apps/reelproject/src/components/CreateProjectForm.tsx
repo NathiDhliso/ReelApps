@@ -283,6 +283,21 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose, onProjec
         setAnalysis(analysisData);
       }
 
+      // Generate a project plan based on the skills and description
+      const generateProjectPlan = (skills: ProjectSkill[], description: string): string[] => {
+        const plan = [
+          `Project Setup: Initialize the ${projectName} project with proper structure and dependencies`,
+          'Requirements Analysis: Define detailed specifications and user stories',
+          'Architecture Design: Plan the system architecture and technology stack',
+          ...skills.map(skill => `${skill.name} Implementation: ${skill.requirements}`),
+          'Integration Testing: Ensure all components work together seamlessly',
+          'Documentation: Create comprehensive project documentation and skill verification evidence',
+          'Final Review: Conduct thorough testing and prepare for skill verification',
+          'Deployment & Presentation: Deploy the project and present skill demonstrations'
+        ];
+        return plan;
+      };
+
       const newProject = {
         id: Date.now().toString(),
         name: projectName,
@@ -290,6 +305,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose, onProjec
         goals: projectGoals,
         target_skills: targetSkills,
         analysis: analysisData,
+        plan: generateProjectPlan(analysisData.detected_skills, projectDescription),
         skill_demonstrations: analysisData.detected_skills.map(skill => ({
           ...skill,
           status: 'planned',

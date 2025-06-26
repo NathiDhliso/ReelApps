@@ -367,7 +367,7 @@ const CandidateResults: React.FC<CandidateResultsProps> = ({ job }) => {
                 <Button 
                   variant="outline" 
                   size="small"
-                  onClick={() => window.open(`/reelcv/${match.candidate_id}`, '_blank')}
+                  onClick={() => window.open(`https://www.reelcv.co.za/candidate/${match.candidate_id}`, '_blank')}
                 >
                   <ExternalLink size={14} />
                   View ReelCV

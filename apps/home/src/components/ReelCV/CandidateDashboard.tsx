@@ -65,10 +65,14 @@ const CandidateDashboard: React.FC = () => {
             onClick={() => {
               if (profile) {
                 console.log('Opening ReelCV', profile.id);
-                navigate(`/reelcv/${profile.id}`);
+                window.open(`https://www.reelcv.co.za/candidate/${profile.id}`, '_blank');
               }
             }}
-            onKeyDown={(e) => profile && e.key === 'Enter' && navigate(`/reelcv/${profile.id}`)}
+            onKeyDown={(e) => {
+              if (profile && e.key === 'Enter') {
+                window.open(`https://www.reelcv.co.za/candidate/${profile.id}`, '_blank');
+              }
+            }}
           >
             <h3>ReelCV</h3>
             <p>Manage your video CV showcase</p>
