@@ -24,6 +24,13 @@ interface Database {
 let supabaseClient: SupabaseClient<Database> | null = null;
 
 export const initializeSupabase = (url: string, anonKey: string) => {
+  // If the client is already created, return the existing instance.
+  // This prevents re-initialization when React Strict Mode runs useEffect twice.
+  if (supabaseClient) {
+    console.log('🔧 SUPABASE: Client already exists, returning existing instance');
+    return supabaseClient;
+  }
+
   console.log('🔧 SUPABASE: initializeSupabase called');
   console.log('🔧 SUPABASE: url present:', !!url);
   console.log('🔧 SUPABASE: anonKey present:', !!anonKey);
