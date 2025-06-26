@@ -1,5 +1,5 @@
 .baseCard {
-  background-color: var(--bg-secondary);
+  background: var(--gradient-card);
   border-radius: 16px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -12,12 +12,13 @@
 .baseCard:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-xl);
+  border-color: var(--border-accent);
 }
 
 .glass {
   background: var(--gradient-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-metallic);
 }
 
 .interactive {
@@ -30,15 +31,16 @@
 
 .gradient {
   background: var(--gradient-primary);
-  color: white;
+  color: var(--text-primary);
+  border: 1px solid var(--brand-primary);
 }
 
 .gradient .cardTitle {
-  color: white;
+  color: var(--text-primary);
 }
 
 .gradient .cardDescription {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-secondary);
 }
 
 .cardHeader {
@@ -56,7 +58,7 @@
   align-items: center;
   justify-content: center;
   background: var(--gradient-primary);
-  color: white;
+  color: var(--text-primary);
   flex-shrink: 0;
 }
 
@@ -96,7 +98,7 @@
   display: block;
   font-size: 18px;
   font-weight: 600;
-  color: var(--brand-turquoise);
+  color: var(--accent-turquoise);
 }
 
 .cardStatLabel {

@@ -1,9 +1,9 @@
 .baseCard {
-  background-color: var(--bg-secondary);
+  background: linear-gradient(145deg, rgba(248, 250, 252, 0.03) 0%, rgba(248, 250, 252, 0.01) 100%);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  border: 1px solid #334155;
   transition: all 0.3s ease-in-out;
   position: relative;
   overflow: hidden;
@@ -11,13 +11,14 @@
 
 .baseCard:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .glass {
-  background: var(--gradient-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.05) 0%, rgba(248, 250, 252, 0.02) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .interactive {
@@ -29,16 +30,17 @@
 }
 
 .gradient {
-  background: var(--gradient-primary);
-  color: white;
+  background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
+  color: #F8FAFC;
+  border: 1px solid #3B82F6;
 }
 
 .gradient .cardTitle {
-  color: white;
+  color: #F8FAFC;
 }
 
 .gradient .cardDescription {
-  color: rgba(255, 255, 255, 0.9);
+  color: #CBD5E1;
 }
 
 .cardHeader {
@@ -55,20 +57,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradient-primary);
-  color: white;
+  background: linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%);
+  color: #F8FAFC;
   flex-shrink: 0;
 }
 
 .cardTitle {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #F8FAFC;
   margin: 0;
 }
 
 .cardDescription {
-  color: var(--text-secondary);
+  color: #CBD5E1;
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
@@ -77,7 +79,7 @@
 .cardFooter {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid var(--border-primary);
+  border-top: 1px solid #334155;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -96,12 +98,12 @@
   display: block;
   font-size: 18px;
   font-weight: 600;
-  color: var(--brand-turquoise);
+  color: #06B6D4;
 }
 
 .cardStatLabel {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #94A3B8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 } 
