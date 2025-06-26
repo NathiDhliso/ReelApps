@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { X, Sparkles } from 'lucide-react';
-import { Button, Card } from '@reelapps/ui';
+import Button from '../Button/Button';
+import Card from '../Card/Card';
 import styles from './JobPostingForm.module.css';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 interface JobPostingFormProps {
   onClose: () => void;
-  onJobCreated: (job: any) => void;
+  onJobCreated: (_job: any) => void;
 }
 
 interface JobAnalysis {

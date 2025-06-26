@@ -9,7 +9,7 @@ import { supabase } from '../../lib/supabase';
 
 interface JobPostingFormProps {
   onClose: () => void;
-  onJobCreated: (job: any) => void;
+  onJobCreated: (_job: any) => void;
 }
 
 interface JobAnalysis {

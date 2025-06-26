@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { 
   Award, 
   Briefcase, 

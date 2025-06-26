@@ -10,14 +10,14 @@ interface AuthState {
   profile: Profile | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, firstName: string, lastName: string, role?: 'candidate' | 'recruiter') => Promise<void>;
+  login: (_email: string, _password: string) => Promise<void>;
+  signup: (_email: string, _password: string, _firstName: string, _lastName: string, _role?: 'candidate' | 'recruiter') => Promise<void>;
   logout: () => Promise<void>;
-  setUser: (user: User | null) => void;
-  setProfile: (profile: Profile | null) => void;
+  setUser: (_user: User | null) => void;
+  setProfile: (_profile: Profile | null) => void;
   initialize: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  sendPasswordResetEmail: (email: string) => Promise<void>;
+  sendPasswordResetEmail: (_email: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -26,14 +26,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
   isAuthenticated: false,
   
-  login: async (email: string, password: string) => {
+  login: async (_email: string, _password: string) => {
     set({ isLoading: true });
     try {
       console.log('Starting login process...');
       
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: _email,
+        password: _password,
       });
 
       if (error) {
@@ -58,20 +58,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  signup: async (email: string, password: string, firstName: string, lastName: string, role: 'candidate' | 'recruiter' = 'candidate') => {
+  signup: async (_email: string, _password: string, _firstName: string, _lastName: string, _role: 'candidate' | 'recruiter' = 'candidate') => {
     set({ isLoading: true });
     try {
       console.log('Starting signup process...');
       
       // Step 1: Create the auth user with metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
+        email: _email,
+        password: _password,
         options: {
           data: {
-            first_name: firstName,
-            last_name: lastName,
-            role: role
+            first_name: _firstName,
+            last_name: _lastName,
+            role: _role
           }
         }
       });
@@ -95,9 +95,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         .from('profiles')
         .insert({
           user_id: authData.user.id,
-          first_name: firstName,
-          last_name: lastName,
-          role: role,
+          first_name: _firstName,
+          last_name: _lastName,
+          role: _role,
         })
         .select()
         .single();
@@ -117,8 +117,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // subsequent API calls have a valid JWT.
       if (!authData.session) {
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: _email,
+          password: _password,
         });
 
         if (signInError) {
@@ -152,14 +152,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
   
-  setUser: (user) => {
-    console.log('Setting user:', user?.id || 'null');
-    set({ user, isAuthenticated: !!user });
+  setUser: (_user) => {
+    console.log('Setting user:', _user?.id || 'null');
+    set({ user: _user, isAuthenticated: !!_user });
   },
 
-  setProfile: (profile) => {
-    console.log('Setting profile:', profile?.id || 'null');
-    set({ profile });
+  setProfile: (_profile) => {
+    console.log('Setting profile:', _profile?.id || 'null');
+    set({ profile: _profile });
   },
 
   refreshProfile: async () => {
@@ -243,18 +243,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  sendPasswordResetEmail: async (email: string) => {
-    set({ isLoading: true });
+  sendPasswordResetEmail: async (_email: string) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/password-reset`,
-      });
-
+      const { error } = await supabase.auth.resetPasswordForEmail(_email);
       if (error) {
+        console.error('Password reset error:', error);
         handleSupabaseError(error);
       }
-    } finally {
-      set({ isLoading: false });
+    } catch (error) {
+      console.error('Password reset error:', error);
+      throw error;
     }
   },
 }));

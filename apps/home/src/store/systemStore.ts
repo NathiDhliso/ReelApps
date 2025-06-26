@@ -22,8 +22,8 @@ interface SystemState {
   notifications: SystemNotification[];
   isOnboarding: boolean;
   onboardingStep: number;
-  addNotification: (notification: Omit<SystemNotification, 'id' | 'timestamp' | 'dismissed'>) => void;
-  dismissNotification: (id: string) => void;
+  addNotification: (_notification: Omit<SystemNotification, 'id' | 'timestamp' | 'dismissed'>) => void;
+  dismissNotification: (_id: string) => void;
   clearNotifications: () => void;
   checkSystemHealth: () => Promise<void>;
   startOnboarding: () => void;

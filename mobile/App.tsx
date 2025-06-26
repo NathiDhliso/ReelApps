@@ -52,7 +52,7 @@ const LoginScreen = ({ navigation }: any) => {
       await AsyncStorage.setItem('userEmail', email);
       
       navigation.replace('Dashboard');
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Login Failed', 'Please check your credentials');
     } finally {
       setIsLoading(false);

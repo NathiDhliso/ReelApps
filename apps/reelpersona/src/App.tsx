@@ -79,7 +79,7 @@ function App() {
 
       {/* Main Content */}
       <main className="app-main">
-        <ReelPersona />
+      <ReelPersona />
       </main>
 
       {/* Footer with Gradient */}
@@ -130,4 +130,4 @@ function App() {
   )
 }
 
-export default App
+export default App 

@@ -18,14 +18,14 @@ interface CandidateProfile extends Profile {
 interface CandidateState {
   profile: CandidateProfile | null;
   isLoading: boolean;
-  fetchProfile: (profileId: string) => Promise<void>;
-  updateProfile: (updates: Partial<Profile>) => Promise<void>;
-  addSkill: (skill: Omit<Skill, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
-  updateSkill: (skillId: string, updates: Partial<Skill>) => Promise<void>;
-  deleteSkill: (skillId: string) => Promise<void>;
-  addProject: (project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
-  updateProject: (projectId: string, updates: Partial<Project>) => Promise<void>;
-  deleteProject: (projectId: string) => Promise<void>;
+  fetchProfile: (_profileId: string) => Promise<void>;
+  updateProfile: (_updates: Partial<Profile>) => Promise<void>;
+  addSkill: (_skill: Omit<Skill, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateSkill: (_skillId: string, _updates: Partial<Skill>) => Promise<void>;
+  deleteSkill: (_skillId: string) => Promise<void>;
+  addProject: (_project: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateProject: (_projectId: string, _updates: Partial<Project>) => Promise<void>;
+  deleteProject: (_projectId: string) => Promise<void>;
 }
 
 export const useCandidateStore = create<CandidateState>((set, get) => ({

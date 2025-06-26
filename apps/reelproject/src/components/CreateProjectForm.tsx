@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import './CreateProjectForm.css';
 import { Card } from '@reelapps/ui';
 import { supabase } from '../lib/supabase';
+import { X, Sparkles, Plus, Trash2 } from 'lucide-react';
+import styles from './CreateProjectForm.css';
 
 interface ScopeAnalysis {
   clarity_score: number;
@@ -11,14 +13,21 @@ interface ScopeAnalysis {
   suggested_technologies: string[];
 }
 
-const CreateProjectForm: React.FC = () => {
+interface CreateProjectFormProps {
+  onClose: () => void;
+  onProjectCreated: (project: any) => void;
+}
+
+const CreateProjectForm: React.FC<CreateProjectFormProps> = ({ onClose, onProjectCreated }) => {
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<ScopeAnalysis | null>(null);
-  const [projectPlan, setProjectPlan] = useState<string[]>([]);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
+  const [_error, setError] = useState<string | null>(null);
+  const [_analysis, setAnalysis] = useState<ScopeAnalysis | null>(null);
+  const [_projectPlan, setProjectPlan] = useState<string[]>([]);
+  const [_isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  const [_handleAnalyzeScope, setHandleAnalyzeScope] = useState<(() => Promise<void>) | null>(null);
 
   const handleAnalyzeScope = async () => {
     if (!projectDescription) {

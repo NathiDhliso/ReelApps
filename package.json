@@ -5,11 +5,15 @@
   "scripts": {
     "dev": "pnpm -r dev",
     "build": "pnpm validate-env && pnpm -r build",
+    "build:netlify": "pnpm validate-env && pnpm -r build",
     "lint": "eslint .",
     "test": "pnpm -r test",
     "ci:test": "pnpm lint && pnpm test",
     "clean": "pnpm --recursive clean",
     "validate-env": "node scripts/validate-env.js"
+  },
+  "eslintConfig": {
+    "ignorePatterns": ["**/*"]
   },
   "devDependencies": {
     "pnpm": "^9.0.0"
