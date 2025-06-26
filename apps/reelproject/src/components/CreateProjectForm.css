@@ -9,7 +9,7 @@
 }
 
 .form-title {
-  font-size: 1.875rem;
+  font-size: var(--font-size-2xl);
   font-weight: 700;
   margin-bottom: 1.5rem;
   color: #F8FAFC;
@@ -39,7 +39,7 @@
   border-radius: 8px;
   background: #1E293B;
   color: #F8FAFC;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   transition: all 0.2s ease;
 }
 
@@ -78,7 +78,7 @@
   color: #F8FAFC;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -145,7 +145,7 @@
 
 .error-message {
   color: #EF4444;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   margin-top: 0.25rem;
 }
 
@@ -154,7 +154,7 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   margin-top: 0.5rem;
 }
 

@@ -14,7 +14,7 @@
 }
 
 .project-title {
-  font-size: 2.25rem;
+  font-size: var(--font-size-3xl);
   font-weight: 700;
   margin-bottom: 1rem;
   color: #F8FAFC;
@@ -38,7 +38,7 @@
 }
 
 .meta-label {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: #94A3B8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -75,7 +75,7 @@
 }
 
 .section-title {
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: #F8FAFC;
   margin-bottom: 1rem;
@@ -92,7 +92,7 @@
   color: #F8FAFC;
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
 }
 
@@ -136,7 +136,7 @@
 
 .member-role {
   color: #94A3B8;
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
 }
 
 .project-actions {
