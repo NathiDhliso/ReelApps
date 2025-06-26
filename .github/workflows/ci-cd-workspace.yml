@@ -398,29 +398,143 @@ jobs:
         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_REELPROJECT_SITE_ID }}
 
   # Deploy staging versions
-  deploy-staging:
+  deploy-staging-home:
     runs-on: ubuntu-latest
-    needs: [test-build-home, test-build-reelcv, test-build-reelhunter, test-build-reelpersona, test-build-reelproject]
-    if: github.ref == 'refs/heads/develop'
-    
+    needs: test-build-home
+    if: github.ref == 'refs/heads/develop' && needs.test-build-home.result == 'success'
     steps:
-    - name: Deploy apps to staging
-      run: |
-        echo "Deploying changed apps to staging environment"
-        # Add staging deployment logic here
+      - uses: actions/checkout@v4
+      - name: Download Home build
+        uses: actions/download-artifact@v4
+        with:
+          name: home-build
+          path: dist/
+      - name: Deploy to Netlify Staging
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './dist'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy Home app to staging - ${{ github.sha }}"
+          alias: 'develop'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_HOME_SITE_ID }}
+          
+  deploy-staging-reelcv:
+    runs-on: ubuntu-latest
+    needs: test-build-reelcv
+    if: github.ref == 'refs/heads/develop' && needs.test-build-reelcv.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download ReelCV build
+        uses: actions/download-artifact@v4
+        with:
+          name: reelcv-build
+          path: dist/
+      - name: Deploy to Netlify Staging
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './dist'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy ReelCV app to staging - ${{ github.sha }}"
+          alias: 'develop'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_REELCV_SITE_ID }}
+          
+  deploy-staging-reelhunter:
+    runs-on: ubuntu-latest
+    needs: test-build-reelhunter
+    if: github.ref == 'refs/heads/develop' && needs.test-build-reelhunter.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download ReelHunter build
+        uses: actions/download-artifact@v4
+        with:
+          name: reelhunter-build
+          path: dist/
+      - name: Deploy to Netlify Staging
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './dist'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy ReelHunter app to staging - ${{ github.sha }}"
+          alias: 'develop'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_REELHUNTER_SITE_ID }}
+
+  deploy-staging-reelpersona:
+    runs-on: ubuntu-latest
+    needs: test-build-reelpersona
+    if: github.ref == 'refs/heads/develop' && needs.test-build-reelpersona.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download ReelPersona build
+        uses: actions/download-artifact@v4
+        with:
+          name: reelpersona-build
+          path: dist/
+      - name: Deploy to Netlify Staging
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './dist'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy ReelPersona app to staging - ${{ github.sha }}"
+          alias: 'develop'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_REELPERSONA_SITE_ID }}
+
+  deploy-staging-reelproject:
+    runs-on: ubuntu-latest
+    needs: test-build-reelproject
+    if: github.ref == 'refs/heads/develop' && needs.test-build-reelproject.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download ReelProject build
+        uses: actions/download-artifact@v4
+        with:
+          name: reelproject-build
+          path: dist/
+      - name: Deploy to Netlify Staging
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './dist'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy ReelProject app to staging - ${{ github.sha }}"
+          alias: 'develop'
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_REELPROJECT_SITE_ID }}
 
   # Notification
   notify:
     runs-on: ubuntu-latest
-    needs: [deploy-home, deploy-reelcv, deploy-reelhunter, deploy-reelpersona, deploy-reelproject]
+    needs:
+      - deploy-home
+      - deploy-reelcv
+      - deploy-reelhunter
+      - deploy-reelpersona
+      - deploy-reelproject
+      - deploy-staging-home
+      - deploy-staging-reelcv
+      - deploy-staging-reelhunter
+      - deploy-staging-reelpersona
+      - deploy-staging-reelproject
     if: always()
     
     steps:
     - name: Notify deployment status
       run: |
         echo "Deployment completed"
-        echo "Home: ${{ needs.deploy-home.result }}"
-        echo "ReelCV: ${{ needs.deploy-reelcv.result }}"
-        echo "ReelHunter: ${{ needs.deploy-reelhunter.result }}"
-        echo "ReelPersona: ${{ needs.deploy-reelpersona.result }}"
-        echo "ReelProject: ${{ needs.deploy-reelproject.result }}" 
+        echo "PROD Home: ${{ needs.deploy-home.result }}"
+        echo "PROD ReelCV: ${{ needs.deploy-reelcv.result }}"
+        echo "PROD ReelHunter: ${{ needs.deploy-reelhunter.result }}"
+        echo "PROD ReelPersona: ${{ needs.deploy-reelpersona.result }}"
+        echo "PROD ReelProject: ${{ needs.deploy-reelproject.result }}"
+        echo "STAGING Home: ${{ needs.deploy-staging-home.result }}"
+        echo "STAGING ReelCV: ${{ needs.deploy-staging-reelcv.result }}"
+        echo "STAGING ReelHunter: ${{ needs.deploy-staging-reelhunter.result }}"
+        echo "STAGING ReelPersona: ${{ needs.deploy-staging-reelpersona.result }}"
+        echo "STAGING ReelProject: ${{ needs.deploy-staging-reelproject.result }}" 
