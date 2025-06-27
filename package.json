@@ -14,11 +14,6 @@
     "setup:dev": "node scripts/setup-env.js",
     "setup:prod": "node scripts/setup-env.js --prod"
   },
-  "eslintConfig": {
-    "ignorePatterns": [
-      "**/*"
-    ]
-  },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
     "pnpm": "^9.0.0"

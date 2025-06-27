@@ -20,7 +20,6 @@ import { useSystemStore } from '../../store/systemStore';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
 import { launchAppWithAuth } from '@reelapps/auth';
-import { getSupabaseClient } from '@reelapps/auth';
 import styles from './HomePage.module.css';
 
 const iconMap = {
@@ -94,12 +93,7 @@ const HomePage: React.FC = () => {
     ? getAppsForRole(profile.role)
     : [];
 
-  // Debug logging
-  console.log('🔍 DEBUG: HomePage - isAuthenticated:', isAuthenticated);
-  console.log('🔍 DEBUG: HomePage - profile:', profile);
-  console.log('🔍 DEBUG: HomePage - profile.role:', profile?.role);
-  console.log('🔍 DEBUG: HomePage - availableApps:', availableApps);
-  console.log('🔍 DEBUG: HomePage - availableApps.length:', availableApps.length);
+
 
   const featuredApps = availableApps.slice(0, 3);
   const otherApps = availableApps.slice(3);
