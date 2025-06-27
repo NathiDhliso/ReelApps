@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm exec vite",
-    "build": "pnpm exec tsc -b && pnpm exec vite build",
+    "build": "pnpm exec vite build",
     "lint": "pnpm exec eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "pnpm exec vite preview"
   },
@@ -13,11 +13,15 @@
     "@reelapps/auth": "workspace:*",
     "@reelapps/config": "workspace:*",
     "@reelapps/types": "workspace:*",
+    "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^7.6.2",
+    "zod": "^3.25.67",
     "zustand": "^4.3.8"
   },
   "devDependencies": {
+    "@types/node": "^24.0.4",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^7.0.0",

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import React, { useState } from 'react';
 import { X, Sparkles } from 'lucide-react';
 import Button from '../Button/Button';

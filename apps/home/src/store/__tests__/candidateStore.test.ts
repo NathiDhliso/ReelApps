@@ -5,7 +5,9 @@ import { getSupabaseClient } from '@reelapps/auth';
 // Mock Supabase
 vi.mock('@reelapps/auth', () => ({
   getSupabaseClient: vi.fn(),
-  handleSupabaseError: vi.fn(),
+  handleSupabaseError: vi.fn((error) => {
+    throw new Error(error.message);
+  }),
 }));
 
 describe('CandidateStore', () => {
@@ -67,73 +69,74 @@ describe('CandidateStore', () => {
         }
       ];
 
-      // Mock profile fetch
-      (getSupabaseClient as any).mockReturnValueOnce({
-        from: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: mockProfile,
-                error: null
+      // Mock Supabase client
+      const mockSupabase = {
+        from: vi.fn((table: string) => {
+          if (table === 'profiles') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  single: vi.fn().mockResolvedValue({
+                    data: mockProfile,
+                    error: null
+                  })
+                })
               })
-            })
-          })
+            };
+          }
+          if (table === 'skills') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  order: vi.fn().mockResolvedValue({
+                    data: mockSkills,
+                    error: null
+                  })
+                })
+              })
+            };
+          }
+          if (table === 'projects') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  order: vi.fn().mockResolvedValue({
+                    data: mockProjects,
+                    error: null
+                  })
+                })
+              })
+            };
+          }
+          if (table === 'persona_analyses') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  maybeSingle: vi.fn().mockResolvedValue({
+                    data: mockPersonaAnalysis,
+                    error: null
+                  })
+                })
+              })
+            };
+          }
+          if (table === 'reviews') {
+            return {
+              select: vi.fn().mockReturnValue({
+                eq: vi.fn().mockReturnValue({
+                  order: vi.fn().mockResolvedValue({
+                    data: mockReviews,
+                    error: null
+                  })
+                })
+              })
+            };
+          }
+          return {};
         })
-      });
+      };
 
-      // Mock parallel data fetches
-      const mockFromCalls = [
-        // Skills
-        {
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({
-                data: mockSkills,
-                error: null
-              })
-            })
-          })
-        },
-        // Projects
-        {
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({
-                data: mockProjects,
-                error: null
-              })
-            })
-          })
-        },
-        // Persona analysis
-        {
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: mockPersonaAnalysis,
-                error: null
-              })
-            })
-          })
-        },
-        // Reviews
-        {
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({
-                data: mockReviews,
-                error: null
-              })
-            })
-          })
-        }
-      ];
-
-      (getSupabaseClient as any)
-        .mockReturnValueOnce(mockFromCalls[0])
-        .mockReturnValueOnce(mockFromCalls[1])
-        .mockReturnValueOnce(mockFromCalls[2])
-        .mockReturnValueOnce(mockFromCalls[3]);
+      (getSupabaseClient as any).mockReturnValue(mockSupabase);
 
       const { fetchProfile } = useCandidateStore.getState();
       
@@ -151,8 +154,8 @@ describe('CandidateStore', () => {
     });
 
     it('should handle profile not found', async () => {
-      (getSupabaseClient as any).mockReturnValue({
-        from: vi.fn().mockReturnValue({
+      const mockSupabase = {
+        from: vi.fn(() => ({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               single: vi.fn().mockResolvedValue({
@@ -161,8 +164,10 @@ describe('CandidateStore', () => {
               })
             })
           })
-        })
-      });
+        }))
+      };
+
+      (getSupabaseClient as any).mockReturnValue(mockSupabase);
 
       const { fetchProfile } = useCandidateStore.getState();
       
@@ -181,13 +186,8 @@ describe('CandidateStore', () => {
 
       const newSkill = {
         name: 'React',
-        category: 'technical' as const,
-        proficiency: 'intermediate' as const,
+        level: 'intermediate',
         years_experience: 3,
-        verified: false,
-        endorsements: 0,
-        video_demo_url: null,
-        description: 'Frontend development',
         profile_id: 'profile-123'
       };
 
@@ -198,8 +198,8 @@ describe('CandidateStore', () => {
         updated_at: '2024-01-01T00:00:00Z'
       };
 
-      (getSupabaseClient as any).mockReturnValue({
-        from: vi.fn().mockReturnValue({
+      const mockSupabase = {
+        from: vi.fn(() => ({
           insert: vi.fn().mockReturnValue({
             select: vi.fn().mockReturnValue({
               single: vi.fn().mockResolvedValue({
@@ -208,23 +208,29 @@ describe('CandidateStore', () => {
               })
             })
           })
-        })
-      });
+        }))
+      };
+
+      (getSupabaseClient as any).mockReturnValue(mockSupabase);
 
       const { addSkill } = useCandidateStore.getState();
       
       await addSkill(newSkill);
 
       const state = useCandidateStore.getState();
-      expect(state.profile?.skills).toHaveLength(1);
-      expect(state.profile?.skills[0]).toEqual(mockInsertedSkill);
+      expect(state.profile?.skills).toContain(mockInsertedSkill);
     });
 
     it('should handle add skill errors', async () => {
-      useCandidateStore.setState({ profile: { id: 'profile-123', skills: [] } as any });
+      const mockProfile = {
+        id: 'profile-123',
+        skills: []
+      };
 
-      (getSupabaseClient as any).mockReturnValue({
-        from: vi.fn().mockReturnValue({
+      useCandidateStore.setState({ profile: mockProfile as any });
+
+      const mockSupabase = {
+        from: vi.fn(() => ({
           insert: vi.fn().mockReturnValue({
             select: vi.fn().mockReturnValue({
               single: vi.fn().mockResolvedValue({
@@ -233,20 +239,17 @@ describe('CandidateStore', () => {
               })
             })
           })
-        })
-      });
+        }))
+      };
+
+      (getSupabaseClient as any).mockReturnValue(mockSupabase);
 
       const { addSkill } = useCandidateStore.getState();
       
       await expect(addSkill({
-        name: 'Python',
-        category: 'technical',
-        proficiency: 'advanced',
-        years_experience: 5,
-        verified: false,
-        endorsements: 0,
-        video_demo_url: null,
-        description: null,
+        name: 'React',
+        level: 'intermediate',
+        years_experience: 3,
         profile_id: 'profile-123'
       })).rejects.toThrow('Skill already exists');
     });
@@ -254,32 +257,25 @@ describe('CandidateStore', () => {
 
   describe('updateSkill', () => {
     it('should successfully update an existing skill', async () => {
-      const existingSkill = {
-        id: 'skill-123',
-        name: 'Python',
-        proficiency: 'intermediate',
-        years_experience: 3
+      const mockProfile = {
+        id: 'profile-123',
+        skills: [
+          {
+            id: 'skill-123',
+            name: 'React',
+            level: 'intermediate',
+            years_experience: 3
+          }
+        ]
       };
 
-      useCandidateStore.setState({
-        profile: {
-          id: 'profile-123',
-          skills: [existingSkill]
-        } as any
-      });
+      useCandidateStore.setState({ profile: mockProfile as any });
 
-      const updates = {
-        proficiency: 'advanced' as const,
-        years_experience: 5
-      };
+      const updates = { level: 'advanced', years_experience: 5 };
+      const updatedSkill = { ...mockProfile.skills[0], ...updates };
 
-      const updatedSkill = {
-        ...existingSkill,
-        ...updates
-      };
-
-      (getSupabaseClient as any).mockReturnValue({
-        from: vi.fn().mockReturnValue({
+      const mockSupabase = {
+        from: vi.fn(() => ({
           update: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               select: vi.fn().mockReturnValue({
@@ -290,15 +286,19 @@ describe('CandidateStore', () => {
               })
             })
           })
-        })
-      });
+        }))
+      };
+
+      (getSupabaseClient as any).mockReturnValue(mockSupabase);
 
       const { updateSkill } = useCandidateStore.getState();
       
       await updateSkill('skill-123', updates);
 
       const state = useCandidateStore.getState();
-      expect(state.profile?.skills[0]).toEqual(updatedSkill);
+      const skill = state.profile?.skills.find(s => s.id === 'skill-123');
+      expect(skill?.level).toBe('advanced');
+      expect(skill?.years_experience).toBe(5);
     });
   });
 

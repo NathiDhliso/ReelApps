@@ -1,3 +1,5 @@
+npx playwright test --grep "SSO" --reporter=line
+
 
 pnpm --filter @reelapps/home dev	
 pnpm --filter @reelapps/reelcv dev

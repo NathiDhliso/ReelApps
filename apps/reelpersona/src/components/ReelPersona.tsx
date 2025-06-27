@@ -439,7 +439,7 @@ const ReelPersona: React.FC = () => {
               <input
                 type="text"
                 value={currentChatInput}
-                onChange={(e) => setCurrentChatInput(e.target.value)}
+                onChange={(e) => setCurrentChatInput((e.target as HTMLInputElement).value)}
                 placeholder="Type your response..."
                 className={styles.chatInput}
                 disabled={isLoading}

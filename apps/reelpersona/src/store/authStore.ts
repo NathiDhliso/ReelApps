@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (error) {
         console.error('Login error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Login');
       }
 
       if (data.user) {
@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (authError) {
         console.error('Auth signup error:', authError);
-        handleSupabaseError(authError);
+        handleSupabaseError(authError, 'Signup');
       }
 
       if (!authData.user) {
@@ -146,7 +146,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Logout error:', error);
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Logout');
       }
       set({ user: null, profile: null, isAuthenticated: false });
       console.log('Logout completed successfully');
@@ -257,7 +257,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Password Reset');
       }
     } finally {
       set({ isLoading: false });

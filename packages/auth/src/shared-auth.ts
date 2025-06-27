@@ -161,42 +161,27 @@ export const checkDatabaseSession = async (supabase: SupabaseClient<any>): Promi
 const updateSessionActivity = async (supabase: SupabaseClient<any>, userId: string) => {
   try {
     console.log('📝 SHARED AUTH: Updating session activity for user:', userId);
-    
+
     const now = new Date().toISOString();
     const expiresAt = new Date(Date.now() + AUTH_CONFIG.sessionTimeout * 1000).toISOString();
-    
-    // Try to update existing session first
-    const { data: updateData, error: updateError } = await supabase
+
+    // Use upsert to handle both insert and update atomically, preventing race conditions.
+    const { error: upsertError } = await supabase
       .from('user_sessions')
-      .update({
+      .upsert({
+        user_id: userId,
         last_activity: now,
         expires_at: expiresAt,
         is_active: true,
         updated_at: now,
-      })
-      .eq('user_id', userId)
-      .select();
-    
-    // If no rows were updated, insert a new session
-    if (!updateError && (!updateData || updateData.length === 0)) {
-      const { error: insertError } = await supabase
-        .from('user_sessions')
-        .insert({
-          user_id: userId,
-          last_activity: now,
-          expires_at: expiresAt,
-          is_active: true,
-        });
-      
-      if (insertError) {
-        console.log('⚠️ SHARED AUTH: Could not insert session activity:', insertError.message);
-      } else {
-        console.log('✅ SHARED AUTH: Session activity inserted successfully');
-      }
-    } else if (updateError) {
-      console.log('⚠️ SHARED AUTH: Could not update session activity:', updateError.message);
+      }, {
+        onConflict: 'user_id', // Specify the column that has the unique constraint
+      });
+
+    if (upsertError) {
+      console.log('⚠️ SHARED AUTH: Could not upsert session activity:', upsertError.message);
     } else {
-      console.log('✅ SHARED AUTH: Session activity updated successfully');
+      console.log('✅ SHARED AUTH: Session activity upserted successfully');
     }
   } catch (error) {
     console.log('⚠️ SHARED AUTH: Error updating session activity:', error);

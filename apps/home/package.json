@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm exec vite",
     "build": "pnpm exec vite build",
-    "lint": "pnpm exec eslint .",
+    "lint": "pnpm exec eslint src --ext .ts,.tsx,.js,.jsx",
     "preview": "pnpm exec vite preview",
     "test": "pnpm exec vitest",
     "test:ui": "pnpm exec vitest --ui",

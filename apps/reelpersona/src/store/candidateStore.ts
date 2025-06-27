@@ -45,7 +45,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
 
       if (profileError) {
         console.error('[candidateStore] Error fetching main profile:', profileError);
-        handleSupabaseError(profileError);
+        handleSupabaseError(profileError, 'Fetch Profile');
       }
 
       if (!profile) {
@@ -133,7 +133,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Update Profile');
       }
 
       set(state => ({
@@ -157,7 +157,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Add Skill');
       }
 
       set(state => ({
@@ -177,7 +177,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Update Skill');
       }
 
       set(state => ({
@@ -197,7 +197,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .eq('id', skillId);
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Delete Skill');
       }
 
       set(state => ({
@@ -219,7 +219,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Add Project');
       }
 
       set(state => ({
@@ -239,7 +239,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Update Project');
       }
 
       set(state => ({
@@ -259,7 +259,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .eq('id', projectId);
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Delete Project');
       }
 
       set(state => ({

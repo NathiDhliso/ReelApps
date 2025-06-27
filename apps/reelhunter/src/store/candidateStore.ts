@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import { getSupabaseClient, handleSupabaseError } from '@reelapps/auth';
+import { getSupabaseClient } from '@reelapps/auth';
+
+// Helper function for error handling
+const handleSupabaseError = (error: any, context?: string) => {
+  console.error(`❌ ${context || 'Unknown'}:`, error);
+  if (error?.message) {
+    throw new Error(error.message);
+  }
+  throw error;
+};
 import { Database } from '@reelapps/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
@@ -45,7 +54,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
 
       if (profileError) {
         console.error('[candidateStore] Error fetching main profile:', profileError);
-        handleSupabaseError(profileError);
+        handleSupabaseError(profileError, 'Fetch Profile');
       }
 
       if (!profile) {
@@ -133,7 +142,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Update Profile');
       }
 
       set(state => ({
@@ -157,7 +166,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Add Skill');
       }
 
       set(state => ({
@@ -177,7 +186,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Update Skill');
       }
 
       set(state => ({
@@ -197,7 +206,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .eq('id', skillId);
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Delete Skill');
       }
 
       set(state => ({
@@ -219,7 +228,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Add Project');
       }
 
       set(state => ({
@@ -239,7 +248,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .single();
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Update Project');
       }
 
       set(state => ({
@@ -259,7 +268,7 @@ export const useCandidateStore = create<CandidateState>((set, get) => ({
         .eq('id', projectId);
 
       if (error) {
-        handleSupabaseError(error);
+        handleSupabaseError(error, 'Delete Project');
       }
 
       set(state => ({

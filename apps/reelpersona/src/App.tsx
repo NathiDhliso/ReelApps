@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthStore, initializeSupabase } from '@reelapps/auth'
 import { getMainAppUrl } from '@reelapps/config'
 import ReelPersona from './components/ReelPersona'
