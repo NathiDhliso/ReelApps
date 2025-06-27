@@ -1,39 +1,16 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
 import { useAuthStore } from '../../lib/auth';
-import { useSystemStore } from '../../store/systemStore';
 import Button from '../Button/Button';
 import styles from './Navigation.module.css';
 
-interface NavigationProps {
-  onLoginClick?: () => void;
-  onSignUpClick?: () => void;
-}
-
-const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) => {
+const Navigation: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user, profile, logout } = useAuthStore();
-  const { openAuthModal } = useSystemStore();
+  const navigate = useNavigate();
   const location = useLocation();
-  const isReelHunterPage = location.pathname.startsWith('/reelhunter');
-
-  const handleSignInClick = () => {
-    if (onLoginClick) {
-      onLoginClick();
-    } else {
-      openAuthModal('login');
-    }
-  };
-
-  const handleGetStartedClick = () => {
-    if (onSignUpClick) {
-      onSignUpClick();
-    } else {
-      openAuthModal('signup');
-    }
-  };
 
   return (
     <nav className={styles.navbar}>
@@ -49,48 +26,16 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) 
           <li><Link to="/" className={styles.navLink}>Home</Link></li>
           {isAuthenticated && (
             <>
-              {profile?.role !== 'recruiter' && (
-                <li>
-                  <Link to="/dashboard" className={styles.navLink}>
-                    My Dashboard
-                  </Link>
-                </li>
-              )}
-              {profile?.role === 'candidate' && (
-                <li><Link to="/reelskills" className={styles.navLink}>ReelSkills</Link></li>
-              )}
-              <li><Link to="/persona" className={styles.navLink}>ReelPersona</Link></li>
-              {profile?.role === 'recruiter' && (
-                <li><Link to="/reelhunter" className={styles.navLink}>ReelHunter</Link></li>
-              )}
-              {isReelHunterPage && profile?.role === 'recruiter' && (
-                <>
-                  <li>
-                    <Link
-                      to="/reelhunter#jobs"
-                      className={`${styles.navLink} ${location.hash === '' || location.hash === '#jobs' ? styles.navLinkActive : ''}`}
-                    >
-                      Job Postings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/reelhunter#candidates"
-                      className={`${styles.navLink} ${location.hash === '#candidates' ? styles.navLinkActive : ''}`}
-                    >
-                      Candidate Pool
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/reelhunter#analytics"
-                      className={`${styles.navLink} ${location.hash === '#analytics' ? styles.navLinkActive : ''}`}
-                    >
-                      Analytics
-                    </Link>
-                  </li>
-                </>
-              )}
+              <li>
+                <Link to="/dashboard" className={styles.navLink}>
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/status" className={styles.navLink}>
+                  Status
+                </Link>
+              </li>
             </>
           )}
         </ul>
@@ -116,10 +61,10 @@ const Navigation: React.FC<NavigationProps> = ({ onLoginClick, onSignUpClick }) 
             </>
           ) : (
             <>
-              <Button variant="outline" size="small" onClick={handleSignInClick} id="nav-login-button">
+              <Button variant="outline" size="small" onClick={() => navigate('/auth/login')} id="nav-login-button">
                 Sign In
               </Button>
-              <Button size="small" onClick={handleGetStartedClick}>
+              <Button size="small" onClick={() => navigate('/auth/signup')}>
                 Get Started
               </Button>
             </>

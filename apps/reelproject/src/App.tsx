@@ -165,6 +165,8 @@ function App() {
               <a 
                 href={mainUrl}
                 className="text-text-secondary hover:text-text-primary transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Back to ReelApps
               </a>

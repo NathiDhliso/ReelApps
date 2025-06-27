@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Brain, MessageCircle } from 'lucide-react';
+import { getSupabaseClient } from '@reelapps/auth';
 import styles from './ReelPersona.module.css';
 
 interface Question {
@@ -24,10 +25,28 @@ interface PersonaResults {
   summary: string;
   strengths: string[];
   growth_areas: string[];
+  detailed_insights?: {
+    work_style: {
+      collaboration: number;
+      independence: number;
+      leadership: number;
+      adaptability: number;
+    };
+    communication_style: string;
+    ideal_environment: string;
+    decision_making: string;
+    stress_management: string;
+  };
+  confidence_score?: number;
+}
+
+interface AiFeedback {
+  message: string;
+  insights: string[];
+  nextSteps: string;
 }
 
 const QUESTIONNAIRE: Question[] = [
-  // ... (questions are the same)
   { id: 1, text: "I enjoy exploring new ideas and concepts, even if they challenge my existing beliefs.", trait: 'openness' },
   { id: 2, text: "I often find myself drawn to creative activities like art, music, or writing.", trait: 'openness' },
   { id: 3, text: "I prefer to stick with familiar routines rather than trying new approaches.", trait: 'openness' },
@@ -51,7 +70,6 @@ const QUESTIONNAIRE: Question[] = [
 ];
 
 const CHAT_QUESTIONS = [
-  // ... (questions are the same)
   "Tell me about a recent challenge you faced and how you approached solving it.",
   "What motivates you most in your work or personal life?",
   "How do you typically handle stress or pressure?",
@@ -60,14 +78,12 @@ const CHAT_QUESTIONS = [
 ];
 
 const FOLLOW_UP_QUESTIONS = [
-  // ... (questions are the same)
   "That's interesting! Can you give me a specific example?",
   "How did that make you feel, and what did you learn from it?",
   "What would you do differently if you faced a similar situation again?",
   "How do others usually respond to your approach?",
   "What aspects of that situation energized or drained you the most?"
 ];
-
 
 const ReelPersona: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<'intro' | 'questionnaire' | 'chat' | 'results'>('intro');
@@ -81,16 +97,15 @@ const ReelPersona: React.FC = () => {
   const [results, setResults] = useState<PersonaResults | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState<AiFeedback | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // NOTE: The 'profile' object from the other version is not used here, so it is removed.
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
   useEffect(() => {
     if (currentStep === 'chat' && chatMessages.length === 0) {
-      // Start chat with a standard greeting
       const firstMessage: ChatMessage = {
         id: 1,
         text: `Hello! I'm your AI personality coach. Let's have a natural conversation to better understand your personality. ${CHAT_QUESTIONS[0]}`,
@@ -102,7 +117,6 @@ const ReelPersona: React.FC = () => {
   }, [currentStep, chatMessages.length]);
 
   const handleQuestionnaireAnswer = (value: number) => {
-    // ... (This function is the same)
     const currentQuestion = QUESTIONNAIRE[currentQuestionIndex];
     setQuestionnaireAnswers(prev => ({
       ...prev,
@@ -117,7 +131,6 @@ const ReelPersona: React.FC = () => {
   };
 
   const handleChatSubmit = (e: React.FormEvent) => {
-    // ... (This function is the same)
     e.preventDefault();
     if (!currentChatInput.trim() || isAnalyzing) return;
 
@@ -137,7 +150,6 @@ const ReelPersona: React.FC = () => {
   };
 
   const handleConversationalAnalysis = async (userResponse: string) => {
-     // ... (This function is the same)
      setIsAnalyzing(true);
     
      try {
@@ -151,15 +163,33 @@ const ReelPersona: React.FC = () => {
        
        await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
        
-       const nextResponse = generateContextualResponse(userResponse, conversationDepth);
+       // Call edge function for AI reply
+       let nextResponse = '';
+       try {
+         const supabase = getSupabaseClient();
+         const { data, error: fnError } = await supabase.functions.invoke('chat-persona', {
+           body: {
+             conversationHistory: chatMessages.map(m => ({ role: m.isUser ? 'user' : 'assistant', content: m.text })),
+             nextUserMessage: userResponse,
+           }
+         });
+         if (fnError) throw fnError;
+         if (data && data.reply) {
+           nextResponse = data.reply;
+         }
+       } catch (apiErr) {
+         console.error('chat-persona error', apiErr);
+         // Fallback to local generator
+         nextResponse = generateContextualResponse(userResponse, conversationDepth);
+       }
        
-        const aiMessage: ChatMessage = {
-          id: chatMessages.length + 2,
+       const aiMessage: ChatMessage = {
+         id: chatMessages.length + 2,
          text: nextResponse,
-          isUser: false,
-          timestamp: new Date()
-        };
- 
+         isUser: false,
+         timestamp: new Date()
+       };
+       
        setChatMessages(prev => prev.slice(0, -1).concat(aiMessage));
  
        if (conversationDepth < 2 && shouldFollowUp(userResponse)) {
@@ -168,16 +198,29 @@ const ReelPersona: React.FC = () => {
          setChatQuestionIndex(prev => prev + 1);
          setConversationDepth(0);
       } else {
+        // Conversation complete - show AI feedback before processing
          setTimeout(async () => {
-           const finalMessage: ChatMessage = {
+          const feedbackMessage: ChatMessage = {
              id: chatMessages.length + 3,
-             text: "Thank you for sharing! I'm now analyzing your responses to create your comprehensive personality profile...",
+            text: "Great conversation! I'm now analyzing your responses to create your comprehensive personality profile...",
              isUser: false,
              timestamp: new Date()
            };
-           setChatMessages(prev => [...prev, finalMessage]);
-           
-           setTimeout(() => processResults(), 2000);
+          setChatMessages(prev => [...prev, feedbackMessage]);
+          
+          // Generate AI feedback about the conversation
+          const feedback: AiFeedback = {
+            message: "Thank you for sharing so openly! Based on our conversation, I've gathered valuable insights about your personality.",
+            insights: [
+              "You demonstrate strong self-awareness and reflection in your responses",
+              "Your communication style shows thoughtful consideration of different perspectives",
+              "You appear to value both personal growth and meaningful connections"
+            ],
+            nextSteps: "I'm now processing all your responses to create a detailed personality profile based on the Big Five model. This will include your trait scores, strengths, growth areas, and personalized insights."
+          };
+          setAiFeedback(feedback);
+          
+          setTimeout(() => processResults(), 3000);
          }, 1500);
        }
      } catch (error) {
@@ -189,29 +232,30 @@ const ReelPersona: React.FC = () => {
   };
 
   const generateContextualResponse = (userResponse: string, depth: number): string => {
-     // ... (This function is the same)
      const responseLength = userResponse.trim().split(' ').length;
      const isDetailedResponse = responseLength > 20;
      const lowerResponse = userResponse.toLowerCase();
      
-     if (lowerResponse.includes('are you real') || lowerResponse.includes('are you ai')) {
-       return "Yes, I'm an AI personality coach! I'm here to have a real conversation with you to understand your personality better. I may be artificial, but our conversation and your insights are completely authentic. " + 
-              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Let's continue exploring your personality.");
+     if (/(^|\s)(hi|hello|hey|good\s(morning|afternoon|evening))\b/i.test(lowerResponse)) {
+       return "Hi there! I'm glad you're here. Remember, our goal is to understand your personality more deeply, so feel free to share honest examples from your life. " +
+              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Let's dive back into your experiences—what comes to mind?");
      }
      
-     if (lowerResponse.includes('hi') || lowerResponse.includes('hello') || lowerResponse.includes('hey')) {
-       return "Hello! It's great to meet you. I'm excited to learn about your unique personality through our conversation. " + 
-              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Let's get started!");
+     if (/how\s+are\s+you|how\s+do\s+you\s+feel/.test(lowerResponse)) {
+       return "I'm functioning perfectly, thank you! I'm much more interested in learning about *you*. The more detail you give, the more accurate your personality insights will be. " +
+              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Could you share an experience that shaped the way you approach challenges?");
      }
      
-     if (lowerResponse.includes('how are you') || lowerResponse.includes('how do you feel')) {
-       return "I'm doing well, thank you for asking! I'm here and ready to focus entirely on understanding you better. " + 
-              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Let's talk about you!");
+     // Light small-talk topics (weather, day, etc.)
+     if (/(weather|rainy|sunny|weekend|day\s+going)/.test(lowerResponse)) {
+       return "That's always interesting! 😊 Just a reminder: the reason we're chatting is to build a rich personality profile for you. When you're ready, tell me about " +
+              (chatQuestionIndex < CHAT_QUESTIONS.length ? `this: ${CHAT_QUESTIONS[chatQuestionIndex]}` : "an experience that really shaped who you are.");
      }
      
-     if (lowerResponse.includes('what') && lowerResponse.includes('you')) {
-       return "I'm an AI designed to help people understand their personalities better through natural conversation. I use the Big Five personality model to provide insights. " + 
-              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Now, let's focus on you!");
+     // Respond to "I'm good", "I'm fine", etc.
+     if (/(i'?m\s+(good|fine|okay|ok)|doing\s+(well|good|fine))/i.test(lowerResponse)) {
+       return "I'm glad to hear that! 😊 Remember, the goal of our chat is to learn more about *you* through your experiences and reflections. " +
+              (chatQuestionIndex < CHAT_QUESTIONS.length ? CHAT_QUESTIONS[chatQuestionIndex] : "Could you share a recent experience that tells me more about your personality?");
      }
      
      const acknowledgments = [
@@ -249,7 +293,6 @@ const ReelPersona: React.FC = () => {
   };
 
   const shouldFollowUp = (response: string): boolean => {
-     // ... (This function is the same)
      const wordCount = response.trim().split(' ').length;
      const hasPersonalInsight = /\b(feel|think|believe|realize|learn|discover|understand)\b/i.test(response);
      const hasConcreteExample = /\b(example|instance|time when|situation|experience)\b/i.test(response);
@@ -262,21 +305,36 @@ const ReelPersona: React.FC = () => {
     setError(null);
 
     try {
-      // In a real implementation, this would call a backend API
-      // For now, we'll simulate a response with a delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const supabase = getSupabaseClient();
+      
+      // Prepare conversation text from chat messages
+      const conversationalText = chatMessages
+        .filter(msg => msg.isUser)
+        .map(msg => msg.text)
+        .join('\n\n');
 
-      // Convert questionnaire answers and chat data for analysis
-      const analysisData = {
+      // Call the analyze-persona edge function
+      const { data, error: functionError } = await supabase.functions.invoke('analyze-persona', {
+        body: {
         questionnaireAnswers,
-        chatMessages: chatMessages.filter(msg => msg.isUser).map(msg => msg.text),
-        conversationDepth
-      };
+          conversationalText,
+          userId: (await supabase.auth.getUser()).data.user?.id
+        }
+      });
 
-      // In real implementation, would send analysisData to backend
-      console.log('Analysis data:', analysisData);
+      if (functionError) throw functionError;
 
-      // Simulated AI response
+      if (data) {
+        setResults(data);
+        setCurrentStep('results');
+      } else {
+        throw new Error('No data received from analysis');
+      }
+    } catch (err) {
+      console.error('Error processing results:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred during analysis');
+      
+      // Fallback to mock results if API fails
       const mockResults: PersonaResults = {
         openness: 78,
         conscientiousness: 65,
@@ -293,20 +351,30 @@ const ReelPersona: React.FC = () => {
           "Could benefit from more structured planning approaches",
           "May need to assert personal needs more in collaborative settings",
           "Could develop more comfort with ambiguity and uncertainty"
-        ]
+        ],
+        detailed_insights: {
+          work_style: {
+            collaboration: 75,
+            independence: 60,
+            leadership: 55,
+            adaptability: 80
+          },
+          communication_style: "Thoughtful and empathetic communicator who values clarity and understanding",
+          ideal_environment: "Collaborative spaces with opportunities for creative expression and meaningful work",
+          decision_making: "Considers multiple perspectives and seeks consensus when possible",
+          stress_management: "Generally resilient with occasional need for structured support systems"
+        },
+        confidence_score: 85
       };
       
       setResults(mockResults);
       setCurrentStep('results');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
   };
 
   const getTraitLabel = (trait: string, value: number) => {
-    // ... (This function is the same)
     const labels: Record<string, string> = {
       openness: value > 70 ? 'Highly Creative' : value > 30 ? 'Moderately Open' : 'Conventional',
       conscientiousness: value > 70 ? 'Highly Organized' : value > 30 ? 'Moderately Disciplined' : 'Flexible',
@@ -335,7 +403,7 @@ const ReelPersona: React.FC = () => {
             <strong>Conversational Analysis:</strong> A natural dialogue with our AI personality coach
           </li>
           <li>
-            <strong>Comprehensive Results:</strong> Detailed insights into your strengths and growth opportunities
+            <strong>AI-Powered Insights:</strong> Advanced analysis providing personalized feedback and growth recommendations
           </li>
           </ul>
           <p>
@@ -348,6 +416,7 @@ const ReelPersona: React.FC = () => {
             className={styles.primaryButton}
             onClick={() => setCurrentStep('questionnaire')}
           >
+            <Sparkles size={18} style={{ marginRight: '8px' }} />
             Start Assessment
             <ArrowRight size={18} />
           </button>
@@ -357,7 +426,6 @@ const ReelPersona: React.FC = () => {
   );
 
   const renderQuestionnaire = () => {
-    // ... (This render function is the same)
     const currentQuestion = QUESTIONNAIRE[currentQuestionIndex];
     const progress = ((currentQuestionIndex + 1) / QUESTIONNAIRE.length) * 100;
 
@@ -365,15 +433,15 @@ const ReelPersona: React.FC = () => {
       <div className={styles.questionnaire}>
           <div className={styles.questionnaireContent}>
           <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--primary-navy)', marginBottom: 'var(--spacing-sm)' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: 'var(--spacing-sm)' }}>
               Question {currentQuestionIndex + 1} of {QUESTIONNAIRE.length}
             </h2>
             <span style={{ 
               padding: 'var(--spacing-xs) var(--spacing-md)', 
-              background: 'var(--light-gray)', 
+              background: 'linear-gradient(145deg, #dbeafe, #bfdbfe)', 
               borderRadius: '20px', 
               fontSize: '14px',
-              color: 'var(--text-secondary)'
+              color: '#1e40af'
             }}>
               {currentQuestion.trait.charAt(0).toUpperCase() + currentQuestion.trait.slice(1)}
             </span>
@@ -413,7 +481,10 @@ const ReelPersona: React.FC = () => {
     <div className={styles.chat}>
         <div className={styles.chatContent}>
         <div className={styles.chatHeader}>
-          <h2>Conversational Analysis</h2>
+          <h2>
+            <MessageCircle size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+            Conversational Analysis
+          </h2>
           <p>Let's have a natural conversation to understand your personality better</p>
         </div>
         
@@ -431,32 +502,52 @@ const ReelPersona: React.FC = () => {
                 </div>
               </div>
             ))}
+          
+          {aiFeedback && (
+            <div className={styles.aiFeedback}>
+              <div className={styles.aiFeedbackTitle}>
+                <Brain size={20} />
+                AI Analysis Complete
+              </div>
+              <div className={styles.aiFeedbackContent}>
+                <p>{aiFeedback.message}</p>
+                <ul>
+                  {aiFeedback.insights.map((insight, index) => (
+                    <li key={index}>{insight}</li>
+                  ))}
+                </ul>
+                <p style={{ fontStyle: 'italic', marginTop: 'var(--spacing-md)' }}>
+                  {aiFeedback.nextSteps}
+                </p>
+              </div>
+            </div>
+          )}
+          
             <div ref={chatEndRef} />
           </div>
         
-          {chatQuestionIndex < CHAT_QUESTIONS.length - 1 ? (
+        {chatQuestionIndex < CHAT_QUESTIONS.length - 1 || (chatQuestionIndex === CHAT_QUESTIONS.length - 1 && !aiFeedback) ? (
             <form onSubmit={handleChatSubmit} className={styles.chatForm}>
               <input
                 type="text"
                 value={currentChatInput}
-                onChange={(e) => setCurrentChatInput((e.target as HTMLInputElement).value)}
+                onChange={(e) => setCurrentChatInput(e.target.value)}
                 placeholder="Type your response..."
                 className={styles.chatInput}
-                disabled={isLoading}
+              disabled={isLoading || isAnalyzing}
               />
             <button 
               type="submit" 
               className={styles.sendButton}
-              disabled={!currentChatInput.trim() || isLoading}
+              disabled={!currentChatInput.trim() || isLoading || isAnalyzing}
             >
               <ArrowRight size={16} />
               </button>
             </form>
           ) : (
             <div className={styles.processingMessage}>
-              <p>Great! I'm now analyzing your responses...</p>
             {isLoading && (
-              <span className={styles.loader}>Analyzing...</span>
+              <span className={styles.loader}>Processing your personality profile...</span>
             )}
             </div>
           )}

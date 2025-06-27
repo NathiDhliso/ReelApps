@@ -7,4 +7,8 @@ pnpm --filter @reelapps/reelpersona dev
 pnpm --filter @reelapps/reelhunter dev	
 pnpm --filter @reelapps/reelproject dev
 
-pnpm -r --filter @reelapps/home --filter @reelapps/reelcv --filter @reelapps/reelpersona --filter @reelapps/reelhunter --filter @reelapps/reelproject --filter @reelapps/reelskills dev
+# Kill any existing processes first
+taskkill /f /im node.exe
+
+# Then start all apps
+pnpm --parallel --filter "@reelapps/*" dev

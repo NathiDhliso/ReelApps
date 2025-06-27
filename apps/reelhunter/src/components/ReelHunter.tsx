@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Database } from '../types/database';
 import { Search, Plus, Filter, SortDesc } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '@reelapps/auth';
 import JobPostingForm from './JobPostingForm';
 import CandidateResults from './CandidateResults';
 import { Button, Card } from '@reelapps/ui';

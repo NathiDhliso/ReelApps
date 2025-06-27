@@ -1,3 +1,7 @@
+const getEnv = (key: string, defaultValue: string): string => {
+  return (import.meta as any).env?.[key] || defaultValue;
+};
+
 export interface AppConfig {
   id: string;
   name: string;
@@ -8,10 +12,7 @@ export interface AppConfig {
   mainNav: boolean;
 }
 
-const getEnv = (key: string, defaultValue: string): string => {
-    return (import.meta as any).env?.[key] || defaultValue;
-}
-
+// Export the apps configuration
 export const apps: AppConfig[] = [
   {
     id: 'reel-cv',
@@ -23,15 +24,6 @@ export const apps: AppConfig[] = [
     mainNav: true
   },
   {
-    id: 'reel-apps',
-    name: 'ReelApps',
-    url: getEnv('VITE_HOME_URL', 'http://localhost:5173'),
-    description: 'The main dashboard.',
-    icon: '🏠',
-    roles: ['admin', 'recruiter', 'candidate'],
-    mainNav: false
-  },
-  {
     id: 'reel-hunter',
     name: 'ReelHunter',
     url: getEnv('VITE_REELHUNTER_URL', 'http://localhost:5175'),
@@ -41,21 +33,21 @@ export const apps: AppConfig[] = [
     mainNav: true
   },
   {
-    id: 'reel-persona',
-    name: 'ReelPersona',
-    url: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5176'),
-    description: 'Analyze and understand candidate personalities.',
-    icon: '🧠',
-    roles: ['recruiter', 'admin'],
-    mainNav: true
-  },
-  {
     id: 'reel-skills',
     name: 'ReelSkills',
-    url: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5177'),
+    url: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5176'),
     description: 'Showcase and verify your professional skills.',
     icon: '🛠️',
     roles: ['candidate', 'admin'],
+    mainNav: true
+  },
+  {
+    id: 'reel-persona',
+    name: 'ReelPersona',
+    url: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5177'),
+    description: 'Analyze and understand candidate personalities.',
+    icon: '🧠',
+    roles: ['recruiter', 'admin', 'candidate'],
     mainNav: true
   },
   {
@@ -119,8 +111,8 @@ export const fetchUserAppsFromDatabase = async (supabase: any): Promise<AppConfi
     const envUrls = {
       reelcv: getEnv('VITE_REELCV_URL', 'http://localhost:5174'),
       reelhunter: getEnv('VITE_REELHUNTER_URL', 'http://localhost:5175'),
-      reelskills: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5177'),
-      reelpersona: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5176'),
+      reelskills: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5176'),
+      reelpersona: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5177'),
       reelproject: getEnv('VITE_REELPROJECT_URL', 'http://localhost:5178')
     };
     return data.map((app: any) => ({

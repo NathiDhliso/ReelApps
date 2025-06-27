@@ -262,13 +262,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     set({ isInitializing: true, error: null });
     console.log('🔄 AUTH STORE: Initializing auth store...');
-    const supabase = getSupabaseClient();
+      const supabase = getSupabaseClient();
     if (!supabase) {
         console.error("AUTH STORE: Supabase client not initialized before auth store.");
         set({ isInitializing: false, error: "Supabase client not available." });
         return;
     }
-    console.log('✅ AUTH STORE: Got Supabase client');
+      console.log('✅ AUTH STORE: Got Supabase client');
     startSessionCleanupService(supabase);
 
     // Check for session info in the URL hash first (coming from SSO redirect)
@@ -292,16 +292,16 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     // Now, continue with standard initialization
-    const shouldRedirect = await shouldRedirectToMainApp(supabase);
-      
-    if (shouldRedirect) {
+        const shouldRedirect = await shouldRedirectToMainApp(supabase);
+        
+        if (shouldRedirect) {
       console.log('🔄 AUTH STORE: No valid session, redirecting to main app for authentication');
-      redirectToMainApp();
+          redirectToMainApp();
       return;
     }
 
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
         console.log(`✅ AUTH STORE: Found existing session for user: ${session.user.id}`);
         set({
             isAuthenticated: true,
@@ -310,13 +310,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         });
         await get().refreshProfile();
         await syncSessionAcrossApps(supabase);
-    } else {
+      } else {
         console.log('⚠️ AUTH STORE: No session found after checks.');
         set({ isAuthenticated: false, user: null, isInitializing: false });
-    }
-    
-    console.log('✅ AUTH STORE: Initialization completed successfully');
-},
+      }
+      
+      console.log('✅ AUTH STORE: Initialization completed successfully');
+  },
 
   sendPasswordResetEmail: async (email: string) => {
     set({ isLoading: true });

@@ -1,14 +1,16 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider/ThemeProvider';
 import { testSupabaseConnection } from '@reelapps/auth';
 import { getMainAppUrl } from '@reelapps/config';
+import { useAuthStore } from './lib/auth';
 import HomePage from './components/HomePage/HomePage';
 import Dashboard from './components/Dashboard/Dashboard';
-import AuthModal from './components/Auth/AuthModal';
+import AuthPage from './pages/AuthPage';
 import PasswordReset from './pages/PasswordReset';
 import StatusDashboard from './components/StatusDashboard/StatusDashboard';
 import SystemNotifications from './components/SystemNotifications/SystemNotifications';
+import Navigation from './components/Navigation/Navigation';
 import './styles/globals.css';
 
 // Lazy load app components
@@ -124,6 +126,39 @@ const AppWrapper: React.FC<{
         </div>
       </header>
       <main>{children}</main>
+    </div>
+  );
+};
+
+// Fixed protected route component that doesn't violate hooks rules
+const ProtectedRoute: React.FC = () => {
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  return isAuthenticated ? <Outlet /> : <Navigate to="/auth/login" replace />;
+};
+
+// Component to conditionally render navigation
+const AppLayout: React.FC = () => {
+  const location = useLocation();
+  const hideNavigation = location.pathname.startsWith('/auth');
+
+  return (
+    <div className="App">
+      {!hideNavigation && <Navigation />}
+      <SystemNotifications />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/auth/:mode" element={<AuthPage />} />
+        <Route path="/auth" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+        
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/status" element={<StatusDashboard />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   );
 };
@@ -305,17 +340,7 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
-        <div className="App">
-          <SystemNotifications />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/password-reset" element={<PasswordReset />} />
-            <Route path="/status" element={<StatusDashboard />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          <AuthModal />
-        </div>
+        <AppLayout />
       </Router>
     </ThemeProvider>
   );

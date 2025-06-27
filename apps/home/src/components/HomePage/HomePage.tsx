@@ -16,7 +16,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth';
-import { useSystemStore } from '../../store/systemStore';
+import { useNavigate } from 'react-router-dom';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
 import { launchAppWithAuth } from '@reelapps/auth';
@@ -35,10 +35,10 @@ const iconMap = {
 
 const HomePage: React.FC = () => {
   const { isAuthenticated, profile } = useAuthStore();
-  const { openAuthModal } = useSystemStore();
+  const navigate = useNavigate();
 
   const handleGetStarted = () => {
-    openAuthModal('signup');
+    navigate('/auth/signup');
   };
 
   const handleLaunchApp = async (appUrl: string) => {

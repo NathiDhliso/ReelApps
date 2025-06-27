@@ -10,26 +10,14 @@ export const SHARED_SESSION_KEY = 'reelapps-shared-auth';
  * Uses environment variables to support both development and production environments
  */
 export const AUTH_CONFIG = {
-  // Domain URLs - dynamically determined from environment
+  // Domain URLs - using environment variables with fallbacks
   domains: {
-    main: process.env.NODE_ENV === 'production' 
-      ? 'https://www.reelapps.co.za' 
-      : (typeof window !== 'undefined' && (window as any).VITE_APP_MAIN_URL) || 'http://localhost:5173',
-    reelcv: process.env.NODE_ENV === 'production' 
-      ? 'https://www.reelcv.co.za' 
-      : (typeof window !== 'undefined' && (window as any).VITE_APP_REELCV_URL) || 'http://localhost:5174',
-    reelhunter: process.env.NODE_ENV === 'production' 
-      ? 'https://www.reelhunter.co.za' 
-      : (typeof window !== 'undefined' && (window as any).VITE_APP_REELHUNTER_URL) || 'http://localhost:5175',
-    reelpersona: process.env.NODE_ENV === 'production' 
-      ? 'https://www.reelpersona.co.za' 
-      : (typeof window !== 'undefined' && (window as any).VITE_APP_REELPERSONA_URL) || 'http://localhost:5176',
-    reelproject: process.env.NODE_ENV === 'production' 
-      ? 'https://www.reelproject.co.za' 
-      : (typeof window !== 'undefined' && (window as any).VITE_APP_REELPROJECT_URL) || 'http://localhost:5177',
-    reelskills: process.env.NODE_ENV === 'production' 
-      ? 'https://www.reelskills.co.za' 
-      : (typeof window !== 'undefined' && (window as any).VITE_APP_REELSKILLS_URL) || 'http://localhost:5178',
+    main: (typeof window !== 'undefined' && (import.meta as any).env?.VITE_HOME_URL) || 'http://localhost:5173',
+    reelcv: (typeof window !== 'undefined' && (import.meta as any).env?.VITE_REELCV_URL) || 'http://localhost:5174',
+    reelhunter: (typeof window !== 'undefined' && (import.meta as any).env?.VITE_REELHUNTER_URL) || 'http://localhost:5175',
+    reelpersona: (typeof window !== 'undefined' && (import.meta as any).env?.VITE_REELPERSONA_URL) || 'http://localhost:5176',
+    reelskills: (typeof window !== 'undefined' && (import.meta as any).env?.VITE_REELSKILLS_URL) || 'http://localhost:5177',
+    reelproject: (typeof window !== 'undefined' && (import.meta as any).env?.VITE_REELPROJECT_URL) || 'http://localhost:5178',
   },
   
   // Session options
@@ -161,10 +149,10 @@ export const checkDatabaseSession = async (supabase: SupabaseClient<any>): Promi
 const updateSessionActivity = async (supabase: SupabaseClient<any>, userId: string) => {
   try {
     console.log('📝 SHARED AUTH: Updating session activity for user:', userId);
-
+    
     const now = new Date().toISOString();
     const expiresAt = new Date(Date.now() + AUTH_CONFIG.sessionTimeout * 1000).toISOString();
-
+    
     // Use upsert to handle both insert and update atomically, preventing race conditions.
     const { error: upsertError } = await supabase
       .from('user_sessions')
@@ -177,7 +165,7 @@ const updateSessionActivity = async (supabase: SupabaseClient<any>, userId: stri
       }, {
         onConflict: 'user_id', // Specify the column that has the unique constraint
       });
-
+    
     if (upsertError) {
       console.log('⚠️ SHARED AUTH: Could not upsert session activity:', upsertError.message);
     } else {
@@ -250,11 +238,11 @@ export const handleReturnFromMainApp = () => {
 export const handleMainAppReturn = async (supabase: SupabaseClient<any>): Promise<string | null> => {
   const urlParams = new URLSearchParams(window.location.search);
   const returnTo = urlParams.get('return_to');
-
+  
   if (returnTo) {
     console.log(`🔄 SHARED AUTH: Main app received return_to parameter: ${returnTo}`);
     const { data: { session } } = await supabase.auth.getSession();
-
+    
     if (session?.user) {
       console.log(`✅ SHARED AUTH: User is authenticated, preparing to redirect back to: ${returnTo}`);
       

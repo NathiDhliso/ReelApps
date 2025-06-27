@@ -113,6 +113,8 @@ function App() {
               <a 
                 href={mainUrl}
                 className="text-text-secondary hover:text-text-primary transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Back to ReelApps
               </a>
@@ -130,7 +132,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-4 mb-4 md:mb-0">
-              <a href={mainUrl} className="text-text-secondary hover:text-text-primary transition-colors">
+              <a href={mainUrl} className="text-text-secondary hover:text-text-primary transition-colors" target="_blank" rel="noopener noreferrer">
                 ← Back to ReelApps
               </a>
               <span className="text-text-secondary">|</span>

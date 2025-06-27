@@ -190,7 +190,7 @@ export const setupStorageEventHandler = (supabase: SupabaseClient<any>): void =>
         // Session was cleared in another tab
         console.log('🚪 SESSION CLEANUP: Session cleared in another tab, signing out...');
         await supabase.auth.signOut();
-      } else {
+  } else {
         // Session was updated in another tab, validate it
         await validateAndCleanupCurrentSession(supabase);
       }
