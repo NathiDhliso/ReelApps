@@ -248,44 +248,42 @@ export const handleReturnFromMainApp = () => {
 
 // Handle return redirect after successful authentication on main app
 export const handleMainAppReturn = async (supabase: SupabaseClient<any>): Promise<string | null> => {
-  if (typeof window === 'undefined') return null;
-  
-  console.log('🔍 SHARED AUTH: handleMainAppReturn called');
-  
   const urlParams = new URLSearchParams(window.location.search);
   const returnTo = urlParams.get('return_to');
-  
-  console.log('🔍 SHARED AUTH: return_to parameter:', returnTo);
-  
+
   if (returnTo) {
-    console.log('🔄 SHARED AUTH: Main app received return_to parameter:', returnTo);
-    
-    // Check if user is authenticated
+    console.log(`🔄 SHARED AUTH: Main app received return_to parameter: ${returnTo}`);
     const { data: { session } } = await supabase.auth.getSession();
-    
-    console.log('🔍 SHARED AUTH: Current session exists:', !!session?.user);
-    
+
     if (session?.user) {
-      console.log('✅ SHARED AUTH: User is authenticated, preparing to redirect back to:', returnTo);
+      console.log(`✅ SHARED AUTH: User is authenticated, preparing to redirect back to: ${returnTo}`);
       
-      // Update session in database
       await updateSessionActivity(supabase, session.user.id);
       
-      // Clean the URL of the return_to parameter before redirecting
-      const newUrl = window.location.pathname + window.location.hash;
-      window.history.replaceState({}, document.title, newUrl);
-      
-      // Return the decoded URL for the caller to handle the redirect
-      console.log('🚀 SHARED AUTH: Returning redirect URL:', decodeURIComponent(returnTo));
-      return decodeURIComponent(returnTo);
+      const { data: { session: newSession } } = await supabase.auth.getSession();
+
+      if (newSession) {
+        const redirectUrl = new URL(decodeURIComponent(returnTo));
+        const hashParams = new URLSearchParams();
+        hashParams.set('access_token', newSession.access_token);
+        hashParams.set('refresh_token', newSession.refresh_token);
+        if (newSession.expires_in) {
+            hashParams.set('expires_in', newSession.expires_in.toString());
+        }
+        
+        redirectUrl.hash = hashParams.toString();
+        
+        console.log(`🚀 SHARED AUTH: Returning redirect URL with session hash: ${redirectUrl.toString()}`);
+        return redirectUrl.toString();
+      }
     } else {
-      console.log('📋 SHARED AUTH: User not authenticated yet, no redirect needed from here.');
-      return null;
+      console.log('📋 SHARED AUTH: Waiting for user authentication to redirect back');
     }
   } else {
     console.log('📋 SHARED AUTH: No return_to parameter found, no redirect.');
-    return null;
   }
+
+  return null;
 };
 
 // Launch app with database-based authentication check

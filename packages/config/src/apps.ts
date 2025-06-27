@@ -1,70 +1,72 @@
 export interface AppConfig {
   id: string;
   name: string;
-  description: string;
   url: string;
+  description: string;
+  icon: string;
   roles: ('candidate' | 'recruiter' | 'admin')[];
-  icon?: string;
+  mainNav: boolean;
 }
 
-// Environment-specific URL configuration
-const getEnvironmentUrls = () => {
-  const isDev = process.env.NODE_ENV === 'development' || 
-                 (typeof window !== 'undefined' && window.location.hostname === 'localhost');
-  
-  return {
-    main: isDev ? 'http://localhost:5173' : 'https://www.reelapps.co.za',
-    reelcv: isDev ? 'http://localhost:5174' : 'https://www.reelcv.co.za',
-    reelhunter: isDev ? 'http://localhost:5176' : 'https://www.reelhunter.co.za',
-    reelpersona: isDev ? 'http://localhost:5177' : 'https://www.reelpersona.co.za',
-    reelproject: isDev ? 'http://localhost:5178' : 'https://www.reelprojects.co.za',
-    reelskills: isDev ? 'http://localhost:5179' : 'https://www.reelskills.co.za'
-  };
-};
+const getEnv = (key: string, defaultValue: string): string => {
+    return (import.meta as any).env?.[key] || defaultValue;
+}
 
 export const apps: AppConfig[] = [
   {
-    id: 'reelcv',
+    id: 'reel-cv',
     name: 'ReelCV',
-    description: 'Dynamic candidate profiles that go beyond traditional resumes',
-    url: getEnvironmentUrls().reelcv,
-    roles: ['candidate', 'admin'],
-    icon: 'User'
+    url: getEnv('VITE_REELCV_URL', 'http://localhost:5174'),
+    description: 'Create and manage your video-based CV.',
+    icon: '📄',
+    roles: ['candidate'],
+    mainNav: true
   },
   {
-    id: 'reelhunter',
+    id: 'reel-apps',
+    name: 'ReelApps',
+    url: getEnv('VITE_HOME_URL', 'http://localhost:5173'),
+    description: 'The main dashboard.',
+    icon: '🏠',
+    roles: ['admin', 'recruiter', 'candidate'],
+    mainNav: false
+  },
+  {
+    id: 'reel-hunter',
     name: 'ReelHunter',
-    description: 'AI-powered recruitment platform for modern hiring teams',
-    url: getEnvironmentUrls().reelhunter,
+    url: getEnv('VITE_REELHUNTER_URL', 'http://localhost:5175'),
+    description: 'Find and hire top talent with video insights.',
+    icon: '🎯',
     roles: ['recruiter', 'admin'],
-    icon: 'Search'
+    mainNav: true
   },
   {
-    id: 'reelskills',
-    name: 'ReelSkills',
-    description: 'Skill verification and development platform',
-    url: getEnvironmentUrls().reelskills,
-    roles: ['candidate', 'admin'],
-    icon: 'Target'
-  },
-  // --- ADDED: ReelPersona Configuration ---
-  {
-    id: 'reelpersona',
+    id: 'reel-persona',
     name: 'ReelPersona',
-    description: 'AI-driven personality assessments for cultural fit',
-    url: getEnvironmentUrls().reelpersona,
-    roles: ['candidate', 'recruiter', 'admin'],
-    icon: 'Smile'
+    url: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5176'),
+    description: 'Analyze and understand candidate personalities.',
+    icon: '🧠',
+    roles: ['recruiter', 'admin'],
+    mainNav: true
   },
-  // --- ADDED: ReelProject Configuration ---
   {
-    id: 'reelproject',
+    id: 'reel-skills',
+    name: 'ReelSkills',
+    url: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5177'),
+    description: 'Showcase and verify your professional skills.',
+    icon: '🛠️',
+    roles: ['candidate', 'admin'],
+    mainNav: true
+  },
+  {
+    id: 'reel-project',
     name: 'ReelProject',
-    description: 'Collaborative project management for freelance teams',
-    url: getEnvironmentUrls().reelproject,
-    roles: ['candidate', 'recruiter', 'admin'],
-    icon: 'Briefcase'
-  }
+    url: getEnv('VITE_REELPROJECT_URL', 'http://localhost:5178'),
+    description: 'Manage and collaborate on projects.',
+    icon: '🚀',
+    roles: ['admin', 'recruiter', 'candidate'],
+    mainNav: true
+  },
 ];
 
 /**
@@ -90,7 +92,7 @@ export const getAppsForRole = (role: 'candidate' | 'recruiter' | 'admin'): AppCo
 
 // --- ADDED: Helper function to get main app URL ---
 export const getMainAppUrl = (): string => {
-  return getEnvironmentUrls().main;
+  return getEnv('VITE_HOME_URL', 'http://localhost:5173');
 };
 
 /**
@@ -114,7 +116,13 @@ export const fetchUserAppsFromDatabase = async (supabase: any): Promise<AppConfi
     }
     
     // Map database results to AppConfig format with environment-specific URLs
-    const envUrls = getEnvironmentUrls();
+    const envUrls = {
+      reelcv: getEnv('VITE_REELCV_URL', 'http://localhost:5174'),
+      reelhunter: getEnv('VITE_REELHUNTER_URL', 'http://localhost:5175'),
+      reelskills: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5177'),
+      reelpersona: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5176'),
+      reelproject: getEnv('VITE_REELPROJECT_URL', 'http://localhost:5178')
+    };
     return data.map((app: any) => ({
       id: app.app_id,
       name: app.app_name,
@@ -134,11 +142,11 @@ export const fetchUserAppsFromDatabase = async (supabase: any): Promise<AppConfi
  */
 const getIconForApp = (appId: string): string => {
   const iconMap: Record<string, string> = {
-    'reelcv': 'User',
-    'reelhunter': 'Search',
-    'reelskills': 'Target',
-    'reelpersona': 'Smile',
-    'reelproject': 'Briefcase'
+    'reelcv': '📄',
+    'reelhunter': '🎯',
+    'reelskills': '🛠️',
+    'reelpersona': '🧠',
+    'reelproject': '🚀'
   };
-  return iconMap[appId] || 'User';
+  return iconMap[appId] || '📄';
 };
