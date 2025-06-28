@@ -96,7 +96,7 @@ function App() {
       }
     };
     initializeApp();
-  }, [initialize]);
+  }, []);
 
   // Show loading while initializing
   if (isInitializing || isLoading) {

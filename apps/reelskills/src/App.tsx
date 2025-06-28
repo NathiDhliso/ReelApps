@@ -39,7 +39,7 @@ function App() {
       }
     };
     initializeApp();
-  }, [initialize]);
+  }, []); // ✅ CORRECTED: Use empty dependency array for one-time initialization
 
   // Show loading while initializing
   if (isInitializing || isLoading) {

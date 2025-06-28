@@ -16,6 +16,7 @@ import {
 import { useAuthStore } from '../../lib/auth';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
+import { launchAppWithAuth } from '@reelapps/auth';
 import styles from './Dashboard.module.css';
 
 const iconMap = {
@@ -32,6 +33,18 @@ const iconMap = {
 
 const Dashboard: React.FC = () => {
   const { isAuthenticated, profile } = useAuthStore();
+
+  const handleLaunchApp = async (appUrl: string) => {
+    try {
+      await launchAppWithAuth(appUrl);
+    } catch (error) {
+      console.error('Error launching app:', error);
+      // Fallback to regular window.open
+      if (typeof window !== 'undefined') {
+        window.open(appUrl, '_blank');
+      }
+    }
+  };
 
   const getIconComponent = (iconName?: string) => {
     if (!iconName || !(iconName in iconMap)) {
@@ -58,9 +71,7 @@ const Dashboard: React.FC = () => {
           )}
         </div>
         <Button 
-          href={app.url}
-          target="_blank"
-          rel="noopener noreferrer"
+          onClick={() => handleLaunchApp(app.url)}
           className={styles.appButton}
           aria-label={`Launch ${app.name}`}
         >

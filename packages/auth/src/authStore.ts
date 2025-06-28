@@ -4,8 +4,6 @@ import { getSupabaseClient } from './supabase';
 import { 
   syncSessionAcrossApps, 
   restoreSharedSession, 
-  shouldRedirectToMainApp,
-  redirectToMainApp,
   handleReturnFromMainApp,
   handleMainAppReturn,
   getCurrentDomainType
@@ -16,6 +14,17 @@ import {
   setupStorageEventHandler,
   validateAndCleanupCurrentSession
 } from './sessionCleanup';
+import { 
+  secureLogin, 
+  securePasswordReset, 
+  securePasswordUpdate,
+  validateSessionSecurity 
+} from './secureAuth';
+import { 
+  setupApplicationCSRFProtection,
+  clearCSRFProtection,
+  CSRFProtectedSupabaseClient 
+} from './csrfProtection';
 
 // Helper function to handle Supabase errors
 const handleSupabaseError = (error: any, context: string) => {
@@ -46,6 +55,7 @@ interface AuthState {
   isInitializing?: boolean;
   error?: string | null;
   isAuthenticated: boolean;
+  csrfProtection?: any;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, firstName: string, lastName: string, role?: 'candidate' | 'recruiter') => Promise<void>;
   logout: () => Promise<void>;
@@ -54,6 +64,8 @@ interface AuthState {
   initialize: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
+  updatePassword: (newPassword: string) => Promise<void>;
+  validateSecurity: () => Promise<{ isValid: boolean; reasons: string[]; recommendations: string[] }>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -61,25 +73,26 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   profile: null,
   isLoading: false,
   isAuthenticated: false,
+  csrfProtection: null,
   
   login: async (email: string, password: string) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const supabase = getSupabaseClient();
-      console.log('Starting login process...');
+      console.log('Starting secure login process...');
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // Use secure login with session fixation prevention
+      const { data, error } = await secureLogin(supabase, email, password);
 
       if (error) {
-        console.error('Login error:', error);
-        handleSupabaseError(error, 'login');
+        console.error('Secure login error:', error);
+        handleSupabaseError(error, 'secure login');
+        set({ error: error.message, isLoading: false });
+        throw error;
       }
 
       if (data.user) {
-        console.log('User authenticated successfully:', data.user.id);
+        console.log('User authenticated securely:', data.user.id);
         set({ user: data.user, isAuthenticated: true });
         
         // Sync session across apps
@@ -90,19 +103,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         
         // Fetch user profile
         await get().refreshProfile();
+        
+        console.log('✅ Secure login completed successfully');
       }
     } catch (error) {
-      console.error('Login process failed:', error);
-      set({ isLoading: false });
+      console.error('Secure login process failed:', error);
+      set({ error: error instanceof Error ? error.message : 'Login failed', isLoading: false });
       throw error;
+    } finally {
+      set({ isLoading: false });
     }
   },
 
   signup: async (email: string, password: string, firstName: string, lastName: string, role: 'candidate' | 'recruiter' = 'candidate') => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const supabase = getSupabaseClient();
-      console.log('Starting signup process...');
+      console.log('Starting secure signup process...');
       
       // Step 1: Create the auth user with metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -120,6 +137,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (authError) {
         console.error('Auth signup error:', authError);
         handleSupabaseError(authError, 'signup');
+        set({ error: authError.message, isLoading: false });
+        throw authError;
       }
 
       if (!authData.user) {
@@ -145,26 +164,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (createError) {
         console.error('Profile creation error:', createError);
-        set({ profile: null, isLoading: false });
+        set({ profile: null, error: 'Profile creation failed', isLoading: false });
         return;
       }
 
       console.log('Profile created successfully:', newProfile);
-      set({ profile: newProfile as Profile, isLoading: false });
+      set({ profile: newProfile as Profile });
+      
+      // Initialize CSRF protection for new user
+      const { csrfProtection } = get();
+      if (csrfProtection) {
+        csrfProtection.refreshToken();
+      }
 
     } catch (error) {
-      console.error('Signup process failed:', error);
-      set({ isLoading: false });
+      console.error('Secure signup process failed:', error);
+      set({ error: error instanceof Error ? error.message : 'Signup failed', isLoading: false });
       throw error;
+    } finally {
+      set({ isLoading: false });
     }
   },
   
   logout: async () => {
     try {
       const supabase = getSupabaseClient();
-      console.log('Starting logout process...');
+      console.log('Starting secure logout process...');
       
-      // Clear shared session storage first
+      // Clear CSRF protection first
+      clearCSRFProtection();
+      
+      // Clear shared session storage
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('reelapps-shared-auth');
         
@@ -180,12 +210,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         handleSupabaseError(error, 'logout');
       }
       
-      set({ user: null, profile: null, isAuthenticated: false });
-      console.log('Logout completed successfully');
+      set({ 
+        user: null, 
+        profile: null, 
+        isAuthenticated: false,
+        csrfProtection: null,
+        error: null
+      });
+      console.log('✅ Secure logout completed successfully');
     } catch (error) {
       console.error('Logout error:', error);
       // Even if there's an error, clear the local state
-      set({ user: null, profile: null, isAuthenticated: false });
+      set({ 
+        user: null, 
+        profile: null, 
+        isAuthenticated: false,
+        csrfProtection: null,
+        error: null
+      });
     }
   },
   
@@ -261,14 +303,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   initialize: async () => {
     set({ isInitializing: true, error: null });
-    console.log('🔄 AUTH STORE: Initializing auth store...');
-      const supabase = getSupabaseClient();
+    console.log('🔄 AUTH STORE: Initializing secure auth store...');
+    const supabase = getSupabaseClient();
     if (!supabase) {
         console.error("AUTH STORE: Supabase client not initialized before auth store.");
         set({ isInitializing: false, error: "Supabase client not available." });
         return;
     }
-      console.log('✅ AUTH STORE: Got Supabase client');
+    console.log('✅ AUTH STORE: Got Supabase client');
+    
+    // Initialize CSRF protection
+    console.log('🛡️ AUTH STORE: Setting up CSRF protection...');
+    const csrfProtection = setupApplicationCSRFProtection();
+    set({ csrfProtection });
+    
     startSessionCleanupService(supabase);
 
     // Check for session info in the URL hash first (coming from SSO redirect)
@@ -291,18 +339,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
     }
 
-    // Now, continue with standard initialization
-        const shouldRedirect = await shouldRedirectToMainApp(supabase);
-        
-        if (shouldRedirect) {
-      console.log('🔄 AUTH STORE: No valid session, redirecting to main app for authentication');
-          redirectToMainApp();
-      return;
-    }
-
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
+    // Check session and update state only - no navigation
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
         console.log(`✅ AUTH STORE: Found existing session for user: ${session.user.id}`);
+        
+        // Validate session security
+        const securityCheck = await validateSessionSecurity(supabase);
+        if (!securityCheck.isValid) {
+          console.warn('⚠️ AUTH STORE: Session security validation failed:', securityCheck.reasons);
+          // Force logout for security
+          await get().logout();
+          set({ 
+            isInitializing: false, 
+            error: 'Session security validation failed. Please log in again.' 
+          });
+          return;
+        }
+        
         set({
             isAuthenticated: true,
             user: session.user,
@@ -310,27 +364,94 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         });
         await get().refreshProfile();
         await syncSessionAcrossApps(supabase);
-      } else {
-        console.log('⚠️ AUTH STORE: No session found after checks.');
+    } else {
+        console.log('⚠️ AUTH STORE: No session found');
         set({ isAuthenticated: false, user: null, isInitializing: false });
-      }
-      
-      console.log('✅ AUTH STORE: Initialization completed successfully');
+    }
+    
+    console.log('✅ AUTH STORE: Secure initialization completed successfully');
   },
 
   sendPasswordResetEmail: async (email: string) => {
-    set({ isLoading: true });
+    set({ isLoading: true, error: null });
     try {
       const supabase = getSupabaseClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/password-reset`,
-      });
-
+      console.log('Sending secure password reset email...');
+      
+      // Use secure password reset to prevent user enumeration
+      const { message, error } = await securePasswordReset(supabase, email);
+      
       if (error) {
         handleSupabaseError(error, 'sendPasswordResetEmail');
+        set({ error: error.message });
+        throw error;
       }
+      
+      console.log('✅ Secure password reset email sent');
+      // Don't set success message in state to maintain security
+      
+    } catch (error) {
+      console.error('Secure password reset failed:', error);
+      // Don't expose the actual error for security
+      set({ error: 'Unable to process password reset request' });
+      throw error;
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  updatePassword: async (newPassword: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const supabase = getSupabaseClient();
+      console.log('Starting secure password update...');
+      
+      // Use secure password update with session invalidation
+      const { data, error } = await securePasswordUpdate(supabase, newPassword);
+      
+      if (error) {
+        handleSupabaseError(error, 'updatePassword');
+        set({ error: error.message, isLoading: false });
+        throw error;
+      }
+      
+      console.log('✅ Password updated securely');
+      
+      // Refresh CSRF token after password change
+      const { csrfProtection } = get();
+      if (csrfProtection) {
+        csrfProtection.refreshToken();
+      }
+      
+    } catch (error) {
+      console.error('Secure password update failed:', error);
+      set({ error: error instanceof Error ? error.message : 'Password update failed', isLoading: false });
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  validateSecurity: async () => {
+    try {
+      const supabase = getSupabaseClient();
+      console.log('Validating session security...');
+      
+      const result = await validateSessionSecurity(supabase);
+      
+      if (!result.isValid) {
+        console.warn('⚠️ Security validation failed:', result.reasons);
+        // Could trigger logout here if validation fails
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Security validation error:', error);
+      return {
+        isValid: false,
+        reasons: ['Security validation failed'],
+        recommendations: ['Please log in again']
+      };
     }
   },
 }));

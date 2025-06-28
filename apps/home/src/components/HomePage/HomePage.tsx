@@ -19,7 +19,7 @@ import { useAuthStore } from '../../lib/auth';
 import { useNavigate } from 'react-router-dom';
 import { getAppsForRole, AppConfig } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
-import { launchAppWithAuth } from '@reelapps/auth';
+// launchAppWithAuth removed - using direct navigation with shared session
 import styles from './HomePage.module.css';
 
 const iconMap = {
@@ -41,15 +41,10 @@ const HomePage: React.FC = () => {
     navigate('/auth/signup');
   };
 
-  const handleLaunchApp = async (appUrl: string) => {
-    try {
-      await launchAppWithAuth(appUrl);
-    } catch (error) {
-      console.error('Error launching app:', error);
-      // Fallback to regular window.open
-      if (typeof window !== 'undefined') {
-        window.open(appUrl, '_blank');
-      }
+  const handleLaunchApp = (appUrl: string) => {
+    // Direct navigation - authentication is handled by shared session
+    if (typeof window !== 'undefined' && window.open) {
+      window.open(appUrl, '_blank');
     }
   };
 

@@ -43,7 +43,7 @@ function App() {
     // Force dark mode and gradient background
     document.documentElement.setAttribute('data-theme', 'dark');
     document.body.classList.add('gradient-background');
-  }, [initialize]);
+  }, []); // ✅ CORRECTED: Use empty dependency array for one-time initialization
 
   // Show loading while initializing
   if (isInitializing || isLoading) {

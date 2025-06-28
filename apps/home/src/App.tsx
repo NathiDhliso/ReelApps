@@ -4,6 +4,7 @@ import { ThemeProvider } from './components/ThemeProvider/ThemeProvider';
 import { testSupabaseConnection } from '@reelapps/auth';
 import { getMainAppUrl } from '@reelapps/config';
 import { useAuthStore } from './lib/auth';
+// Note: AppWrapper will be imported and used in the main component
 import HomePage from './components/HomePage/HomePage';
 import Dashboard from './components/Dashboard/Dashboard';
 import AuthPage from './pages/AuthPage';
@@ -29,8 +30,8 @@ const AppLoading: React.FC<{ appName: string }> = ({ appName }) => (
   </div>
 );
 
-// App wrapper with authentication check
-const AppWrapper: React.FC<{ 
+// App wrapper with authentication check - renamed to SubAppWrapper
+const SubAppWrapper: React.FC<{ 
   children: React.ReactNode, 
   requiredRole?: 'candidate' | 'recruiter' | 'both',
   appName: string 
@@ -136,6 +137,12 @@ const ProtectedRoute: React.FC = () => {
   return isAuthenticated ? <Outlet /> : <Navigate to="/auth/login" replace />;
 };
 
+// Home route component that redirects based on auth status
+const HomeRoute: React.FC = () => {
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <HomePage />;
+};
+
 // Component to conditionally render navigation
 const AppLayout: React.FC = () => {
   const location = useLocation();
@@ -146,7 +153,7 @@ const AppLayout: React.FC = () => {
       {!hideNavigation && <Navigation />}
       <SystemNotifications />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomeRoute />} />
         <Route path="/auth/:mode" element={<AuthPage />} />
         <Route path="/auth" element={<Navigate to="/auth/login" replace />} />
         <Route path="/password-reset" element={<PasswordReset />} />
@@ -186,7 +193,7 @@ function App() {
   console.log('🔍 Requested app:', requestedApp || 'none (main portal)');
 
   useEffect(() => {
-    console.log('📋 useEffect starting - initializationComplete:', initializationComplete);
+    console.log('🎬 Starting initialization process... (This will now run only ONCE)');
     
     const initializeApp = async () => {
       console.log('🚀 Starting ReelApps initialization...');
@@ -252,13 +259,8 @@ function App() {
       }
     };
 
-    if (!initializationComplete) {
-      console.log('🎬 Starting initialization process...');
-      initializeApp();
-    } else {
-      console.log('⏭️ Initialization already complete, skipping...');
-    }
-  }, [initializationComplete]);
+    initializeApp();
+  }, []); // ✅ CORRECTED: Use empty dependency array for one-time initialization
 
   // Show loading screen during initialization
   if (!initializationComplete) {
@@ -290,32 +292,32 @@ function App() {
       <ThemeProvider>
         <Suspense fallback={<AppLoading appName={requestedApp} />}>
           {requestedApp === 'reelcv' && (
-            <AppWrapper requiredRole="candidate" appName="ReelCV">
+            <SubAppWrapper requiredRole="candidate" appName="ReelCV">
               <ReelCVDashboard />
-            </AppWrapper>
+            </SubAppWrapper>
           )}
           {requestedApp === 'reelpersona' && (
-            <AppWrapper requiredRole="both" appName="ReelPersona">
+            <SubAppWrapper requiredRole="both" appName="ReelPersona">
               <ReelPersonaComponent />
-            </AppWrapper>
+            </SubAppWrapper>
           )}
           {requestedApp === 'reelhunter' && (
-            <AppWrapper requiredRole="recruiter" appName="ReelHunter">
+            <SubAppWrapper requiredRole="recruiter" appName="ReelHunter">
               <ReelHunterComponent />
-            </AppWrapper>
+            </SubAppWrapper>
           )}
           {requestedApp === 'reelskills' && (
-            <AppWrapper requiredRole="candidate" appName="ReelSkills">
+            <SubAppWrapper requiredRole="candidate" appName="ReelSkills">
               <ReelSkillsComponent />
-            </AppWrapper>
+            </SubAppWrapper>
           )}
           {requestedApp === 'reelproject' && (
-            <AppWrapper requiredRole="both" appName="ReelProject">
+            <SubAppWrapper requiredRole="both" appName="ReelProject">
               <div className="p-8 text-center">
                 <h2 className="text-2xl font-bold text-text-primary mb-4">ReelProject</h2>
                 <p className="text-text-secondary">Coming Soon - Project collaboration platform</p>
               </div>
-            </AppWrapper>
+            </SubAppWrapper>
           )}
           {!['reelcv', 'reelpersona', 'reelhunter', 'reelskills', 'reelproject'].includes(requestedApp) && (
             <div className="min-h-screen bg-background flex items-center justify-center">

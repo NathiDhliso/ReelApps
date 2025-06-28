@@ -21,7 +21,16 @@ interface Database {
   };
 }
 
+// Use a global key to persist client across hot reloads in development
+const GLOBAL_SUPABASE_KEY = '__reelapps_supabase_client__';
+
 let supabaseClient: SupabaseClient<Database> | null = null;
+
+// Check for existing client in global scope (helps with hot reloading)
+if (typeof window !== 'undefined' && (window as any)[GLOBAL_SUPABASE_KEY]) {
+  supabaseClient = (window as any)[GLOBAL_SUPABASE_KEY];
+  console.log('🔧 SUPABASE: Restored client from global scope (hot reload recovery)');
+}
 
 export const initializeSupabase = (url: string, anonKey: string) => {
   // If the client is already created, return the existing instance.
@@ -51,6 +60,11 @@ export const initializeSupabase = (url: string, anonKey: string) => {
       }
     }
   });
+
+  // Store in global scope to persist across hot reloads in development
+  if (typeof window !== 'undefined') {
+    (window as any)[GLOBAL_SUPABASE_KEY] = supabaseClient;
+  }
 
   console.log('🔧 SUPABASE: Supabase client created successfully:', !!supabaseClient);
   return supabaseClient;

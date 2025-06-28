@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Users, Moon, Sun, LogOut } from 'lucide-react';
 import { useTheme } from '../ThemeProvider/ThemeProvider';
 import { useAuthStore } from '../../lib/auth';
@@ -10,12 +10,11 @@ const Navigation: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user, profile, logout } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.navContainer}>
-        <Link to="/" className={styles.navLogo}>
+        <Link to={isAuthenticated ? "/dashboard" : "/"} className={styles.navLogo}>
           <div className={styles.navLogoIcon}>
             <Users size={20} />
           </div>
@@ -23,7 +22,6 @@ const Navigation: React.FC = () => {
         </Link>
         
         <ul className={styles.navLinks}>
-          <li><Link to="/" className={styles.navLink}>Home</Link></li>
           {isAuthenticated && (
             <>
               <li>
