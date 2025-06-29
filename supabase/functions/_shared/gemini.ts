@@ -44,4 +44,6 @@ export async function callGemini(
     '';
 
   return parseJson ? JSON.parse(text) : text;
-} 
+}
+
+export const callGeminiApi = callGemini; 

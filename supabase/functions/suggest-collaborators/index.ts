@@ -46,7 +46,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ suggestions }), { 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
-  } catch (error) {
+  } catch (_error) {
     return new Response(JSON.stringify({ error: 'Failed to suggest collaborators' }), { 
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })

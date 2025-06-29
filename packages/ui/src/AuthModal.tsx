@@ -142,8 +142,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         await onSignup(email, password, firstName, lastName, role);
         onClose();
       }
-    } catch (err) {
-      setLocalError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (_err) {
+      setLocalError('An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
     }
@@ -164,7 +164,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     try {
       await onPasswordReset(email);
       setSuccessMessage('Password reset email sent. Please check your inbox.');
-    } catch (err) {
+    } catch (_err) {
       setLocalError('Failed to send password reset email. Please try again.');
     } finally {
       setIsSubmitting(false);

@@ -1,12 +1,20 @@
 {
   "name": "@reelapps/supabase",
   "version": "1.0.0",
+  "description": "Supabase client configuration for ReelApps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm exec tsc",
-    "dev": "pnpm exec tsc --watch"
+    "dev": "pnpm exec tsc --watch",
+    "test": "echo \"No tests specified for @reelapps/supabase\""
   },
+  "keywords": ["supabase", "database"],
+  "author": "ReelApps Team",
+  "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "@reelapps/types": "workspace:*"
@@ -19,5 +27,8 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

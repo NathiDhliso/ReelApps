@@ -131,7 +131,7 @@ serve(async (req) => {
     
     try {
       requestData = JSON.parse(rawBody);
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error('Invalid JSON in request body');
     }
 

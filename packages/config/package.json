@@ -10,12 +10,15 @@
   "scripts": {
     "build": "pnpm exec tsc",
     "dev": "pnpm exec tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests specified for @reelapps/config\""
   },
   "keywords": ["config"],
-  "author": "",
-  "license": "ISC",
+  "author": "ReelApps Team",
+  "license": "MIT",
   "devDependencies": {
     "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

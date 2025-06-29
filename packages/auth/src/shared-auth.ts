@@ -103,11 +103,12 @@ export const checkDatabaseSession = async (supabase: SupabaseClient<any>): Promi
           });
           
           if (!setError && data.session?.user) {
+            const session = data.session;
             // Validate restored session against database
             const { data: dbSession, error: dbError } = await supabase
               .from('user_sessions')
               .select('*')
-              .eq('user_id', data.session.user.id)
+              .eq('user_id', session.user.id)
               .single();
 
             if (dbError || !dbSession || !dbSession.is_active || new Date(dbSession.expires_at) < new Date()) {
@@ -119,9 +120,9 @@ export const checkDatabaseSession = async (supabase: SupabaseClient<any>): Promi
 
             console.log('✅ SHARED AUTH: Successfully restored and validated session from storage');
             // Update session activity in database
-            await updateSessionActivity(supabase, data.session.user.id);
+            await updateSessionActivity(supabase, session.user.id);
             
-            return data.session;
+            return session;
           } else {
             console.log('❌ SHARED AUTH: Failed to restore stored session:', setError?.message);
             localStorage.removeItem(SHARED_SESSION_KEY);

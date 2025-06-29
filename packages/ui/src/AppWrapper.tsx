@@ -7,7 +7,7 @@ interface AppWrapperProps {
   // Auth state from authStore
   isAuthenticated: boolean;
   isInitializing: boolean;
-  user: any | null;
+  _user: any | null;
   error: string | null;
   // Auth methods from authStore
   onLogin: (email: string, password: string) => Promise<void>;
@@ -20,11 +20,11 @@ interface AppWrapperProps {
   onAuthRequired?: (currentPath: string) => void;
 }
 
-export const AppWrapper: React.FC<AppWrapperProps> = ({
+export function AppWrapper({
   children,
   isAuthenticated,
   isInitializing,
-  user,
+  _user,
   error,
   onLogin,
   onSignup,
@@ -32,7 +32,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({
   isLoading,
   loadingComponent,
   onAuthRequired
-}) => {
+}: AppWrapperProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [originalPath, setOriginalPath] = useState<string | null>(null);
   const isActiveRef = useRef(true);
@@ -128,4 +128,4 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({
       {children}
     </div>
   );
-}; 
+} 

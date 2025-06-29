@@ -119,7 +119,7 @@ serve(async (req) => {
     
     try {
       jobData = JSON.parse(rawBody);
-    } catch (parseError) {
+    } catch (_parseError) {
       throw new Error('Invalid JSON in request body');
     }
 

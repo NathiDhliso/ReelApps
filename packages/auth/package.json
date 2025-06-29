@@ -14,8 +14,8 @@
     "clean": "rm -rf dist"
   },
   "keywords": ["auth", "supabase"],
-  "author": "",
-  "license": "ISC",
+  "author": "ReelApps Team",
+  "license": "MIT",
   "dependencies": {
     "@supabase/supabase-js": "^2.38.0",
     "zustand": "^4.4.1"
@@ -37,6 +37,6 @@
     "dist"
   ],
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   }
 }

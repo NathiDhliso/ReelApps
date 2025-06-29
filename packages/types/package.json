@@ -1,12 +1,20 @@
 {
   "name": "@reelapps/types",
   "version": "1.0.0",
+  "description": "Shared TypeScript types for ReelApps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pnpm exec tsc",
-    "dev": "pnpm exec tsc --watch"
+    "dev": "pnpm exec tsc --watch",
+    "test": "echo \"No tests specified for @reelapps/types\""
   },
+  "keywords": ["types", "typescript"],
+  "author": "ReelApps Team",
+  "license": "MIT",
   "devDependencies": {
     "typescript": "^5.0.0"
   },
@@ -15,5 +23,8 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

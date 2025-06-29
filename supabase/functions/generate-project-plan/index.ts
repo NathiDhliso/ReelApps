@@ -36,7 +36,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ tasks }), { 
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
-  } catch (error) {
+  } catch (_error) {
     return new Response(JSON.stringify({ error: 'Failed to generate plan' }), { 
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })

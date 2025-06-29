@@ -7,8 +7,4 @@ pnpm --filter @reelapps/reelpersona dev
 pnpm --filter @reelapps/reelhunter dev	
 pnpm --filter @reelapps/reelproject dev
 
-# Kill any existing processes first
-taskkill /f /im node.exe
-
-# Then start all apps
-pnpm --parallel --filter "@reelapps/*" dev
+image.png

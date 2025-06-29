@@ -22,7 +22,7 @@ export {
 } from './csrfProtection';
 
 // Supabase client and utilities
-export { getSupabaseClient, initializeSupabase } from './supabase';
+export { getSupabaseClient, initializeSupabase, testSupabaseConnection, handleSupabaseError } from './supabase';
 
 // Session management utilities
 export { 
@@ -30,7 +30,8 @@ export {
   restoreSharedSession, 
   handleReturnFromMainApp,
   handleMainAppReturn,
-  getCurrentDomainType
+  getCurrentDomainType,
+  launchAppWithAuth
 } from './shared-auth';
 
 // Session cleanup utilities
@@ -43,3 +44,6 @@ export {
 
 // Auth package exports complete
 // Higher-order auth protection is handled by @reelapps/ui AppWrapper component
+
+// Auth listener utilities (for backward compatibility)
+export { setupAuthListener, startSessionWatcher } from './authStore';

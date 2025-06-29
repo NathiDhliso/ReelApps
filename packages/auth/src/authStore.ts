@@ -2,17 +2,10 @@ import { create } from 'zustand';
 import { User } from '@supabase/supabase-js';
 import { getSupabaseClient } from './supabase';
 import { 
-  syncSessionAcrossApps, 
-  restoreSharedSession, 
-  handleReturnFromMainApp,
-  handleMainAppReturn,
-  getCurrentDomainType
+  syncSessionAcrossApps
 } from './shared-auth';
 import {
-  startSessionCleanupService,
-  setupVisibilityChangeHandler,
-  setupStorageEventHandler,
-  validateAndCleanupCurrentSession
+  startSessionCleanupService
 } from './sessionCleanup';
 import { 
   secureLogin, 
@@ -22,8 +15,7 @@ import {
 } from './secureAuth';
 import { 
   setupApplicationCSRFProtection,
-  clearCSRFProtection,
-  CSRFProtectedSupabaseClient 
+  clearCSRFProtection
 } from './csrfProtection';
 
 // Helper function to handle Supabase errors
@@ -82,18 +74,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.log('Starting secure login process...');
       
       // Use secure login with session fixation prevention
-      const { data, error } = await secureLogin(supabase, email, password);
+      const { data: _data, error: _error } = await secureLogin(supabase, email, password);
 
-      if (error) {
-        console.error('Secure login error:', error);
-        handleSupabaseError(error, 'secure login');
-        set({ error: error.message, isLoading: false });
-        throw error;
+      if (_error) {
+        console.error('Secure login error:', _error);
+        handleSupabaseError(_error, 'secure login');
+        set({ error: _error.message, isLoading: false });
+        throw _error;
       }
 
-      if (data.user) {
-        console.log('User authenticated securely:', data.user.id);
-        set({ user: data.user, isAuthenticated: true });
+      if (_data.user) {
+        console.log('User authenticated securely:', _data.user.id);
+        set({ user: _data.user, isAuthenticated: true });
         
         // Sync session across apps
         await syncSessionAcrossApps(supabase);
@@ -204,10 +196,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         channel.close();
       }
       
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Logout error:', error);
-        handleSupabaseError(error, 'logout');
+      const { error: _error } = await supabase.auth.signOut();
+      if (_error) {
+        console.error('Logout error:', _error);
+        handleSupabaseError(_error, 'logout');
       }
       
       set({ 
@@ -256,14 +248,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       // Add a small delay to ensure the database has processed the user creation
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      const { data: profile, error } = await supabase
+      const { data: profile, error: _error } = await supabase
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error refreshing profile:', error);
+      if (_error && _error.code !== 'PGRST116') {
+        console.error('Error refreshing profile:', _error);
         set({ isLoading: false });
         return;
       }
@@ -304,13 +296,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   initialize: async () => {
     set({ isInitializing: true, error: null });
     console.log('🔄 AUTH STORE: Initializing secure auth store...');
-    const supabase = getSupabaseClient();
+      const supabase = getSupabaseClient();
     if (!supabase) {
         console.error("AUTH STORE: Supabase client not initialized before auth store.");
         set({ isInitializing: false, error: "Supabase client not available." });
         return;
     }
-    console.log('✅ AUTH STORE: Got Supabase client');
+      console.log('✅ AUTH STORE: Got Supabase client');
     
     // Initialize CSRF protection
     console.log('🛡️ AUTH STORE: Setting up CSRF protection...');
@@ -327,10 +319,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         if (access_token && refresh_token) {
             console.log('🔑 AUTH STORE: Found session in URL hash, setting session...');
-            const { error } = await supabase.auth.setSession({ access_token, refresh_token });
+            const { error: _error } = await supabase.auth.setSession({ access_token, refresh_token });
 
-            if (error) {
-                console.error('AUTH STORE: Error setting session from hash:', error);
+            if (_error) {
+                console.error('AUTH STORE: Error setting session from hash:', _error);
                 set({ error: 'Failed to set session from redirect.' });
             } else {
                 console.log('✅ AUTH STORE: Session set successfully from hash.');
@@ -340,8 +332,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     // Check session and update state only - no navigation
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
         console.log(`✅ AUTH STORE: Found existing session for user: ${session.user.id}`);
         
         // Validate session security
@@ -364,11 +356,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         });
         await get().refreshProfile();
         await syncSessionAcrossApps(supabase);
-    } else {
+      } else {
         console.log('⚠️ AUTH STORE: No session found');
         set({ isAuthenticated: false, user: null, isInitializing: false });
-    }
-    
+      }
+      
     console.log('✅ AUTH STORE: Secure initialization completed successfully');
   },
 
@@ -379,12 +371,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.log('Sending secure password reset email...');
       
       // Use secure password reset to prevent user enumeration
-      const { message, error } = await securePasswordReset(supabase, email);
-      
-      if (error) {
-        handleSupabaseError(error, 'sendPasswordResetEmail');
-        set({ error: error.message });
-        throw error;
+      const { message: _message, error: _error } = await securePasswordReset(supabase, email);
+
+      if (_error) {
+        handleSupabaseError(_error, 'sendPasswordResetEmail');
+        set({ error: _error.message });
+        throw _error;
       }
       
       console.log('✅ Secure password reset email sent');
@@ -407,12 +399,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.log('Starting secure password update...');
       
       // Use secure password update with session invalidation
-      const { data, error } = await securePasswordUpdate(supabase, newPassword);
+      const { data: _data, error: _error } = await securePasswordUpdate(supabase, newPassword);
       
-      if (error) {
-        handleSupabaseError(error, 'updatePassword');
-        set({ error: error.message, isLoading: false });
-        throw error;
+      if (_error) {
+        handleSupabaseError(_error, 'updatePassword');
+        set({ error: _error.message, isLoading: false });
+        throw _error;
       }
       
       console.log('✅ Password updated securely');
@@ -483,13 +475,14 @@ export const startSessionWatcher = () => {
   setInterval(async () => {
     try {
       const supabase = getSupabaseClient();
-      const { data, error } = await supabase.auth.refreshSession();
-      if (error) {
-        console.warn('Silent session refresh failed', error.message);
+      const { data: _data, error: _error } = await supabase.auth.refreshSession();
+      if (_error) {
+        console.warn('Silent session refresh failed', _error.message);
         return;
       }
-      if (data?.session?.user) {
-        useAuthStore.getState().setUser(data.session.user);
+      if (_data?.session?.user) {
+        const session = _data.session;
+        useAuthStore.getState().setUser(session.user);
       }
     } catch (err) {
       console.warn('Silent session refresh threw', err);

@@ -10,18 +10,21 @@
   "scripts": {
     "build": "pnpm exec tsc && node -e \"require('fs').readdirSync('src').filter(f=>f.endsWith('.css')).forEach(f=>require('fs').copyFileSync('src/'+f,'dist/'+f))\"",
     "dev": "pnpm exec tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests specified for @reelapps/ui\""
   },
   "keywords": ["react", "ui", "components"],
-  "author": "",
-  "license": "ISC",
+  "author": "ReelApps Team",
+  "license": "MIT",
   "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
