@@ -63,7 +63,9 @@ setup_amplify_app() {
     
     if [ -z "$APP_ID" ]; then
         print_status "Creating new Amplify app: $app_name"
-        APP_ID=$(aws amplify create-app \
+        
+        # Create the app with proper error handling
+        if APP_ID=$(aws amplify create-app \
             --name "$app_name" \
             --description "$description" \
             --platform WEB \
@@ -71,12 +73,15 @@ setup_amplify_app() {
                 {
                     "source": "/<*>",
                     "target": "/index.html",
-                    "status": "200",
-                    "condition": null
+                    "status": "200"
                 }
             ]' \
-            --query 'app.appId' --output text)
-        print_success "Created Amplify app: $app_name (ID: $APP_ID)"
+            --query 'app.appId' --output text 2>/dev/null); then
+            print_success "Created Amplify app: $app_name (ID: $APP_ID)"
+        else
+            print_error "Failed to create Amplify app: $app_name"
+            return 1
+        fi
     else
         print_status "Amplify app already exists: $app_name (ID: $APP_ID)"
     fi
@@ -90,30 +95,46 @@ setup_amplify_app() {
     # Set up domain association
     if [ "$subdomain" = "www" ]; then
         print_status "Setting up main domain: $DOMAIN"
-        aws amplify create-domain-association \
-            --app-id "$APP_ID" \
-            --domain-name "$DOMAIN" \
-            --sub-domain-settings '[
-                {
-                    "prefix": "www",
-                    "branchName": "main"
-                },
-                {
-                    "prefix": "",
-                    "branchName": "main"
-                }
-            ]' 2>/dev/null || print_warning "Domain association may already exist for $app_name"
+        
+        # Check if domain association already exists
+        EXISTING_DOMAIN=$(aws amplify list-domain-associations --app-id "$APP_ID" --query "domainAssociations[?domainName=='$DOMAIN'].domainName" --output text 2>/dev/null || echo "")
+        
+        if [ -z "$EXISTING_DOMAIN" ]; then
+            aws amplify create-domain-association \
+                --app-id "$APP_ID" \
+                --domain-name "$DOMAIN" \
+                --sub-domain-settings '[
+                    {
+                        "prefix": "www",
+                        "branchName": "main"
+                    },
+                    {
+                        "prefix": "",
+                        "branchName": "main"
+                    }
+                ]' && print_success "Domain association created for $DOMAIN"
+        else
+            print_warning "Domain association already exists for $DOMAIN"
+        fi
     else
         print_status "Setting up subdomain: $subdomain.$DOMAIN"
-        aws amplify create-domain-association \
-            --app-id "$APP_ID" \
-            --domain-name "$DOMAIN" \
-            --sub-domain-settings '[
-                {
-                    "prefix": "'$subdomain'",
-                    "branchName": "main"
-                }
-            ]' 2>/dev/null || print_warning "Domain association may already exist for $subdomain"
+        
+        # Check if domain association already exists for this subdomain
+        EXISTING_DOMAIN=$(aws amplify list-domain-associations --app-id "$APP_ID" --query "domainAssociations[?domainName=='$DOMAIN'].domainName" --output text 2>/dev/null || echo "")
+        
+        if [ -z "$EXISTING_DOMAIN" ]; then
+            aws amplify create-domain-association \
+                --app-id "$APP_ID" \
+                --domain-name "$DOMAIN" \
+                --sub-domain-settings '[
+                    {
+                        "prefix": "'$subdomain'",
+                        "branchName": "main"
+                    }
+                ]' && print_success "Domain association created for $subdomain.$DOMAIN"
+        else
+            print_warning "Domain association already exists for $subdomain.$DOMAIN"
+        fi
     fi
     
     print_success "Completed setup for $app_name"
