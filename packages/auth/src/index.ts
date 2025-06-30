@@ -47,3 +47,15 @@ export {
 
 // Auth listener utilities (for backward compatibility)
 export { setupAuthListener, startSessionWatcher } from './authStore';
+
+// Re-export everything from existing files
+export * from './authStore';
+export * from './shared-auth';
+export * from './supabase';
+export * from './secureAuth';
+export * from './csrfProtection';
+export * from './sessionCleanup';
+
+// Export SSO functionality
+export * from './sso';
+export { ssoManager, defaultSSOConfig } from './sso';

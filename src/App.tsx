@@ -8,6 +8,7 @@ import HomePage from './components/HomePage/HomePage';
 import Dashboard from './components/Dashboard/Dashboard';
 import AuthPage from './pages/AuthPage';
 import PasswordReset from './pages/PasswordReset';
+import SSOPage from './pages/SSOPage';
 import StatusDashboard from './components/StatusDashboard/StatusDashboard';
 import SystemNotifications from './components/SystemNotifications/SystemNotifications';
 import Navigation from './components/Navigation/Navigation';
@@ -156,6 +157,7 @@ const AppLayout: React.FC = () => {
         <Route path="/" element={<HomeRoute />} />
         <Route path="/auth/:mode" element={<AuthPage />} />
         <Route path="/auth" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/auth/sso" element={<SSOPage />} />
         <Route path="/password-reset" element={<PasswordReset />} />
         
         {/* Protected Routes */}

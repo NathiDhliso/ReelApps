@@ -19,7 +19,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@reelapps/auth": ["packages/auth/src"],
+      "@reelapps/config": ["packages/config/src"],
+      "@reelapps/types": ["packages/types/src"],
+      "@reelapps/ui": ["packages/ui/src"]
+    }
   },
   "include": ["src"]
 }
