@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../ReelCV"
+		},
+		{
+			"path": "../Reelhunter"
+		},
+		{
+			"path": "../ReelPersona"
+		},
+		{
+			"path": "../ReelProjects"
+		},
+		{
+			"path": "../ReelSkills"
+		}
+	],
+	"settings": {}
+}
