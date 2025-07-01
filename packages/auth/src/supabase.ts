@@ -73,9 +73,22 @@ export const initializeSupabase = (url: string, anonKey: string) => {
 export const getSupabaseClient = () => {
   console.log('🔍 SUPABASE: getSupabaseClient called');
   console.log('🔍 SUPABASE: supabaseClient exists:', !!supabaseClient);
+  console.log('🔍 SUPABASE: current timestamp:', new Date().toISOString());
+  console.log('🔍 SUPABASE: calling function stack:', new Error().stack?.split('\n').slice(1, 4).join('\n'));
   
   if (!supabaseClient) {
     console.error('🔍 SUPABASE: supabaseClient is null/undefined!');
+    console.error('🔍 SUPABASE: This means initializeSupabase() was not called yet or failed');
+    console.error('🔍 SUPABASE: Check the following:');
+    console.error('  1. Environment variables VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY are set');
+    console.error('  2. initializeSupabase() is called before any SSO operations');
+    console.error('  3. No errors occurred during client creation');
+    
+    // Check if we have environment variables available at this point
+    if (typeof window !== 'undefined' && window.location) {
+      console.error('🔍 SUPABASE: Current URL:', window.location.href);
+    }
+    
     throw new Error('Supabase client not initialized. Call initializeSupabase first.');
   }
   

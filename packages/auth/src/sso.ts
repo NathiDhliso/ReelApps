@@ -1,6 +1,7 @@
 import { getSupabaseClient } from './supabase';
 
-const supabase = getSupabaseClient();
+// Remove the immediate client initialization - it will be done lazily
+// const supabase = getSupabaseClient();
 
 export interface SSOConfig {
   mainDomain: string;
@@ -25,11 +26,32 @@ export interface SSOSession {
   subdomain?: string;
 }
 
+// Helper function to safely get Supabase client with better error handling
+const getSupabaseClientSafely = () => {
+  try {
+    console.log('🔍 SSO: Attempting to get Supabase client...');
+    const client = getSupabaseClient();
+    console.log('✅ SSO: Successfully obtained Supabase client');
+    return client;
+  } catch (error) {
+    console.error('❌ SSO: Failed to get Supabase client:', error);
+    console.error('❌ SSO: This usually means initializeSupabase() was not called yet');
+    console.error('❌ SSO: Make sure to initialize Supabase before using SSO functionality');
+    throw new Error(`SSO requires Supabase to be initialized first. Original error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+
 export class SSOManager {
   private config: SSOConfig;
 
   constructor(config: SSOConfig) {
     this.config = config;
+    console.log('🔧 SSO: SSOManager created with config:', {
+      mainDomain: config.mainDomain,
+      allowedSubdomains: config.allowedSubdomains,
+      sessionCookieName: config.sessionCookieName,
+      ssoTokenName: config.ssoTokenName
+    });
   }
 
   /**
@@ -39,28 +61,49 @@ export class SSOManager {
     try {
       console.log('[SSO] Initializing SSO session...');
       
+      // Get Supabase client safely
+      const supabase = getSupabaseClientSafely();
+      
       // Check if we're on a subdomain
       const currentDomain = window.location.hostname;
       const isSubdomain = currentDomain !== this.config.mainDomain && 
                          currentDomain.endsWith(`.${this.config.mainDomain}`);
       
+      console.log('[SSO] Domain analysis:', {
+        currentDomain,
+        mainDomain: this.config.mainDomain,
+        isSubdomain
+      });
+      
       if (isSubdomain) {
+        console.log('[SSO] On subdomain, checking for SSO token...');
         // Try to get session from SSO token in URL or localStorage
         const ssoToken = this.getSSOTokenFromURL() || this.getSSOTokenFromStorage();
         if (ssoToken) {
+          console.log('[SSO] Found SSO token, validating...');
           return await this.validateSSOToken(ssoToken);
         }
         
+        console.log('[SSO] No SSO token found, redirecting to main domain...');
         // If no token, redirect to main domain for authentication
         return await this.redirectToSSO();
       }
       
+      console.log('[SSO] On main domain, getting current session...');
       // On main domain, get current session
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('[SSO] Error getting session:', error);
+        return null;
+      }
+      
       if (session) {
+        console.log('[SSO] Found active session, creating SSO session...');
         return this.createSSOSession(session, currentDomain);
       }
       
+      console.log('[SSO] No active session found');
       return null;
     } catch (error) {
       console.error('[SSO] Error initializing SSO:', error);
@@ -72,11 +115,19 @@ export class SSOManager {
    * Create SSO session for cross-domain sharing
    */
   public async createSSOSession(session: any, domain: string): Promise<SSOSession> {
-    const { data: profile } = await supabase
+    console.log('[SSO] Creating SSO session for domain:', domain);
+    
+    const supabase = getSupabaseClientSafely();
+    
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', session.user.id)
       .single();
+
+    if (error) {
+      console.warn('[SSO] Could not fetch user profile:', error);
+    }
 
     const ssoUser: SSOUser = {
       id: session.user.id,
@@ -94,6 +145,14 @@ export class SSOManager {
       subdomain: this.extractSubdomain(domain)
     };
 
+    console.log('[SSO] SSO session created:', {
+      userId: ssoUser.id,
+      userEmail: ssoUser.email,
+      userRole: ssoUser.role,
+      domain: ssoSession.domain,
+      subdomain: ssoSession.subdomain
+    });
+
     // Store session for cross-domain access
     this.storeSSOSession(ssoSession);
     
@@ -109,6 +168,7 @@ export class SSOManager {
       
       // Decode the token (in production, this should be properly signed/encrypted)
       const sessionData = JSON.parse(atob(token));
+      console.log('[SSO] Token decoded successfully');
       
       // Verify token hasn't expired
       if (new Date(sessionData.expiresAt) < new Date()) {
@@ -116,6 +176,9 @@ export class SSOManager {
         return null;
       }
 
+      console.log('[SSO] Token is valid, setting session in Supabase...');
+      const supabase = getSupabaseClientSafely();
+      
       // Set the session in Supabase
       const { error } = await supabase.auth.setSession({
         access_token: sessionData.user.accessToken,
