@@ -37,27 +37,39 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email address is required';
+    } else if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
     // Password validation
-    if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters long for security';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase and one lowercase letter';
     }
 
     // Confirm password validation
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Password confirmation does not match';
     }
 
     // Name validation
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required';
+    } else if (formData.firstName.trim().length < 2) {
+      newErrors.firstName = 'First name must be at least 2 characters';
     }
 
     if (!formData.lastName.trim()) {
       newErrors.lastName = 'Last name is required';
+    } else if (formData.lastName.trim().length < 2) {
+      newErrors.lastName = 'Last name must be at least 2 characters';
     }
 
     setErrors(newErrors);
@@ -75,7 +87,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
 
     try {
       await signup(
-        formData.email,
+        formData.email.trim(),
         formData.password,
         formData.firstName.trim(),
         formData.lastName.trim(),
@@ -85,7 +97,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
       addNotification({
         type: 'success',
         title: 'Welcome to ReelApps!',
-        message: `Your ${formData.role} account has been created successfully.`
+        message: `Your ${formData.role} account has been created successfully. Please check your email to verify your account.`
       });
 
       // Start onboarding flow after a short delay
@@ -95,18 +107,35 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
 
       onSuccess?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create account';
-      setGeneralError(errorMessage);
+      const errorMessage = err instanceof Error ? err.message : 'Account creation failed';
       
-      // Handle specific error cases
-      if (errorMessage.includes('already registered')) {
-        setErrors({ email: 'This email is already registered' });
+      // Handle specific error cases with professional messaging
+      if (errorMessage.includes('already registered') || 
+          errorMessage.includes('email_address_exists') ||
+          errorMessage.includes('User already registered')) {
+        setGeneralError('An account with this email address already exists. Please use a different email or sign in to your existing account.');
+        setErrors({ email: 'This email address is already registered' });
+      } else if (errorMessage.includes('Invalid email') || 
+                 errorMessage.includes('email_invalid')) {
+        setGeneralError('The email address format is invalid. Please enter a valid email address.');
+        setErrors({ email: 'Please enter a valid email address' });
+      } else if (errorMessage.includes('Password') && errorMessage.includes('weak')) {
+        setGeneralError('The password you entered does not meet our security requirements. Please choose a stronger password.');
+        setErrors({ password: 'Password does not meet security requirements' });
+      } else if (errorMessage.includes('Rate limit') || 
+                 errorMessage.includes('too many')) {
+        setGeneralError('Too many account creation attempts. Please wait a few minutes before trying again.');
+      } else if (errorMessage.includes('Network') || 
+                 errorMessage.includes('connection')) {
+        setGeneralError('Connection issue detected. Please check your internet connection and try again.');
+      } else {
+        setGeneralError('We encountered an issue creating your account. Please try again or contact support if the problem persists.');
       }
       
       addNotification({
         type: 'error',
-        title: 'Sign Up Failed',
-        message: errorMessage
+        title: 'Account Creation Failed',
+        message: generalError || 'Unable to create your account. Please review the information and try again.'
       });
     }
   };
@@ -127,6 +156,24 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
     return errors[field];
   };
 
+  const getPasswordStrength = () => {
+    if (!formData.password) return null;
+    
+    const hasLength = formData.password.length >= 8;
+    const hasUpper = /[A-Z]/.test(formData.password);
+    const hasLower = /[a-z]/.test(formData.password);
+    const hasNumber = /[0-9]/.test(formData.password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(formData.password);
+    
+    const score = [hasLength, hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
+    
+    if (score < 3) return { strength: 'Weak', color: 'text-red-600' };
+    if (score < 4) return { strength: 'Good', color: 'text-yellow-600' };
+    return { strength: 'Strong', color: 'text-green-600' };
+  };
+
+  const passwordStrength = getPasswordStrength();
+
   return (
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
@@ -138,11 +185,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
             <span className={styles.logoText}>ReelApps</span>
           </div>
           <h1 className={styles.title}>Create Your Account</h1>
-          <p className={styles.subtitle}>Join the future of talent acquisition</p>
+          <p className={styles.subtitle}>Join the future of talent acquisition and unlock your potential</p>
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.label}>Account Type</label>
+          <label className={styles.label}>I am a...</label>
           <div style={{ display: 'flex', gap: '12px' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, cursor: 'pointer' }}>
               <input
@@ -153,7 +200,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
                 onChange={(e) => handleInputChange('role', e.target.value)}
                 style={{ cursor: 'pointer' }}
               />
-              <span>I'm looking for opportunities</span>
+              <span>Job seeker looking for opportunities</span>
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, cursor: 'pointer' }}>
               <input
@@ -164,7 +211,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
                 onChange={(e) => handleInputChange('role', e.target.value)}
                 style={{ cursor: 'pointer' }}
               />
-              <span>I'm hiring talent</span>
+              <span>Recruiter hiring talent</span>
             </label>
           </div>
         </div>
@@ -178,6 +225,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
               value={formData.firstName}
               onChange={(e) => handleInputChange('firstName', e.target.value)}
               placeholder="Enter your first name"
+              autoComplete="given-name"
               required
             />
             {getFieldError('firstName') && (
@@ -196,6 +244,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
               value={formData.lastName}
               onChange={(e) => handleInputChange('lastName', e.target.value)}
               placeholder="Enter your last name"
+              autoComplete="family-name"
               required
             />
             {getFieldError('lastName') && (
@@ -208,13 +257,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.label}>Email</label>
+          <label className={styles.label}>Email Address</label>
           <input
             type="email"
             className={`${styles.input} ${getFieldError('email') ? styles.inputError : ''}`}
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            placeholder="Enter your email"
+            placeholder="Enter your email address"
+            autoComplete="email"
             required
           />
           {getFieldError('email') && (
@@ -232,7 +282,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
             className={`${styles.input} ${getFieldError('password') ? styles.inputError : ''}`}
             value={formData.password}
             onChange={(e) => handleInputChange('password', e.target.value)}
-            placeholder="Create a password (min. 6 characters)"
+            placeholder="Create a strong password (minimum 8 characters)"
+            autoComplete="new-password"
             required
           />
           {getFieldError('password') && (
@@ -241,10 +292,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
               {getFieldError('password')}
             </div>
           )}
-          {formData.password.length >= 6 && !getFieldError('password') && (
-            <div className={styles.fieldSuccess}>
+          {passwordStrength && !getFieldError('password') && (
+            <div className={`${styles.fieldSuccess} ${passwordStrength.color}`}>
               <CheckCircle size={14} />
-              Password strength: Good
+              Password strength: {passwordStrength.strength}
             </div>
           )}
         </div>
@@ -256,7 +307,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
             className={`${styles.input} ${getFieldError('confirmPassword') ? styles.inputError : ''}`}
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-            placeholder="Confirm your password"
+            placeholder="Re-enter your password"
+            autoComplete="new-password"
             required
           />
           {getFieldError('confirmPassword') && (
@@ -265,7 +317,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
               {getFieldError('confirmPassword')}
             </div>
           )}
-          {formData.confirmPassword && formData.password === formData.confirmPassword && (
+          {formData.confirmPassword && formData.password === formData.confirmPassword && !getFieldError('confirmPassword') && (
             <div className={styles.fieldSuccess}>
               <CheckCircle size={14} />
               Passwords match
@@ -285,8 +337,16 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
           className={styles.submitButton}
           disabled={isLoading}
         >
-          {isLoading ? 'Creating Account...' : 'Create Account'}
-          {!isLoading && <ArrowRight size={16} />}
+          {isLoading ? (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Creating Account...
+            </span>
+          ) : (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Create Account
+              <ArrowRight size={16} />
+            </span>
+          )}
         </Button>
 
         <div className={styles.footer}>
@@ -295,9 +355,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
             type="button"
             onClick={onSwitchToLogin}
             className={styles.link}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: '4px' }}
           >
-            Sign in
+            Sign In
           </button>
         </div>
       </form>

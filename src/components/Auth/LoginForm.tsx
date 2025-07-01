@@ -29,7 +29,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!email.trim()) {
+      newErrors.email = 'Email address is required';
+    } else if (!emailRegex.test(email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
@@ -52,31 +54,44 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
     }
 
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       
       addNotification({
         type: 'success',
         title: 'Welcome back!',
-        message: 'You have successfully signed in to ReelApps.'
+        message: 'You have successfully signed in to your ReelApps account.'
       });
 
       onSuccess?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Invalid email or password';
+      const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
       
-      // Handle specific error cases
-      if (errorMessage.includes('Invalid login credentials')) {
-        setGeneralError('Invalid email or password. Please try again.');
-      } else if (errorMessage.includes('Email not confirmed')) {
-        setGeneralError('Please confirm your email before signing in.');
+      // Handle specific error cases with professional messaging
+      if (errorMessage.includes('Invalid login credentials') || 
+          errorMessage.includes('Invalid email or password') ||
+          errorMessage.includes('Authentication failed')) {
+        setGeneralError('The email address or password you entered is incorrect. Please verify your credentials and try again.');
+      } else if (errorMessage.includes('Email not confirmed') || 
+                 errorMessage.includes('email_not_confirmed')) {
+        setGeneralError('Please verify your email address before signing in. Check your inbox for a confirmation email.');
+      } else if (errorMessage.includes('Too many requests') || 
+                 errorMessage.includes('rate limit')) {
+        setGeneralError('Too many login attempts. Please wait a few minutes before trying again.');
+      } else if (errorMessage.includes('Account locked') || 
+                 errorMessage.includes('locked')) {
+        setGeneralError('Your account has been temporarily locked for security reasons. Please contact support if this continues.');
+      } else if (errorMessage.includes('Network') || 
+                 errorMessage.includes('connection')) {
+        setGeneralError('Connection issue detected. Please check your internet connection and try again.');
       } else {
-        setGeneralError(errorMessage);
+        // Generic professional error message for unknown errors
+        setGeneralError('We encountered an issue signing you in. Please try again or contact support if the problem persists.');
       }
       
       addNotification({
         type: 'error',
         title: 'Sign In Failed',
-        message: errorMessage
+        message: generalError || 'Unable to sign in. Please verify your credentials.'
       });
     }
   };
@@ -99,27 +114,37 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
 
   const handlePasswordReset = async () => {
     setGeneralError('');
-    if (!email) {
-      setErrors({ email: 'Please enter your email to reset password.' });
+    if (!email.trim()) {
+      setErrors({ email: 'Please enter your email address to reset your password.' });
       return;
     }
 
     try {
-      await sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(email.trim());
       addNotification({
         type: 'success',
         title: 'Password Reset Email Sent',
-        message: `If an account exists for ${email}, a reset link has been sent.`,
+        message: `We've sent password reset instructions to ${email}. Please check your inbox and follow the link to reset your password.`,
         persistent: true,
       });
       setIsResetView(false); // Go back to login view
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
-      setGeneralError(errorMessage);
+      const errorMessage = err instanceof Error ? err.message : 'Unable to send reset email';
+      
+      // Professional error handling for password reset
+      if (errorMessage.includes('Rate limit') || errorMessage.includes('too many')) {
+        setGeneralError('Too many password reset requests. Please wait before requesting another reset.');
+      } else if (errorMessage.includes('Invalid email') || errorMessage.includes('not found')) {
+        // Don't reveal if email exists for security, but be helpful
+        setGeneralError('If an account exists with this email address, you will receive reset instructions shortly.');
+      } else {
+        setGeneralError('We encountered an issue sending the reset email. Please try again or contact support.');
+      }
+      
       addNotification({
         type: 'error',
         title: 'Password Reset Failed',
-        message: errorMessage,
+        message: generalError || 'Unable to send password reset email. Please try again.',
       });
     }
   };
@@ -137,19 +162,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
           <h1 className={styles.title}>{isResetView ? 'Reset Password' : 'Welcome Back'}</h1>
           <p className={styles.subtitle}>
             {isResetView 
-              ? 'Enter your email to receive a password reset link.' 
-              : 'Sign in to your ReelApps account'}
+              ? 'Enter your email address to receive password reset instructions.' 
+              : 'Sign in to access your ReelApps account'}
           </p>
         </div>
 
         <div className={styles.formGroup}>
-          <label className={styles.label}>Email</label>
+          <label className={styles.label}>Email Address</label>
           <input
             type="email"
             className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
             value={email}
             onChange={(e) => handleEmailChange(e.target.value)}
-            placeholder="Enter your email"
+            placeholder="Enter your email address"
+            autoComplete="email"
             required
           />
           {errors.email && (
@@ -169,6 +195,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
             value={password}
             onChange={(e) => handlePasswordChange(e.target.value)}
             placeholder="Enter your password"
+            autoComplete="current-password"
             required
           />
           {errors.password && (
@@ -194,7 +221,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
             className={styles.submitButton}
             disabled={isLoading}
           >
-            {isLoading ? 'Sending...' : 'Send Reset Link'}
+            {isLoading ? 'Sending Reset Instructions...' : 'Send Reset Instructions'}
           </Button>
         ) : (
         <Button 
@@ -223,7 +250,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
             onClick={onSwitchToSignUp}
             className={styles.link}
           >
-            Sign up
+            Create Account
           </button>
             </>
           )}
@@ -236,7 +263,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignUp }) =>
               onClick={() => setIsResetView(true)}
               className={styles.link}
             >
-              Forgot Password?
+              Forgot your password?
             </button>
           </div>
         )}

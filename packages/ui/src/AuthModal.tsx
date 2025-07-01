@@ -108,27 +108,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setLocalError(null);
     setSuccessMessage(null);
 
-    // Client-side validation
-    if (!email || !password) {
-      setLocalError('Please fill in all required fields');
+    // Client-side validation with professional messaging
+    if (!email.trim() || !password) {
+      setLocalError('Please enter both your email address and password to continue.');
       return;
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setLocalError('Please enter a valid email address');
+    if (!emailRegex.test(email.trim())) {
+      setLocalError('Please enter a valid email address format.');
       return;
     }
 
     // Password policy validation (minimum 8 characters)
     if (password.length < 8) {
-      setLocalError('Password must be at least 8 characters long');
+      setLocalError('Password must be at least 8 characters long for security purposes.');
       return;
     }
 
-    if (view === 'signup' && (!firstName || !lastName)) {
-      setLocalError('Please fill in all required fields');
+    if (view === 'signup' && (!firstName.trim() || !lastName.trim())) {
+      setLocalError('Please provide both your first and last name to create your account.');
       return;
     }
 
@@ -136,14 +136,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     try {
       if (view === 'login') {
-        await onLogin(email, password);
+        await onLogin(email.trim(), password);
         onClose();
       } else if (view === 'signup') {
-        await onSignup(email, password, firstName, lastName, role);
+        await onSignup(email.trim(), password, firstName.trim(), lastName.trim(), role);
         onClose();
       }
-    } catch (_err) {
-      setLocalError('An unexpected error occurred');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
+      
+      // Professional error handling
+      if (errorMessage.includes('Invalid login credentials') || 
+          errorMessage.includes('Invalid email or password')) {
+        setLocalError('The email address or password you entered is incorrect. Please verify your credentials and try again.');
+      } else if (errorMessage.includes('Email not confirmed') || 
+                 errorMessage.includes('email_not_confirmed')) {
+        setLocalError('Please verify your email address before signing in. Check your inbox for a confirmation email.');
+      } else if (errorMessage.includes('already registered') || 
+                 errorMessage.includes('User already registered')) {
+        setLocalError('An account with this email address already exists. Please sign in or use a different email address.');
+      } else if (errorMessage.includes('Rate limit') || 
+                 errorMessage.includes('too many')) {
+        setLocalError('Too many attempts. Please wait a few minutes before trying again.');
+      } else {
+        setLocalError('We encountered an issue processing your request. Please try again or contact support if the problem persists.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -154,18 +171,25 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setLocalError(null);
     setSuccessMessage(null);
 
-    if (!email) {
-      setLocalError('Please enter your email address');
+    if (!email.trim()) {
+      setLocalError('Please enter your email address to receive password reset instructions.');
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setLocalError('Please enter a valid email address format.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await onPasswordReset(email);
-      setSuccessMessage('Password reset email sent. Please check your inbox.');
-    } catch (_err) {
-      setLocalError('Failed to send password reset email. Please try again.');
+      await onPasswordReset(email.trim());
+      setSuccessMessage('Password reset instructions have been sent to your email address. Please check your inbox and follow the link to reset your password.');
+    } catch (err) {
+      setLocalError('We encountered an issue sending the password reset email. Please try again or contact support if the problem persists.');
     } finally {
       setIsSubmitting(false);
     }
