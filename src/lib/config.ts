@@ -2,7 +2,7 @@
 
 // Helper function to get main app URL
 export const getMainAppUrl = (): string => {
-  return import.meta.env.VITE_HOME_URL || 'http://localhost:5173';
+  return import.meta.env.VITE_HOME_URL || 'https://www.reelapps.co.za';
 };
 
 // Get environment variable with fallback

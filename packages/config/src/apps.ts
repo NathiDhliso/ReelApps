@@ -17,7 +17,7 @@ export const apps: AppConfig[] = [
   {
     id: 'reel-cv',
     name: 'ReelCV',
-    url: getEnv('VITE_REELCV_URL', 'http://localhost:5174'),
+    url: getEnv('VITE_REELCV_URL', 'https://reelcv.reelapps.co.za'),
     description: 'Create and manage your video-based CV.',
     icon: '📄',
     roles: ['candidate'],
@@ -26,7 +26,7 @@ export const apps: AppConfig[] = [
   {
     id: 'reel-hunter',
     name: 'ReelHunter',
-    url: getEnv('VITE_REELHUNTER_URL', 'http://localhost:5175'),
+    url: getEnv('VITE_REELHUNTER_URL', 'https://reelhunter.reelapps.co.za'),
     description: 'Find and hire top talent with video insights.',
     icon: '🎯',
     roles: ['recruiter', 'admin'],
@@ -35,7 +35,7 @@ export const apps: AppConfig[] = [
   {
     id: 'reel-skills',
     name: 'ReelSkills',
-    url: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5176'),
+    url: getEnv('VITE_REELSKILLS_URL', 'https://reelskills.reelapps.co.za'),
     description: 'Showcase and verify your professional skills.',
     icon: '🛠️',
     roles: ['candidate', 'admin'],
@@ -44,7 +44,7 @@ export const apps: AppConfig[] = [
   {
     id: 'reel-persona',
     name: 'ReelPersona',
-    url: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5177'),
+    url: getEnv('VITE_REELPERSONA_URL', 'https://reelpersona.reelapps.co.za'),
     description: 'Analyze and understand candidate personalities.',
     icon: '🧠',
     roles: ['recruiter', 'admin', 'candidate'],
@@ -53,7 +53,7 @@ export const apps: AppConfig[] = [
   {
     id: 'reel-project',
     name: 'ReelProject',
-    url: getEnv('VITE_REELPROJECT_URL', 'http://localhost:5178'),
+    url: getEnv('VITE_REELPROJECT_URL', 'https://reelprojects.reelapps.co.za'),
     description: 'Manage and collaborate on projects.',
     icon: '🚀',
     roles: ['admin', 'recruiter', 'candidate'],
@@ -84,7 +84,7 @@ export const getAppsForRole = (role: 'candidate' | 'recruiter' | 'admin'): AppCo
 
 // --- ADDED: Helper function to get main app URL ---
 export const getMainAppUrl = (): string => {
-  return getEnv('VITE_HOME_URL', 'http://localhost:5173');
+  return getEnv('VITE_HOME_URL', 'https://www.reelapps.co.za');
 };
 
 /**
@@ -109,11 +109,11 @@ export const fetchUserAppsFromDatabase = async (supabase: any): Promise<AppConfi
     
     // Map database results to AppConfig format with environment-specific URLs
     const envUrls = {
-      reelcv: getEnv('VITE_REELCV_URL', 'http://localhost:5174'),
-      reelhunter: getEnv('VITE_REELHUNTER_URL', 'http://localhost:5175'),
-      reelskills: getEnv('VITE_REELSKILLS_URL', 'http://localhost:5176'),
-      reelpersona: getEnv('VITE_REELPERSONA_URL', 'http://localhost:5177'),
-      reelproject: getEnv('VITE_REELPROJECT_URL', 'http://localhost:5178')
+      reelcv: getEnv('VITE_REELCV_URL', 'https://reelcv.reelapps.co.za'),
+      reelhunter: getEnv('VITE_REELHUNTER_URL', 'https://reelhunter.reelapps.co.za'),
+      reelskills: getEnv('VITE_REELSKILLS_URL', 'https://reelskills.reelapps.co.za'),
+      reelpersona: getEnv('VITE_REELPERSONA_URL', 'https://reelpersona.reelapps.co.za'),
+      reelproject: getEnv('VITE_REELPROJECT_URL', 'https://reelprojects.reelapps.co.za')
     };
     return data.map((app: any) => ({
       id: app.app_id,
