@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { ssoManager } from '@reelapps/auth';
+import { getSupabaseClient } from '@reelapps/auth';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
 
 const SSOPage: React.FC = () => {
@@ -66,6 +67,7 @@ const SSOPage: React.FC = () => {
         }
 
         // Create SSO session
+        const supabase = getSupabaseClient();
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           setError('Failed to get current session');

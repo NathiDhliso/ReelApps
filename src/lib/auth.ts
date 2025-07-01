@@ -22,7 +22,7 @@ interface AuthState {
   setProfile: (profile: Profile | null) => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   user: null,
   profile: null,

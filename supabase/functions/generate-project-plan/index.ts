@@ -7,10 +7,13 @@ interface GeneratePlanRequest {
   projectName: string
 }
 
-interface Task {
-  title: string
-  description: string
-  milestone?: string
+interface _Task {
+  id: string;
+  title: string;
+  description: string;
+  estimatedHours: number;
+  skillsRequired: string[];
+  dependencies: string[];
 }
 
 serve(async (req) => {

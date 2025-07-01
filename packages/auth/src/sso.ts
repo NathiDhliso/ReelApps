@@ -1,4 +1,6 @@
-import { supabase } from '@reelapps/supabase';
+import { getSupabaseClient } from './supabase';
+
+const supabase = getSupabaseClient();
 
 export interface SSOConfig {
   mainDomain: string;
@@ -69,7 +71,7 @@ export class SSOManager {
   /**
    * Create SSO session for cross-domain sharing
    */
-  private async createSSOSession(session: any, domain: string): Promise<SSOSession> {
+  public async createSSOSession(session: any, domain: string): Promise<SSOSession> {
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
@@ -115,7 +117,7 @@ export class SSOManager {
       }
 
       // Set the session in Supabase
-      const { data, error } = await supabase.auth.setSession({
+      const { error } = await supabase.auth.setSession({
         access_token: sessionData.user.accessToken,
         refresh_token: sessionData.user.refreshToken
       });

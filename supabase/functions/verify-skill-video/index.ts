@@ -209,7 +209,7 @@ const analyzeProjectEvidence = async (
   return await analyzer(evidenceUrl, skillName, evidenceType);
 };
 
-const analyzeCodeEvidence = async (evidenceUrl: string, skillName: string, evidenceType: string) => {
+const analyzeCodeEvidence = async (evidenceUrl: string, skillName: string, _evidenceType: string) => {
   const ratings = [3, 4, 4, 5, 5]; // Weighted towards higher ratings
   const rating = ratings[Math.floor(Math.random() * ratings.length)];
 
@@ -239,7 +239,7 @@ const analyzeCodeEvidence = async (evidenceUrl: string, skillName: string, evide
   };
 };
 
-const analyzeVideoEvidence = async (evidenceUrl: string, skillName: string, evidenceType: string) => {
+const analyzeVideoEvidence = async (evidenceUrl: string, skillName: string, _evidenceType: string) => {
   const ratings = [3, 4, 4, 5, 5];
   const rating = ratings[Math.floor(Math.random() * ratings.length)];
 
@@ -269,7 +269,7 @@ const analyzeVideoEvidence = async (evidenceUrl: string, skillName: string, evid
   };
 };
 
-const analyzeDocumentEvidence = async (evidenceUrl: string, skillName: string, evidenceType: string) => {
+const analyzeDocumentEvidence = async (evidenceUrl: string, skillName: string, _evidenceType: string) => {
   const ratings = [3, 4, 4, 5, 5];
   const rating = ratings[Math.floor(Math.random() * ratings.length)];
 
@@ -299,7 +299,7 @@ const analyzeDocumentEvidence = async (evidenceUrl: string, skillName: string, e
   };
 };
 
-const analyzePresentationEvidence = async (evidenceUrl: string, skillName: string, evidenceType: string) => {
+const analyzePresentationEvidence = async (evidenceUrl: string, skillName: string, _evidenceType: string) => {
   const ratings = [3, 4, 4, 5, 5];
   const rating = ratings[Math.floor(Math.random() * ratings.length)];
 
@@ -329,7 +329,7 @@ const analyzePresentationEvidence = async (evidenceUrl: string, skillName: strin
   };
 };
 
-const analyzeLiveDemoEvidence = async (evidenceUrl: string, skillName: string, evidenceType: string) => {
+const analyzeLiveDemoEvidence = async (evidenceUrl: string, skillName: string, _evidenceType: string) => {
   const ratings = [3, 4, 4, 5, 5];
   const rating = ratings[Math.floor(Math.random() * ratings.length)];
 

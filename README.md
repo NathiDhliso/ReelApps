@@ -1,81 +1,143 @@
-# ReelApps Shared Packages
+# ReelApps - Main Portal
 
-This repository contains shared packages for the ReelApps ecosystem. These packages provide common functionality, UI components, authentication, and configuration used across all ReelApps applications.
+The central authentication hub and app launcher for the ReelApps ecosystem.
 
-## 📦 Packages
+## 🌟 Features
 
-### `@reelapps/auth`
-Authentication and authorization utilities, including Supabase integration and session management.
+### 🔐 Authentication Hub
+- **Single Sign-On (SSO)** - Centralized authentication for all ReelApps
+- **Role-Based Access Control** - Admin, Recruiter, and Candidate roles
+- **Secure Session Management** - Cross-domain session handling
+- **Password Reset & Recovery** - Self-service password management
 
-### `@reelapps/config`
-Shared configuration and constants used across applications.
+### 🚀 App Launcher
+- **Unified Dashboard** - Access all ReelApps from one place
+- **Role-Based Navigation** - Only see apps you have permission to use
+- **Seamless App Switching** - No re-authentication required
+- **Quick Access Links** - Direct navigation to frequently used features
 
-### `@reelapps/supabase`
-Supabase client configuration and utilities.
+### 👥 User Management
+- **Profile Management** - Update personal information and preferences
+- **Role Assignment** - Admin can assign roles to users
+- **User Directory** - Browse and search registered users
+- **Activity Tracking** - View recent app usage and activity
 
-### `@reelapps/types`
-TypeScript type definitions shared across applications.
-
-### `@reelapps/ui`
-Reusable UI components and styling utilities.
-
-## 🚀 Usage
-
-Install packages in your ReelApps application:
-
-```bash
-npm install @reelapps/auth @reelapps/ui @reelapps/config @reelapps/types @reelapps/supabase
-```
-
-## 🛠️ Development
-
-### Prerequisites
-- Node.js 18+
-- pnpm 8+
-
-### Setup
-```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm run build
-
-# Run tests
-pnpm run test
-
-# Lint all packages
-pnpm run lint
-```
-
-### Publishing
-```bash
-# Publish all packages to npm
-pnpm run publish:all
-```
+### 🎨 Modern UI/UX
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **Dark/Light Theme** - User preference-based theming
+- **Accessibility** - WCAG 2.1 compliant interface
+- **Fast Loading** - Optimized performance and caching
 
 ## 🏗️ Architecture
 
-This is a monorepo using pnpm workspaces. Each package is independently versioned and published to npm under the `@reelapps` scope.
-
-### Package Structure
+### Domain Structure
 ```
-packages/
-├── auth/          # Authentication utilities
-├── config/        # Shared configuration
-├── supabase/      # Supabase client
-├── types/         # TypeScript types
-└── ui/           # UI components
+www.reelapps.co.za (Main Portal)
+├── reelcv.reelapps.co.za (Candidate Profiles)
+├── reelhunter.reelapps.co.za (Recruitment Platform)
+├── reelskills.reelapps.co.za (Skills Management)
+├── reelpersona.reelapps.co.za (Personality Assessment)
+└── reelprojects.reelapps.co.za (Project Showcase)
 ```
 
-## 🔗 Related Repositories
+### Technology Stack
+- **Frontend**: React 18 + TypeScript + Vite
+- **Authentication**: Supabase Auth
+- **Database**: PostgreSQL (via Supabase)
+- **Styling**: Tailwind CSS + CSS Modules
+- **Deployment**: AWS Amplify
+- **CI/CD**: GitHub Actions
 
-- [ReelCV](https://github.com/NathiDhliso/ReelCV) - Dynamic candidate profiles
-- [ReelHunter](https://github.com/NathiDhliso/ReelHunter) - AI-powered recruitment platform
-- [ReelPersona](https://github.com/NathiDhliso/ReelPersona) - Personality assessment tool
-- [ReelSkills](https://github.com/NathiDhliso/ReelSkills) - Skills management platform
-- [ReelProjects](https://github.com/NathiDhliso/ReelProjects) - Project showcase platform
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+- Supabase account and project
+
+### Installation
+```bash
+git clone https://github.com/your-org/reelapps-main.git
+cd reelapps-main
+npm install
+```
+
+### Environment Setup
+Create a `.env` file:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_HOME_URL=http://localhost:5175
+VITE_REELCV_URL=http://localhost:5176
+VITE_REELHUNTER_URL=http://localhost:5177
+VITE_REELSKILLS_URL=http://localhost:5178
+VITE_REELPERSONA_URL=http://localhost:5179
+VITE_REELPROJECT_URL=http://localhost:5180
+```
+
+### Development
+```bash
+npm run dev
+# App runs on http://localhost:5175
+```
+
+## 🔧 Configuration
+
+### Role-Based Access
+```typescript
+const roleMapping = {
+  'admin': ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelprojects'],
+  'recruiter': ['reelhunter', 'reelpersona', 'reelprojects'],
+  'candidate': ['reelcv', 'reelskills', 'reelpersona', 'reelprojects']
+};
+```
+
+### SSO Configuration
+- **Token Expiration**: 24 hours
+- **Allowed Domains**: *.reelapps.co.za
+- **Session Storage**: localStorage + Supabase session
+
+## 📱 User Roles
+
+### 👑 Admin
+- Access to all ReelApps
+- User management capabilities
+- System configuration access
+- Analytics and reporting
+
+### 🎯 Recruiter
+- ReelHunter (recruitment platform)
+- ReelPersona (personality assessment)
+- ReelProjects (project showcase)
+- Candidate search and evaluation
+
+### 👤 Candidate
+- ReelCV (profile management)
+- ReelSkills (skills showcase)
+- ReelPersona (personality assessment)
+- ReelProjects (project portfolio)
+
+## 🔗 Related Apps
+
+- **[ReelCV](https://github.com/your-org/reelcv-reelapps)** - Dynamic candidate profiles
+- **[ReelHunter](https://github.com/your-org/reelhunter-reelapps)** - AI-powered recruitment
+- **[ReelSkills](https://github.com/your-org/reelskills-reelapps)** - Skills management
+- **[ReelPersona](https://github.com/your-org/reelpersona-reelapps)** - Personality assessment
+- **[ReelProjects](https://github.com/your-org/reelprojects-reelapps)** - Project showcase
+
+## 📚 Documentation
+
+- [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md)
+- [SSO Implementation](./docs/SUBDOMAIN_DEPLOYMENT_GUIDE.md)
+- [CI/CD Setup](./CI_CD_AND_SUPABASE_FIXES.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## 📄 License
 
-MIT License - see LICENSE file for details. 
+This project is proprietary software. All rights reserved. 

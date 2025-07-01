@@ -4,4 +4,16 @@
 **/*.d.ts
 **/coverage/**
 **/.next/**
-**/out/** 
+**/out/**
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.pnpm/
+packages/**/dist/
+apps/**/dist/
+packages/auth/dist/
+packages/ui/dist/
+packages/config/dist/
+packages/supabase/dist/
+packages/types/dist/
+supabase/functions/ 

@@ -27,6 +27,7 @@ module.exports = [
       'packages/config/dist/**',
       'packages/supabase/dist/**',
       'packages/types/dist/**',
+      'supabase/functions/**',
     ],
     languageOptions: {
       parser: tsParser,
@@ -79,15 +80,41 @@ module.exports = [
       },
     },
   },
-  // Supabase functions configuration
+  // Supabase functions configuration - completely separate
   {
-    files: ['supabase/functions/**/*.{ts,js}'],
+    files: ['**/supabase/functions/**/*.{ts,js}'],
     languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module',
       globals: {
-        ...globals.browser,
         ...globals.node,
         Deno: 'readonly',
+        Request: 'readonly',
+        Response: 'readonly',
+        Headers: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        fetch: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
       },
+    },
+    plugins: {
+      '@typescript-eslint': require('@typescript-eslint/eslint-plugin'),
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_'
+      }],
+      'no-unused-vars': 'off',
+      'no-undef': 'error',
+      'no-empty': 'warn',
     },
   },
   // Ignore dist and generated files completely
@@ -102,6 +129,7 @@ module.exports = [
       'packages/config/dist/**/*',
       'packages/supabase/dist/**/*',
       'packages/types/dist/**/*',
+      'supabase/functions/**/*',
     ],
   },
 ];

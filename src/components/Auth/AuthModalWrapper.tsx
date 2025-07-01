@@ -20,13 +20,10 @@ export const AuthModalWrapper: React.FC<AuthModalWrapperProps> = ({
   // Get auth state and methods from store
   const {
     isAuthenticated,
-    isInitializing,
-    user,
-    error,
+    isLoading,
     login,
     signup,
-    sendPasswordResetEmail,
-    isLoading
+    sendPasswordResetEmail
   } = useAuthStore();
 
   // Handle authentication state changes with cleanup
@@ -35,7 +32,7 @@ export const AuthModalWrapper: React.FC<AuthModalWrapperProps> = ({
     isActiveRef.current = true;
 
     // Skip if still initializing
-    if (isInitializing) return;
+    if (isLoading) return;
 
     // Check if authentication is required
     if (!isAuthenticated) {
@@ -70,10 +67,10 @@ export const AuthModalWrapper: React.FC<AuthModalWrapperProps> = ({
         setOriginalPath(null);
       }
     }
-  }, [isAuthenticated, isInitializing, originalPath, onAuthRequired]);
+  }, [isAuthenticated, isLoading, originalPath, onAuthRequired]);
 
   // Three-state rendering machine
-  if (isInitializing) {
+  if (isLoading) {
     // State 1: Still initializing - show loading state
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -98,7 +95,6 @@ export const AuthModalWrapper: React.FC<AuthModalWrapperProps> = ({
           onSignup={signup}
           onPasswordReset={sendPasswordResetEmail}
           isLoading={isLoading}
-          error={error}
         />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
