@@ -14,6 +14,7 @@ import SystemNotifications from './components/SystemNotifications/SystemNotifica
 import Navigation from './components/Navigation/Navigation';
 import './styles/globals.css';
 import { testSupabaseConnection, initializeSupabase, ssoManager } from '@reelapps/auth';
+import { testSSO } from './test-sso';
 
 // App redirect component for proper app navigation
 const AppRedirect: React.FC<{ 
@@ -136,11 +137,22 @@ const initializeAuth = async () => {
   await initialize();
   startSessionWatcher();
 
-  // Initialize (or restore) Single Sign-On session. This makes sure that
-  // if we arrive on a sub-domain without a local Supabase session, we
-  // attempt to restore it from the shared cookie or redirect to SSO.
-  await ssoManager.initializeSSO();
-  console.log('✅ SSO initialization complete');
+  // Only initialize SSO on subdomains, not on the main domain
+  const currentDomain = window.location.hostname;
+  const isSubdomain = currentDomain !== 'reelapps.co.za' && 
+                     currentDomain !== 'www.reelapps.co.za' &&
+                     currentDomain.endsWith('.reelapps.co.za');
+  
+  if (isSubdomain) {
+    console.log('🔄 On subdomain, initializing SSO...');
+    // Initialize (or restore) Single Sign-On session. This makes sure that
+    // if we arrive on a sub-domain without a local Supabase session, we
+    // attempt to restore it from the shared cookie or redirect to SSO.
+    await ssoManager.initializeSSO();
+    console.log('✅ SSO initialization complete');
+  } else {
+    console.log('🏠 On main domain, skipping SSO initialization');
+  }
 };
 
 function App() {
@@ -198,6 +210,9 @@ function App() {
         console.log('🔐 Initializing authentication...');
         await initializeAuth();
         console.log('✅ Authentication initialized successfully');
+        
+        // Make testSSO available for debugging
+        (window as any).testSSO = testSSO;
         
         setAuthStore({ useAuthStore });
         

@@ -43,6 +43,8 @@ const getSupabaseClientSafely = () => {
 
 export class SSOManager {
   private config: SSOConfig;
+  private isInitializing = false; // Add guard flag
+  private hasRedirected = false; // Add redirect guard
 
   constructor(config: SSOConfig) {
     this.config = config;
@@ -58,7 +60,20 @@ export class SSOManager {
    * Initialize SSO session from main domain
    */
   async initializeSSO(): Promise<SSOSession | null> {
+    // Prevent multiple simultaneous initializations
+    if (this.isInitializing) {
+      console.log('[SSO] Already initializing, skipping...');
+      return null;
+    }
+
+    // Prevent redirect loops
+    if (this.hasRedirected) {
+      console.log('[SSO] Already redirected in this session, skipping...');
+      return null;
+    }
+
     try {
+      this.isInitializing = true;
       console.log('[SSO] Initializing SSO session...');
       
       // Get Supabase client safely
@@ -103,11 +118,13 @@ export class SSOManager {
         return this.createSSOSession(session, currentDomain);
       }
       
-      console.log('[SSO] No active session found');
+      console.log('[SSO] No active session found on main domain - user needs to log in');
       return null;
     } catch (error) {
       console.error('[SSO] Error initializing SSO:', error);
       return null;
+    } finally {
+      this.isInitializing = false;
     }
   }
 
@@ -257,11 +274,41 @@ export class SSOManager {
    * Redirect to main domain for SSO authentication
    */
   private async redirectToSSO(): Promise<null> {
+    // Additional safety check - don't redirect if we're already processing an SSO request
+    if (window.location.pathname.includes('/auth/sso')) {
+      console.log('[SSO] Already on SSO page, not redirecting');
+      return null;
+    }
+
+    // Prevent multiple redirects in the same session
+    if (this.hasRedirected) {
+      console.log('[SSO] Already redirected in this session, skipping redirect');
+      return null;
+    }
+
+    // Check if we're in a redirect loop by looking at the return_url parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('return_url');
+    if (returnUrl) {
+      try {
+        const decodedUrl = decodeURIComponent(returnUrl);
+        // If the return URL contains another return_url, we're in a loop
+        if (decodedUrl.includes('return_url=')) {
+          console.warn('[SSO] Potential redirect loop detected, stopping redirect');
+          return null;
+        }
+      } catch (e) {
+        console.warn('[SSO] Could not decode return_url, stopping redirect to prevent loop');
+        return null;
+      }
+    }
+
     const currentUrl = window.location.href;
-    const returnUrl = encodeURIComponent(currentUrl);
-    const ssoUrl = `https://www.${this.config.mainDomain}/auth/sso?return_url=${returnUrl}`;
+    const returnUrlEncoded = encodeURIComponent(currentUrl);
+    const ssoUrl = `https://www.${this.config.mainDomain}/auth/sso?return_url=${returnUrlEncoded}`;
     
     console.log('[SSO] Redirecting to SSO:', ssoUrl);
+    this.hasRedirected = true; // Mark that we've redirected
     window.location.href = ssoUrl;
     
     return null;
@@ -286,6 +333,15 @@ export class SSOManager {
     localStorage.removeItem(this.config.ssoTokenName);
     sessionStorage.removeItem(this.config.ssoTokenName);
     this.deleteCookie(this.config.sessionCookieName);
+  }
+
+  /**
+   * Reset SSO state - useful for clearing redirect flags
+   */
+  resetSSOState(): void {
+    this.isInitializing = false;
+    this.hasRedirected = false;
+    console.log('[SSO] SSO state reset');
   }
 
   /**
