@@ -1,9 +1,7 @@
 import { create } from 'zustand';
 
 interface SystemStatus {
-  pythonService: 'healthy' | 'degraded' | 'down' | 'unknown';
   supabaseService: 'healthy' | 'degraded' | 'down' | 'unknown';
-  aiService: 'healthy' | 'degraded' | 'down' | 'unknown';
   lastChecked: string;
 }
 
@@ -34,9 +32,7 @@ interface SystemState {
 
 export const useSystemStore = create<SystemState>((set, get) => ({
   status: {
-    pythonService: 'unknown',
     supabaseService: 'unknown',
-    aiService: 'unknown',
     lastChecked: new Date().toISOString(),
   },
   notifications: [],
@@ -77,9 +73,7 @@ export const useSystemStore = create<SystemState>((set, get) => ({
 
   checkSystemHealth: async () => {
     const newStatus: SystemStatus = {
-      pythonService: 'unknown',
       supabaseService: 'unknown',
-      aiService: 'unknown',
       lastChecked: new Date().toISOString(),
     };
 
@@ -99,33 +93,10 @@ export const useSystemStore = create<SystemState>((set, get) => ({
       newStatus.supabaseService = 'down';
     }
 
-    try {
-      // Check Python service health
-      const response = await fetch('/api/health', { 
-        method: 'GET',
-        signal: AbortSignal.timeout(5000) // 5 second timeout
-      });
-      newStatus.pythonService = response.ok ? 'healthy' : 'degraded';
-    } catch {
-      newStatus.pythonService = 'down';
-    }
-
-    // AI service status is inferred from Python service + recent successful calls
-    newStatus.aiService = newStatus.pythonService === 'healthy' ? 'healthy' : 'unknown';
-
     set({ status: newStatus });
 
-    // Add notifications for service issues
+    // Add notifications for service issues - but only for actual down services, not unknown ones
     const { addNotification } = get();
-    if (newStatus.pythonService === 'down') {
-      addNotification({
-        type: 'warning',
-        title: 'AI Features Temporarily Unavailable',
-        message: 'Job analysis and candidate matching are currently offline. Please try again later.',
-        persistent: true
-      });
-    }
-
     if (newStatus.supabaseService === 'down') {
       addNotification({
         type: 'error',

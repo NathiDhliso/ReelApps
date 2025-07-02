@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Database, Cpu, Zap, RefreshCw } from 'lucide-react';
+import { Activity, Database, RefreshCw } from 'lucide-react';
 import { useSystemStore } from '../../store/systemStore';
 import Card from '../Card/Card';
 import Button from '../Button/Button';
@@ -33,18 +33,6 @@ const StatusDashboard: React.FC = () => {
       icon: <Database size={20} />,
       description: 'User data and profiles'
     },
-    {
-      name: 'AI Engine',
-      status: status.pythonService,
-      icon: <Cpu size={20} />,
-      description: 'Job analysis and matching'
-    },
-    {
-      name: 'AI Models',
-      status: status.aiService,
-      icon: <Zap size={20} />,
-      description: 'External AI services'
-    }
   ];
 
   const overallHealth = services.every(s => s.status === 'healthy') ? 'healthy' :
