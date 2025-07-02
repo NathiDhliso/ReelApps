@@ -29,5 +29,11 @@
       "@reelapps/ui": ["packages/ui/src"]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "packages/auth/src",
+    "packages/config/src", 
+    "packages/types/src",
+    "packages/ui/src"
+  ]
 }

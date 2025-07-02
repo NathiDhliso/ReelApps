@@ -237,6 +237,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           // Create a minimal profile object with role for the UI
           const fallbackProfile: Profile = {
             id: user.id,
+            user_id: user.id,
             first_name: userData.first_name || 'User',
             last_name: userData.last_name || 'Name',
             email: user.email || null,
