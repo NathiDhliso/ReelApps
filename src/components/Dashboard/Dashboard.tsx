@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Search, 
@@ -14,9 +14,10 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { getAppsForRole, AppConfig } from '@reelapps/config';
+import { getAppsForRole, AppConfig, fetchUserAppsFromDatabase } from '@reelapps/config';
 import { Button } from '@reelapps/ui';
 import { launchAppWithAuth } from '@reelapps/auth';
+import { getSupabaseClient } from '@reelapps/auth';
 import styles from './Dashboard.module.css';
 
 const iconMap = {
@@ -33,6 +34,32 @@ const iconMap = {
 
 const Dashboard: React.FC = () => {
   const { isAuthenticated, profile } = useAuthStore();
+  const [availableApps, setAvailableApps] = useState<AppConfig[]>([]);
+
+  useEffect(() => {
+    const loadApps = async () => {
+      if (isAuthenticated && profile?.role) {
+        try {
+          const supabase = getSupabaseClient();
+          const dbApps = await fetchUserAppsFromDatabase(supabase);
+          if (dbApps.length > 0) {
+            setAvailableApps(dbApps);
+          } else {
+            // Fallback to role-based apps if database query fails
+            setAvailableApps(getAppsForRole(profile.role));
+          }
+        } catch (error) {
+          console.error('Error fetching apps from database:', error);
+          // Fallback to role-based apps
+          setAvailableApps(getAppsForRole(profile.role));
+        }
+      } else {
+        setAvailableApps([]);
+      }
+    };
+
+    loadApps();
+  }, [isAuthenticated, profile?.role]);
 
   const handleLaunchApp = async (appUrl: string) => {
     try {
@@ -81,10 +108,6 @@ const Dashboard: React.FC = () => {
       </div>
     );
   };
-
-  const availableApps = isAuthenticated && profile?.role 
-    ? getAppsForRole(profile.role)
-    : [];
 
   if (!isAuthenticated) {
     return (

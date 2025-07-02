@@ -70,13 +70,19 @@ export const getAppsForRole = (role: 'candidate' | 'recruiter' | 'admin'): AppCo
   console.log('🔍 DEBUG: getAppsForRole called with role:', role);
   console.log('🔍 DEBUG: getAppsForRole - all apps:', apps);
   
-  // --- UPDATED: Admins should see all applications ---
-  if (role === 'admin') {
-    console.log('🔍 DEBUG: getAppsForRole - admin role, returning all apps:', apps);
-    return apps;
-  }
+  // Database-driven approach should be preferred, but this is a fallback
+  // The actual app access should be determined by calling fetchUserAppsFromDatabase
   
-  const filteredApps = apps.filter(app => app.roles.includes(role));
+  // --- UPDATED: Role-based filtering according to database schema ---
+  const roleAppMapping: Record<string, string[]> = {
+    'candidate': ['reel-cv', 'reel-skills', 'reel-persona', 'reel-project'],
+    'recruiter': ['reel-hunter', 'reel-persona', 'reel-project'],
+    'admin': ['reel-cv', 'reel-hunter', 'reel-skills', 'reel-persona', 'reel-project'] // Admin gets all apps
+  };
+  
+  const allowedAppIds = roleAppMapping[role] || [];
+  const filteredApps = apps.filter(app => allowedAppIds.includes(app.id));
+  
   console.log('🔍 DEBUG: getAppsForRole - filtered apps for role', role, ':', filteredApps);
   
   return filteredApps;

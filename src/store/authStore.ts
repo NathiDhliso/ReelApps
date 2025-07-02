@@ -13,7 +13,7 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (_email: string, _password: string) => Promise<void>;
-  signup: (_email: string, _password: string, _firstName: string, _lastName: string, _role?: 'candidate' | 'recruiter') => Promise<void>;
+  signup: (_email: string, _password: string, _firstName: string, _lastName: string, _role?: 'candidate' | 'recruiter' | 'admin') => Promise<void>;
   logout: () => Promise<void>;
   setUser: (_user: User | null) => void;
   setProfile: (_profile: Profile | null) => void;
@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  signup: async (_email: string, _password: string, _firstName: string, _lastName: string, _role: 'candidate' | 'recruiter' = 'candidate') => {
+  signup: async (_email: string, _password: string, _firstName: string, _lastName: string, _role: 'candidate' | 'recruiter' | 'admin' = 'candidate') => {
     set({ isLoading: true });
     try {
       console.log('Starting signup process...');
@@ -270,10 +270,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ profile: profileWithRole, isAuthenticated: true, isLoading: false });
       } else {
         console.log('✅ Profile found:', profile);
-        // Add role to the profile for UI purposes
+        // Get the role from the profile table (this is the authoritative source)
+        const roleFromProfile = profile.role as 'candidate' | 'recruiter' | 'admin' | undefined;
+        const roleFromMetadata = user.user_metadata?.role as 'candidate' | 'recruiter' | 'admin' | undefined;
+
         const profileWithRole = {
           ...profile,
-          role: (user.user_metadata?.role as 'candidate' | 'recruiter') || 'candidate'
+          // Always prioritize the role from the profiles table, fallback to metadata, then default
+          role: roleFromProfile || roleFromMetadata || 'candidate'
         };
         console.log('🔄 Setting existing profile with role:', profileWithRole);
         set({ profile: profileWithRole, isAuthenticated: true, isLoading: false });

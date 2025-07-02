@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from './components/ThemeProvider/ThemeProvider';
-import { testSupabaseConnection, initializeSupabase } from '@reelapps/auth';
+import { testSupabaseConnection, initializeSupabase, ssoManager } from '@reelapps/auth';
 import { useAuthStore, startSessionWatcher } from './lib/auth';
 import { AuthModalWrapper } from './components/Auth/AuthModalWrapper';
 import HomePage from './components/HomePage/HomePage';
@@ -51,6 +51,10 @@ function AppWithModalAuth() {
         // Start background token refresh
         startSessionWatcher();
         console.log('✅ Session watcher started');
+        
+        // Attempt to restore or establish SSO session
+        await ssoManager.initializeSSO();
+        console.log('✅ SSO initialization complete');
         
       } catch (error) {
         console.error('❌ Initialization failed:', error);

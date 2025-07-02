@@ -49,7 +49,7 @@ interface AuthState {
   isAuthenticated: boolean;
   csrfProtection?: any;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, firstName: string, lastName: string, role?: 'candidate' | 'recruiter') => Promise<void>;
+  signup: (email: string, password: string, firstName: string, lastName: string, role?: 'candidate' | 'recruiter' | 'admin') => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
   setProfile: (profile: Profile | null) => void;
@@ -107,7 +107,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  signup: async (email: string, password: string, firstName: string, lastName: string, role: 'candidate' | 'recruiter' = 'candidate') => {
+  signup: async (email: string, password: string, firstName: string, lastName: string, role: 'candidate' | 'recruiter' | 'admin' = 'candidate') => {
     set({ isLoading: true, error: null });
     try {
       const supabase = getSupabaseClient();

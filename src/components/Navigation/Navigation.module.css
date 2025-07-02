@@ -110,11 +110,55 @@
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px);
+  }
+  
   .navLinks {
     display: none;
   }
   
   .navContainer {
     padding: 0 16px;
+    height: 64px;
+  }
+  
+  .navLogo {
+    font-size: 20px;
+  }
+  
+  .navLogoIcon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .themeToggle {
+    padding: 6px;
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navContainer {
+    padding: 0 12px;
+    height: 56px;
+  }
+  
+  .navLogo {
+    font-size: 18px;
+    gap: 8px;
+  }
+  
+  .navLogoIcon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .themeToggle {
+    padding: 4px;
+    min-height: 40px;
+    min-width: 40px;
   }
 }

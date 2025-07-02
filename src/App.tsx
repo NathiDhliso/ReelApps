@@ -13,7 +13,7 @@ import StatusDashboard from './components/StatusDashboard/StatusDashboard';
 import SystemNotifications from './components/SystemNotifications/SystemNotifications';
 import Navigation from './components/Navigation/Navigation';
 import './styles/globals.css';
-import { testSupabaseConnection, initializeSupabase } from '@reelapps/auth';
+import { testSupabaseConnection, initializeSupabase, ssoManager } from '@reelapps/auth';
 
 // App redirect component for proper app navigation
 const AppRedirect: React.FC<{ 
@@ -135,6 +135,12 @@ const initializeAuth = async () => {
   const { initialize } = useAuthStore.getState();
   await initialize();
   startSessionWatcher();
+
+  // Initialize (or restore) Single Sign-On session. This makes sure that
+  // if we arrive on a sub-domain without a local Supabase session, we
+  // attempt to restore it from the shared cookie or redirect to SSO.
+  await ssoManager.initializeSSO();
+  console.log('✅ SSO initialization complete');
 };
 
 function App() {

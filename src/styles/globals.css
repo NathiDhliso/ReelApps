@@ -90,6 +90,10 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Mobile optimizations */
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* High contrast focus states for accessibility */
@@ -97,6 +101,54 @@ body {
   outline: none;
   box-shadow: var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  body {
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+  }
+
+  /* Improve button touch targets */
+  button, 
+  a,
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px; /* iOS recommended touch target size */
+    min-width: 44px;
+  }
+
+  /* Prevent zoom on form inputs on iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+
+  /* Improve scrolling on mobile */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  /* Even larger touch targets for small screens */
+  button, 
+  a {
+    min-height: 48px;
+    min-width: 48px;
+  }
 }
 
 /* Utility classes */

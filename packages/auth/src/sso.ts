@@ -224,21 +224,33 @@ export class SSOManager {
   }
 
   /**
-   * Get SSO token from localStorage
+   * Get SSO token from localStorage and cookie
    */
   private getSSOTokenFromStorage(): string | null {
-    return localStorage.getItem(this.config.ssoTokenName);
+    // First attempt to read from localStorage (same-domain)
+    const localToken = localStorage.getItem(this.config.ssoTokenName);
+    if (localToken) return localToken;
+
+    // Fallback to cookie (shared across *.reelapps.co.za)
+    return this.getCookie(this.config.sessionCookieName);
   }
 
   /**
-   * Store SSO session in localStorage
+   * Store SSO session in localStorage and cookie (domain-wide)
    */
   private storeSSOSession(session: SSOSession): void {
     const token = this.generateSSOToken(session);
+
+    // Persist in local / session storage for same-origin tabs
     localStorage.setItem(this.config.ssoTokenName, token);
-    
-    // Also store in sessionStorage for cross-tab support
     sessionStorage.setItem(this.config.ssoTokenName, token);
+
+    // Persist in cookie so that sub-domains can bootstrap automatically
+    // Cookie will be available to *.mainDomain
+    // Default expiry: 1 day (can be adjusted later)
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 1);
+    this.setCookie(this.config.sessionCookieName, token, expiryDate);
   }
 
   /**
@@ -268,12 +280,12 @@ export class SSOManager {
   }
 
   /**
-   * Clear SSO session
+   * Clear SSO session from storage and cookies
    */
   clearSSOSession(): void {
     localStorage.removeItem(this.config.ssoTokenName);
     sessionStorage.removeItem(this.config.ssoTokenName);
-    localStorage.removeItem(this.config.sessionCookieName);
+    this.deleteCookie(this.config.sessionCookieName);
   }
 
   /**
@@ -295,9 +307,9 @@ export class SSOManager {
    */
   hasAppAccess(userRole: string, appId: string): boolean {
     const roleMapping: Record<string, string[]> = {
-      'admin': ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelprojects'],
-      'recruiter': ['reelhunter', 'reelpersona', 'reelprojects'],
-      'candidate': ['reelcv', 'reelskills', 'reelpersona', 'reelprojects']
+      'admin': ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelproject'],
+      'recruiter': ['reelhunter', 'reelpersona', 'reelproject'],
+      'candidate': ['reelcv', 'reelskills', 'reelpersona', 'reelproject']
     };
 
     return roleMapping[userRole]?.includes(appId) || false;
@@ -308,21 +320,50 @@ export class SSOManager {
    */
   getAllowedApps(userRole: string): string[] {
     const roleMapping: Record<string, string[]> = {
-      'admin': ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelprojects'],
-      'recruiter': ['reelhunter', 'reelpersona', 'reelprojects'],
-      'candidate': ['reelcv', 'reelskills', 'reelpersona', 'reelprojects']
+      'admin': ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelproject'],
+      'recruiter': ['reelhunter', 'reelpersona', 'reelproject'],
+      'candidate': ['reelcv', 'reelskills', 'reelpersona', 'reelproject']
     };
 
     return roleMapping[userRole] || [];
+  }
+
+  // === Cookie helpers ===
+
+  /**
+   * Set a cookie accessible to all sub-domains (Domain=.mainDomain)
+   */
+  private setCookie(name: string, value: string, expires: Date) {
+    const cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;domain=.${this.config.mainDomain};SameSite=Lax;Secure`;
+    document.cookie = cookie;
+  }
+
+  /**
+   * Read a cookie by name
+   */
+  private getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return decodeURIComponent(parts.pop()!.split(';').shift()!);
+    }
+    return null;
+  }
+
+  /**
+   * Delete a cookie by setting its expiry date in the past
+   */
+  private deleteCookie(name: string) {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=.${this.config.mainDomain}`;
   }
 }
 
 // Default SSO configuration
 export const defaultSSOConfig: SSOConfig = {
   mainDomain: 'reelapps.co.za',
-  allowedSubdomains: ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelprojects'],
+  allowedSubdomains: ['reelcv', 'reelhunter', 'reelskills', 'reelpersona', 'reelproject'],
   sessionCookieName: 'reelapps-session',
-  ssoTokenName: 'sso_token'
+  ssoTokenName: 'ssoToken'
 };
 
 // Export singleton instance

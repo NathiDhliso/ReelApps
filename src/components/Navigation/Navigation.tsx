@@ -62,7 +62,7 @@ const Navigation: React.FC = () => {
               <Button variant="outline" size="small" onClick={() => navigate('/auth/login')} id="nav-login-button">
                 Sign In
               </Button>
-              <Button size="small" onClick={() => navigate('/auth/signup')}>
+              <Button size="small" onClick={() => navigate('/auth/login')}>
                 Get Started
               </Button>
             </>

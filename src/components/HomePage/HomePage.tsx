@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Search, 
@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
-import { getAppsForRole, AppConfig } from '@reelapps/config';
+import { getAppsForRole, AppConfig, fetchUserAppsFromDatabase } from '@reelapps/config';
+import { getSupabaseClient } from '@reelapps/auth';
 import { Button } from '@reelapps/ui';
 // launchAppWithAuth removed - using direct navigation with shared session
 import styles from './HomePage.module.css';
@@ -36,9 +37,35 @@ const iconMap = {
 const HomePage: React.FC = () => {
   const { isAuthenticated, profile } = useAuthStore();
   const navigate = useNavigate();
+  const [availableApps, setAvailableApps] = useState<AppConfig[]>([]);
+
+  useEffect(() => {
+    const loadApps = async () => {
+      if (isAuthenticated && profile?.role) {
+        try {
+          const supabase = getSupabaseClient();
+          const dbApps = await fetchUserAppsFromDatabase(supabase);
+          if (dbApps.length > 0) {
+            setAvailableApps(dbApps);
+          } else {
+            // Fallback to role-based apps if database query fails
+            setAvailableApps(getAppsForRole(profile.role));
+          }
+        } catch (error) {
+          console.error('Error fetching apps from database:', error);
+          // Fallback to role-based apps
+          setAvailableApps(getAppsForRole(profile.role));
+        }
+      } else {
+        setAvailableApps([]);
+      }
+    };
+
+    loadApps();
+  }, [isAuthenticated, profile?.role]);
 
   const handleGetStarted = () => {
-    navigate('/auth/signup');
+    navigate('/auth/login');
   };
 
   const handleLaunchApp = (appUrl: string) => {
@@ -83,12 +110,6 @@ const HomePage: React.FC = () => {
       </div>
     );
   };
-
-  const availableApps = isAuthenticated && profile?.role 
-    ? getAppsForRole(profile.role)
-    : [];
-
-
 
   const featuredApps = availableApps.slice(0, 3);
   const otherApps = availableApps.slice(3);

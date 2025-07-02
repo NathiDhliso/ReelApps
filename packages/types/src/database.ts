@@ -30,11 +30,13 @@ export type Database = {
       profiles: {
         Row: {
           id: string
+          user_id: string
           updated_at: string | null
           username: string | null
           first_name: string | null
           last_name: string | null
           email: string | null
+          role: 'candidate' | 'recruiter' | 'admin'
           avatar_url: string | null
           bio: string | null
           location: string | null
@@ -49,11 +51,13 @@ export type Database = {
         }
         Insert: {
           id: string
+          user_id: string
           updated_at?: string | null
           username?: string | null
           first_name?: string | null
           last_name?: string | null
           email?: string | null
+          role?: 'candidate' | 'recruiter' | 'admin'
           avatar_url?: string | null
           bio?: string | null
           location?: string | null
@@ -68,11 +72,13 @@ export type Database = {
         }
         Update: {
           id?: string
+          user_id?: string
           updated_at?: string | null
           username?: string | null
           first_name?: string | null
           last_name?: string | null
           email?: string | null
+          role?: 'candidate' | 'recruiter' | 'admin'
           avatar_url?: string | null
           bio?: string | null
           location?: string | null

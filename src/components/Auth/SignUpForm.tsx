@@ -25,7 +25,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    role: 'candidate' as 'candidate' | 'recruiter'
+    role: 'candidate' as 'candidate' | 'recruiter' | 'admin'
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [generalError, setGeneralError] = useState('');
@@ -176,7 +176,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
 
   return (
     <div className={styles.container}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.signupForm} onSubmit={handleSubmit}>
         <div className={styles.header}>
           <div className={styles.logo}>
             <div className={styles.logoIcon}>
@@ -188,141 +188,169 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSwitchToLogin }) =
           <p className={styles.subtitle}>Join the future of talent acquisition and unlock your potential</p>
         </div>
 
-        <div className={styles.formGroup}>
-          <label className={styles.label}>I am a...</label>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="role"
-                value="candidate"
-                checked={formData.role === 'candidate'}
-                onChange={(e) => handleInputChange('role', e.target.value)}
-                style={{ cursor: 'pointer' }}
-              />
-              <span>Job seeker looking for opportunities</span>
-            </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, cursor: 'pointer' }}>
-              <input
-                type="radio"
-                name="role"
-                value="recruiter"
-                checked={formData.role === 'recruiter'}
-                onChange={(e) => handleInputChange('role', e.target.value)}
-                style={{ cursor: 'pointer' }}
-              />
-              <span>Recruiter hiring talent</span>
-            </label>
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div className={styles.formGroup}>
-            <label className={styles.label}>First Name</label>
-            <input
-              type="text"
-              className={`${styles.input} ${getFieldError('firstName') ? styles.inputError : ''}`}
-              value={formData.firstName}
-              onChange={(e) => handleInputChange('firstName', e.target.value)}
-              placeholder="Enter your first name"
-              autoComplete="given-name"
-              required
-            />
-            {getFieldError('firstName') && (
-              <div className={styles.fieldError}>
-                <AlertCircle size={14} />
-                {getFieldError('firstName')}
+        <div className={styles.formContent}>
+          {/* Left Column - Role Selection */}
+          <div className={styles.leftColumn}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>I am a...</label>
+              <div className={styles.roleSelection}>
+                <label className={styles.roleOption}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="candidate"
+                    checked={formData.role === 'candidate'}
+                    onChange={(e) => handleInputChange('role', e.target.value)}
+                    className={styles.roleRadio}
+                  />
+                  <div className={styles.roleContent}>
+                    <span className={styles.roleTitle}>Job Seeker</span>
+                    <span className={styles.roleDescription}>Looking for opportunities and building my profile</span>
+                  </div>
+                </label>
+                <label className={styles.roleOption}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="recruiter"
+                    checked={formData.role === 'recruiter'}
+                    onChange={(e) => handleInputChange('role', e.target.value)}
+                    className={styles.roleRadio}
+                  />
+                  <div className={styles.roleContent}>
+                    <span className={styles.roleTitle}>Recruiter</span>
+                    <span className={styles.roleDescription}>Hiring talent and managing recruitment</span>
+                  </div>
+                </label>
+                <label className={styles.roleOption}>
+                  <input
+                    type="radio"
+                    name="role"
+                    value="admin"
+                    checked={formData.role === 'admin'}
+                    onChange={(e) => handleInputChange('role', e.target.value)}
+                    className={styles.roleRadio}
+                  />
+                  <div className={styles.roleContent}>
+                    <span className={styles.roleTitle}>Administrator</span>
+                    <span className={styles.roleDescription}>Managing platform and overseeing operations</span>
+                  </div>
+                </label>
               </div>
-            )}
+            </div>
           </div>
 
-          <div className={styles.formGroup}>
-            <label className={styles.label}>Last Name</label>
-            <input
-              type="text"
-              className={`${styles.input} ${getFieldError('lastName') ? styles.inputError : ''}`}
-              value={formData.lastName}
-              onChange={(e) => handleInputChange('lastName', e.target.value)}
-              placeholder="Enter your last name"
-              autoComplete="family-name"
-              required
-            />
-            {getFieldError('lastName') && (
-              <div className={styles.fieldError}>
-                <AlertCircle size={14} />
-                {getFieldError('lastName')}
+          {/* Right Column - Account Details */}
+          <div className={styles.rightColumn}>
+            <div className={styles.nameFields}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>First Name</label>
+                <input
+                  type="text"
+                  className={`${styles.input} ${getFieldError('firstName') ? styles.inputError : ''}`}
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  placeholder="Enter your first name"
+                  autoComplete="given-name"
+                  required
+                />
+                {getFieldError('firstName') && (
+                  <div className={styles.fieldError}>
+                    <AlertCircle size={14} />
+                    {getFieldError('firstName')}
+                  </div>
+                )}
               </div>
-            )}
+
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Last Name</label>
+                <input
+                  type="text"
+                  className={`${styles.input} ${getFieldError('lastName') ? styles.inputError : ''}`}
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  placeholder="Enter your last name"
+                  autoComplete="family-name"
+                  required
+                />
+                {getFieldError('lastName') && (
+                  <div className={styles.fieldError}>
+                    <AlertCircle size={14} />
+                    {getFieldError('lastName')}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Email Address</label>
+              <input
+                type="email"
+                className={`${styles.input} ${getFieldError('email') ? styles.inputError : ''}`}
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Enter your email address"
+                autoComplete="email"
+                required
+              />
+              {getFieldError('email') && (
+                <div className={styles.fieldError}>
+                  <AlertCircle size={14} />
+                  {getFieldError('email')}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Password</label>
+              <input
+                type="password"
+                className={`${styles.input} ${getFieldError('password') ? styles.inputError : ''}`}
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                placeholder="Create a strong password (minimum 8 characters)"
+                autoComplete="new-password"
+                required
+              />
+              {getFieldError('password') && (
+                <div className={styles.fieldError}>
+                  <AlertCircle size={14} />
+                  {getFieldError('password')}
+                </div>
+              )}
+              {passwordStrength && !getFieldError('password') && (
+                <div className={`${styles.fieldSuccess} ${passwordStrength.color}`}>
+                  <CheckCircle size={14} />
+                  Password strength: {passwordStrength.strength}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Confirm Password</label>
+              <input
+                type="password"
+                className={`${styles.input} ${getFieldError('confirmPassword') ? styles.inputError : ''}`}
+                value={formData.confirmPassword}
+                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                placeholder="Re-enter your password"
+                autoComplete="new-password"
+                required
+              />
+              {getFieldError('confirmPassword') && (
+                <div className={styles.fieldError}>
+                  <AlertCircle size={14} />
+                  {getFieldError('confirmPassword')}
+                </div>
+              )}
+              {formData.confirmPassword && formData.password === formData.confirmPassword && !getFieldError('confirmPassword') && (
+                <div className={styles.fieldSuccess}>
+                  <CheckCircle size={14} />
+                  Passwords match
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Email Address</label>
-          <input
-            type="email"
-            className={`${styles.input} ${getFieldError('email') ? styles.inputError : ''}`}
-            value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
-            placeholder="Enter your email address"
-            autoComplete="email"
-            required
-          />
-          {getFieldError('email') && (
-            <div className={styles.fieldError}>
-              <AlertCircle size={14} />
-              {getFieldError('email')}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Password</label>
-          <input
-            type="password"
-            className={`${styles.input} ${getFieldError('password') ? styles.inputError : ''}`}
-            value={formData.password}
-            onChange={(e) => handleInputChange('password', e.target.value)}
-            placeholder="Create a strong password (minimum 8 characters)"
-            autoComplete="new-password"
-            required
-          />
-          {getFieldError('password') && (
-            <div className={styles.fieldError}>
-              <AlertCircle size={14} />
-              {getFieldError('password')}
-            </div>
-          )}
-          {passwordStrength && !getFieldError('password') && (
-            <div className={`${styles.fieldSuccess} ${passwordStrength.color}`}>
-              <CheckCircle size={14} />
-              Password strength: {passwordStrength.strength}
-            </div>
-          )}
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Confirm Password</label>
-          <input
-            type="password"
-            className={`${styles.input} ${getFieldError('confirmPassword') ? styles.inputError : ''}`}
-            value={formData.confirmPassword}
-            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-            placeholder="Re-enter your password"
-            autoComplete="new-password"
-            required
-          />
-          {getFieldError('confirmPassword') && (
-            <div className={styles.fieldError}>
-              <AlertCircle size={14} />
-              {getFieldError('confirmPassword')}
-            </div>
-          )}
-          {formData.confirmPassword && formData.password === formData.confirmPassword && !getFieldError('confirmPassword') && (
-            <div className={styles.fieldSuccess}>
-              <CheckCircle size={14} />
-              Passwords match
-            </div>
-          )}
         </div>
 
         {generalError && (
